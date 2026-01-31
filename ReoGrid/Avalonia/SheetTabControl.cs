@@ -59,6 +59,7 @@ namespace unvell.ReoGrid.AvaloniaPlatform
 
             this.BorderColor = Colors.DeepSkyBlue;
             this.Background = new SolidColorBrush(SystemColors.ControlLight);
+            this.Cursor = Cursor.Default;
 
             this.Template = new FuncControlTemplate<SheetTabControl>((p, ns) => 
                 new Grid()

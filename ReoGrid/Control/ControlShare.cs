@@ -1397,7 +1397,7 @@ namespace unvell.ReoGrid
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
         {
 #elif AVALONIA
-        protected void OnMouseLeave()
+        protected override void OnPointerExited(Avalonia.Input.PointerEventArgs args)
         {
 #endif // WPF
 
