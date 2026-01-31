@@ -129,8 +129,8 @@ namespace unvell.Common
         }
         #endregion // Calculation
 
-        #region Drawing
-        public enum TriangleDirection { Left, Up, Right, Down, }
+		#region Drawing
+		public enum TriangleDirection { Left, Up, Right, Down, DownFilter, }
 
         public static void FillTriangle(PlatformGraphics g, RGFloat size, Point loc, TriangleDirection dir = TriangleDirection.Down)
         {
@@ -167,9 +167,9 @@ namespace unvell.Common
 #elif ANDROID
                         g.DrawLine(loc.X + x, y, loc.X + size - x - 1, y, p);
 #endif
-                        y--;
-                    }
-                    break;
+            y--;
+          }
+          break;
 
                 case TriangleDirection.Down:
                     loc.X -= size / 2 - 1;
@@ -181,22 +181,69 @@ namespace unvell.Common
 #elif ANDROID
                         g.DrawLine(loc.X + x, y, loc.X + size - x, y, p);
 #endif
-                        y++;
-                    }
-                    break;
+            y++;
+          }
+          break;
 
-                case TriangleDirection.Left:
-                    loc.Y -= size / 2;
-                    for (y = 0; y < size / 2; y++)
-                    {
-#if WINFORM || WPF || AVALONIA
-                        g.DrawLine(p, new Point(x, loc.Y + y), new Point(x, loc.Y + size - y - 1));
+        case TriangleDirection.DownFilter:
+          loc.X -= size / 2;
+          loc.Y -= size / 2;
+
+          // Draw the outline of the funnel
+          // Upper wide opening
+          int topWidth = (int)size;
+          int bottomWidth = (int)(size / 4);
+          int funnelHeight = (int)(size / 2);
+          int neckHeight = (int)(size / 2 + 1); // Extended funnel neck
+
+#if WINFORM || WPF
+          // Draw four side lines of the funnel to create a hollow effect
+          // Top left to bottom left
+          g.DrawLine(p, new Point(loc.X, loc.Y), new Point(loc.X + (topWidth - bottomWidth) / 2, loc.Y + funnelHeight));
+          // Top right to bottom right
+          g.DrawLine(p, new Point(loc.X + topWidth, loc.Y), new Point(loc.X + (topWidth + bottomWidth) / 2, loc.Y + funnelHeight));
+          // Bottom connecting line
+          g.DrawLine(p, new Point(loc.X + (topWidth - bottomWidth) / 2, loc.Y + funnelHeight),
+                     new Point(loc.X + (topWidth + bottomWidth) / 2, loc.Y + funnelHeight));
+          // Top connecting line (optional, for closing the top)
+          g.DrawLine(p, new Point(loc.X, loc.Y), new Point(loc.X + topWidth, loc.Y));
+
+          // Draw extended neck lines
+          Point neckTopLeft = new Point(loc.X + (topWidth - bottomWidth) / 2, loc.Y + funnelHeight);
+          Point neckTopRight = new Point(loc.X + (topWidth + bottomWidth) / 2, loc.Y + funnelHeight);
+          Point neckBottomLeft = new Point(neckTopLeft.X, neckTopLeft.Y + neckHeight);
+          Point neckBottomRight = new Point(neckTopRight.X, neckTopRight.Y + neckHeight);
+
+          // Left neck line
+          g.DrawLine(p, neckTopLeft, neckBottomLeft);
+          // Right neck line
+          g.DrawLine(p, neckTopRight, neckBottomRight);
+
+          // Draw square dot (1x1 pixel) at bottom left corner
+          Point dotPosition = new Point(neckBottomLeft.X - 3, neckBottomLeft.Y - 1);
+#endif
+
+#if WPF
+          // Draw a 1x1 pixel rectangle at the funnel tip for WPF platform
+          g.DrawRectangle(RGBrushes.Black, p, new Rectangle(dotPosition.X, dotPosition.Y, 1, 1));
+#elif WINFORM
+          g.DrawRectangle(p, dotPosition.X, dotPosition.Y, 1, 1);
+#elif ANDROID        
+
+#endif
+          break;  
+        case TriangleDirection.Left:
+          loc.Y -= size / 2;
+          for (y = 0; y < size / 2; y++)
+          {
+#if WINFORM || WPF
+            g.DrawLine(p, new Point(x, loc.Y + y), new Point(x, loc.Y + size - y - 1));
 #elif ANDROID
                         g.DrawLine(x, loc.Y + y, x, loc.Y + size - y - 1, p);
 #endif
-                        x--;
-                    }
-                    break;
+            x--;
+          }
+          break;
 
                 case TriangleDirection.Right:
                     loc.Y -= size / 2;
@@ -207,12 +254,12 @@ namespace unvell.Common
 #elif ANDROID
                         g.DrawLine(x, loc.Y + y, x, loc.Y + size - y - 1, p);
 #endif
-                        x++;
-                    }
-                    break;
+            x++;
+          }
+          break;
 
-            }
-        }
+      }
+    }
 
 #endregion
 

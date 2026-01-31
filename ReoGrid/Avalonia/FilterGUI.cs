@@ -184,7 +184,7 @@ namespace unvell.ReoGrid.AvaloniaPlatform
                             items.Insert(0, LanguageResource.Filter_SelectAll);
                             filterPanel.ItemsSource = items;
 
-                            if (headerBody.IsSelectAll)
+                            if (headerBody.IsSelectAll == true)
                             {
                                 filterPanel.Selection.SelectAll();
                             }
