@@ -21,23 +21,26 @@
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using Avalonia.Reactive;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using System;
 using System.Diagnostics;
+using unvell.ReoGrid.AvaloniaPlatform;
 using unvell.ReoGrid.Graphics;
 using unvell.ReoGrid.Interaction;
 using unvell.ReoGrid.Main;
 using unvell.ReoGrid.Rendering;
 using unvell.ReoGrid.Views;
-using unvell.ReoGrid.AvaloniaPlatform;
 using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using Point = unvell.ReoGrid.Graphics.Point;
 
@@ -59,17 +62,24 @@ namespace unvell.ReoGrid
         private ScrollBar horScrollbar;
         private ScrollBar verScrollbar;
 
-        //private Canvas canvas;
+    //private Canvas canvas;
 
-        //private DockPanel layout;
+    //private DockPanel layout;
 
-        /// <summary>
-        /// Create ReoGrid spreadsheet control
-        /// </summary>
-        public ReoGridControl()
-        {
-            //this.SnapsToDevicePixels = true;
-            this.Focusable = true;
+    /// <summary>
+    /// Create ReoGrid spreadsheet control
+    /// </summary>
+    public ReoGridControl()
+    {
+
+      this.Styles.Add(new StyleInclude(new Uri("avares://unvell.ReoGrid/"))
+      {
+        Source = new Uri("avares://unvell.ReoGrid/Avalonia/Theme/Styles.axaml")
+      });
+
+
+      //this.SnapsToDevicePixels = true;
+      this.Focusable = true;
             //this.FocusVisualStyle = null;
 
             this.BeginInit();
