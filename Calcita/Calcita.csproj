@@ -1,0 +1,153 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	  <TargetFrameworks>net8.0</TargetFrameworks>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Calcita</RootNamespace>
+    <AssemblyName>Calcita</AssemblyName>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <StartupObject></StartupObject>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Configurations>AvaloniaDebug;AvaloniaRelease</Configurations>
+  </PropertyGroup>
+	<PropertyGroup>
+		<Authors>Calcita Contributors</Authors>
+		<Company>Calcita</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/Calcita/Calcita</PackageProjectUrl>
+		<PackageIcon>icon.png</PackageIcon>
+		<RepositoryUrl>https://github.com/Calcita/Calcita</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionSuffix></VersionSuffix>
+		<PackageId>Calcita.Avalonia</PackageId>
+		<Description>Calcita — a modernized fork of ReoGrid. Powerful and lightweight .NET spreadsheet component compatible with Excel formats. This package contains the Avalonia UI build of Calcita.</Description>
+		<SignAssembly>true</SignAssembly>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<Copyright>2012-2024 (c) Jingwood, unvell and Calcita contributors.</Copyright>
+		<PackageTags>calcita spreadsheet excel drawing grid workbook worksheet chart data formula script macro outline print</PackageTags>
+		<PackageReleaseNotes>Initial Calcita package based on ReoGrid sources.</PackageReleaseNotes>
+	</PropertyGroup>
+	
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AvaloniaDebug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;AVALONIA;GLOBALUSING;VP_DEBUG_OFF;ALWAYS_CELL_CLIP;FORMULA;LANG_JP;OUTLINE;DRAWING;COMMENT;RICHTEXT;</DefineConstants>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AvaloniaRelease|AnyCPU'">
+    <DefineConstants>TRACE;AVALONIA;GLOBALUSING;FORMULA;LANG_JP;OUTLINE;DRAWING;RICHTEXT;</DefineConstants>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='AvaloniaRelease|net6.0|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Android\**" />
+    <Compile Remove="iOS\**" />
+    <Compile Remove="Test\**" />
+    <Compile Remove="WinForm\**" />
+    <Compile Remove="WPF\**" />
+    <Content Remove="Android\**" />
+    <Content Remove="iOS\**" />
+    <Content Remove="Test\**" />
+    <Content Remove="WinForm\**" />
+    <EmbeddedResource Remove="Android\**" />
+    <EmbeddedResource Remove="iOS\**" />
+    <EmbeddedResource Remove="Test\**" />
+    <EmbeddedResource Remove="WinForm\**" />
+    <EmbeddedResource Remove="WPF\**" />
+    <None Remove="Android\**" />
+    <None Remove="iOS\**" />
+    <None Remove="Test\**" />
+    <None Remove="WinForm\**" />
+    <None Remove="WPF\**" />
+    <Page Remove="Android\**" />
+    <Page Remove="iOS\**" />
+    <Page Remove="Test\**" />
+    <Page Remove="WinForm\**" />
+    <Page Remove="WPF\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaXaml Remove="Avalonia\Base.axaml" />
+    <AvaloniaXaml Remove="Avalonia\ControlTheme.axaml" />
+    <AvaloniaXaml Remove="Avalonia\TemplatedControl1.axaml" />
+    <AvaloniaXaml Remove="Avalonia\UserControl1.axaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Avalonia\TemplatedControl1.axaml.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Avalonia\Theme\Base.axaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Update="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Update="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Control\ControlShare.cs" />
+    <Compile Update="ClipboardMonitor.cs" />
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\cross.cur" />
+		<EmbeddedResource Include="Resources\full_col_select.cur" />
+		<EmbeddedResource Include="Resources\full_row_select.cur" />
+		<EmbeddedResource Include="Resources\grid_select.cur" />
+		<EmbeddedResource Include="Resources\pick_range.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.11" />
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+    <PackageReference Include="System.Security.Permissions" Version="7.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\NuGet\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\DateTimeFormat.it.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\DateTimeFormat.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DateTimeFormat.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Avalonia\Base.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+</Project>

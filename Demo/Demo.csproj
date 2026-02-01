@@ -1,10 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>unvell.ReoGrid.Demo</RootNamespace>
-    <AssemblyName>ReoGridDemo</AssemblyName>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <RootNamespace>Calcita.Demo</RootNamespace>
+    <AssemblyName>Calcita.Demo</AssemblyName>
+    <Authors>Calcita Contributors</Authors>
+    <Company>Calcita</Company>
+    <RepositoryUrl>https://github.com/Calcita/Calcita</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Calcita/Calcita</PackageProjectUrl>
+    <Description>Calcita demo application showcasing the Calcita spreadsheet component (Avalonia UI).</Description>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -17,357 +21,39 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <Configurations>Debug;Release</Configurations>
+     <AvaloniaVersion>11.3.11</AvaloniaVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>TRACE;DEBUG;EX_SCRIPT;</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <Authors>Jingwood</Authors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime">
       <HintPath>..\Ref\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="FastColoredTextBox">
-      <HintPath>..\Ref\FastColoredTextBox.dll</HintPath>
-    </Reference>
-    <Reference Update="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Update="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="unvell.ReoScript, Version=1.4.4.0, Culture=neutral, PublicKeyToken=85339a558a3a0c58, processorArchitecture=MSIL">
+    <Reference Include="unvell.ReoScript, Version=1.5.0.0, Culture=neutral, PublicKeyToken=85339a558a3a0c58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Ref\unvell.ReoScript.dll</HintPath>
     </Reference>
-    <Reference Include="unvell.ReoScript.EditorLib, Version=1.4.4.0, Culture=neutral, PublicKeyToken=85339a558a3a0c58, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Ref\unvell.ReoScript.EditorLib.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="CellAndRange\IterateCellsAndBorders.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CellAndRange\CustomDataFormatDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CellAndRange\CellTextDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CellAndRange\AccessRangeData.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CellAndRange\AccessCellDataDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Chart\AreaChartDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Chart\BarChartDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Chart\DoughnutChartDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Chart\Pie2DChartDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Chart\ColumnChartDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Chart\LineChartDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CustomCells\CustomDropdownDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CustomCells\BuiltInTypesDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CustomCells\AnimationCellDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CustomCells\ImageCheckboxDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CustomCells\NumericProgressDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CustomCells\SlideCellDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\DataFormatDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\FinancialRatiosDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\InvoiceExcelDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\ProjectBuildReportDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\YearCalendarDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\MazeDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\MonthCalendarDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\OrderDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Documents\ProjectSummaryDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Drawings\DrawingObjectStyleDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Drawings\AddingObjectDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Drawings\BasicShapesDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="DropdownButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Features\ClipboardEventDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\CellsEventDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\ControlAppearanceDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\BottomFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\LeftFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\RightFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\BottomRightFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\BottomLeftFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\TopRightFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\TopFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\OutlineDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\ColumnFilterAndSortDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="EdgeFreeze\TopLeftFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\RichTextDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\SynchronizeScrollDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Performance\ComplexMergedCellDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Performance\RowPerformanceDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\OutlineWithFreezeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\PickRangeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\MultisheetDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\CustomSelectionDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\ZoomDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Formula\NamedRangeReferenceDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Formula\FormulaDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Update="Scripts\ReoQueryScriptDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Scripts\LoadScriptDocDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Styles\MultiSelectionDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Welcome\WhatsNewDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Performance\MaximumSheetDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Print\PrintMultipleWorksheetDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Print\PrintPreviewDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Styles\BorderStylesDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Styles\SelectionModeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Styles\CustomHeaderDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Performance\UpdateDataFormatDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CellAndRange\MergeCellsDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\OnlyNumberInputDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Features\SetEditableRangeDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Formula\CustomizeFunctionDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Scripts\HandleEventsDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Scripts\RunScriptDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Update="_Templates\Excel\welcome.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\calendar_2008_1.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\calendar_2013.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\cell_format.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\change_colors.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\Excel\simple-invoice.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\Financial_Ratios.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\Maze.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\merged_range.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\order_sample.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Update="_Templates\RGF\outline.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\printable_report.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\project_building_report.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\RGF\project_cost_summary.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Update="_Templates\RGF\quick_start_sample.rgf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="_Templates\CSV\zip_code_sample.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DemoCategory.xml">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Drawings\AddingObjectDemo.src.html" />
-    <Content Include="favicon.ico" />
-    <Content Include="Resources\computer_laptop.png" />
-    <None Include="Resources\image3.png" />
-    <None Include="Resources\image1.png" />
-    <None Include="Resources\image2.png" />
-    <None Include="Resources\image4.png" />
-    <Content Include="Resources\loading.gif" />
+    <ProjectReference Include="..\Calcita\Calcita.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Editor\Editor.csproj" />
-    <ProjectReference Include="..\ReoGrid\ReoGrid.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="DemoForm.resx" />
-    <EmbeddedResource Remove="Features\CustomCellsForm.resx" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
+      <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
 </Project>

@@ -1,46 +1,28 @@
-﻿/*****************************************************************************
- * 
- * ReoGrid - .NET Spreadsheet Control
- * 
- * https://reogrid.net
- *
- * THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
- * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
- * PURPOSE.
- *
- * ReoGrid and ReoGrid Demo project is released under MIT license.
- *
- * Copyright (c) 2012-2021 Jing Lu <jingwood at unvell.com>
- * Copyright (c) 2012-2016 unvell.com, all rights reserved.
- * 
- ****************************************************************************/
-
+﻿using Avalonia;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
+using System.Text;
+using System.Threading.Tasks;
+using ReactiveUI.Avalonia;
 
-using unvell.Common;
-using unvell.ReoGrid.Demo.Styles;
-
-namespace unvell.ReoGrid.Demo
+namespace Calcita.Demo
 {
-	static class Program
-	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main()
-		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
+    class Program
+    {
+        // Initialization code. Don't use any Avalonia, third-party APIs or any
+        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
+        // yet and stuff might break.
+        [STAThread]
+        public static void Main(string[] args) => BuildAvaloniaApp()
+            .StartWithClassicDesktopLifetime(args);
 
-			Application.Run(new DemoItemsForm());
-
-			//BorderPainter.Instance.Dispose();
-			//ResourcePoolManager.Instance.Dispose();
-		}
-	}
+        // Avalonia configuration, don't remove; also used by visual designer.
+        public static AppBuilder BuildAvaloniaApp()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .WithInterFont()
+                .LogToTrace()
+                .UseReactiveUI();
+    }
 }

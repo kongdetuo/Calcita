@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace unvell.ReoGrid.Demo.Properties {
+namespace Calcita.Demo.Properties {
     using System;
     
     
@@ -19,7 +19,7 @@ namespace unvell.ReoGrid.Demo.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -39,7 +39,7 @@ namespace unvell.ReoGrid.Demo.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("unvell.ReoGrid.Demo.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Calcita.Demo.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,176 +61,22 @@ namespace unvell.ReoGrid.Demo.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///
-        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///    &lt;title&gt;&lt;/title&gt;
-        ///	&lt;style type=&quot;text/css&quot;&gt;
-        ///		.csharpcode, .csharpcode pre
-        ///{
-        ///	font-size: small;
-        ///	color: black;
-        ///	font-family: Consolas, &quot;Courier New&quot;, Courier, Monospace;
-        ///	background-color: #ffffff;
-        ///	/*white-space: pre;*/
-        ///}
-        ///
-        ///.csharpcode pre { margin: 0em; }
-        ///
-        ///.csharpcode .rem { color: #008000; }
-        ///
-        ///.csharpcode .kwrd { color: #0000ff; }
-        ///
-        ///.csharpcode .str { color: #a31515; }
-        ///
-        ///.csharp [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string AddingObjectDemo_src {
+        internal static byte[] computer_laptop_png {
             get {
-                return ResourceManager.GetString("AddingObjectDemo_src", resourceCulture);
+                object obj = ResourceManager.GetObject("computer_laptop_png", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Bitmap Checked_Checkbox_20 {
+        internal static byte[] order_sample {
             get {
-                object obj = ResourceManager.GetObject("Checked_Checkbox_20", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap computer_laptop {
-            get {
-                object obj = ResourceManager.GetObject("computer_laptop", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
-        ///
-        ///&lt;!--
-        ////*****************************************************************************
-        /// * 
-        /// * ReoGrid - .NET Spreadsheet Control
-        /// 
-        /// * https://reogrid.net
-        /// *
-        /// * THIS CODE AND INFORMATION IS PROVIDED &quot;AS IS&quot; WITHOUT WARRANTY OF ANY
-        /// * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-        /// * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-        /// * PURPOSE.
-        /// *
-        /// * ReoGrid Demo project released under MIT license.
-        /// *
-        /// * Copyright (c [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string DemoCategory {
-            get {
-                return ResourceManager.GetString("DemoCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap DialogGroup_5846_16x {
-            get {
-                object obj = ResourceManager.GetObject("DialogGroup_5846_16x", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Folder_6222 {
-            get {
-                object obj = ResourceManager.GetObject("Folder_6222", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///    &lt;title&gt;{0}&lt;/title&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///{1}
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
-        /// </summary>
-        internal static string HTMLHelpTemp {
-            get {
-                return ResourceManager.GetString("HTMLHelpTemp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap image5 {
-            get {
-                object obj = ResourceManager.GetObject("image5", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap loading {
-            get {
-                object obj = ResourceManager.GetObject("loading", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
-        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot; /&gt;
-        ///    &lt;title&gt;ReoGrid Demo&lt;/title&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///Sorry, no help information available for this demo.
-        ///&lt;/body&gt;
-        ///&lt;/html&gt;.
-        /// </summary>
-        internal static string NoHelpAvailable {
-            get {
-                return ResourceManager.GetString("NoHelpAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Table_748 {
-            get {
-                object obj = ResourceManager.GetObject("Table_748", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Unchecked_Checkbox_20 {
-            get {
-                object obj = ResourceManager.GetObject("Unchecked_Checkbox_20", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("order_sample", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

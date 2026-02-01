@@ -1,16 +1,24 @@
-# ReoGrid
 
-![NuGet](https://img.shields.io/nuget/v/unvell.ReoGrid.DLL.svg)
+# Calcita
 
-Fast and powerful open source .NET spreadsheet component
+Calcita is a fork and independent development of the open-source .NET spreadsheet component ReoGrid. This repository contains the Calcita project which started from ReoGrid's codebase and will evolve separately.
 
-https://reogrid.net
+- Project: `Calcita` (derived from ReoGrid)
+- Original project: ReoGrid — https://reogrid.net
 
-# Documentations
+# About
+
+Calcita aims to provide a lightweight, modernized .NET spreadsheet component based on ReoGrid. Early versions keep much of the original functionality and snapshots, while future commits will introduce Calcita-specific features and refactors.
+
+# Documentation
+
+The original ReoGrid documentation is available at:
 
 https://reogrid.net/document
 
-# Snapshots
+Calcita-specific documentation will be added as the project matures.
+
+# Snapshots (from original ReoGrid)
 
 Read from Excel<br />
 ![Snapshot - Read from Excel](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/02.png)
@@ -36,9 +44,15 @@ Custom Control Appearance<br />
 Script and Macro Execution<br />
 ![Snapshot - Script and Macro](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/27.png)
 
-# License
+# License & Attribution
+
+This project is based on ReoGrid. The original project is licensed under the MIT License.
 
 MIT License
 
-Copyright (c) Jingwood & unvell.com 2012-2019, All rights reserved.
+Copyright (c) Jingwood & unvell.com 2012-2019.
+
+Calcita continues under the same MIT terms for code derived from ReoGrid. Any new code added in this repository by the Calcita authors will also be published under the MIT License unless otherwise stated.
+
+If you are using or redistributing this code, please respect the original authors' attribution and the licensing terms.
 

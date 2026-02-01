@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <!-- Centralized package and repository metadata for Calcita projects -->
+    <AvaloniaVersion>11.3.11</AvaloniaVersion>
+    <Authors>Calcita Contributors</Authors>
+    <Company>Calcita</Company>
+    <RepositoryUrl>https://github.com/Calcita/Calcita</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Calcita/Calcita</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+</Project>

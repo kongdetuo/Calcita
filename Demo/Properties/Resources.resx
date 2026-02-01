@@ -118,58 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="loading" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\loading.gif;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="computer_laptop_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\computer_laptop_png.image;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="computer_laptop" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\computer_laptop.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DialogGroup_5846_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DialogGroup_5846_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Folder_6222" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Folder_6222.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Table_748" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Table_748.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="HTMLHelpTemp" xml:space="preserve">
-    <value>&lt;!DOCTYPE html&gt;
-&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head&gt;
-    &lt;meta charset="utf-8" /&gt;
-    &lt;title&gt;{0}&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-{1}
-&lt;/body&gt;
-&lt;/html&gt;</value>
-  </data>
-  <data name="NoHelpAvailable" xml:space="preserve">
-    <value>&lt;!DOCTYPE html&gt;
-&lt;html lang="en" xmlns="http://www.w3.org/1999/xhtml"&gt;
-&lt;head&gt;
-    &lt;meta charset="utf-8" /&gt;
-    &lt;title&gt;ReoGrid Demo&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-Sorry, no help information available for this demo.
-&lt;/body&gt;
-&lt;/html&gt;</value>
-  </data>
-  <data name="DemoCategory" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\democategory.xml;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="AddingObjectDemo_src" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\drawings\addingobjectdemo.src.html;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="image5" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image5.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Checked_Checkbox_20" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Checked Checkbox-20.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Unchecked_Checkbox_20" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Unchecked Checkbox-20.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="order_sample" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\order_sample.rgf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

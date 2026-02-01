@@ -1,17 +1,17 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ReoGrid Demo")]
-[assembly: AssemblyDescription("Opensource .NET Spreadsheet Control")]
+[assembly: AssemblyTitle("Demo")]
+[assembly: AssemblyDescription(".NET Spreadsheet Control for WPF")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("unvell")]
-[assembly: AssemblyProduct("ReoGrid")]
-[assembly: AssemblyCopyright("Copyright © 2012-2021 Jingwood & unvell, all rights reserved.")]
-[assembly: AssemblyTrademark("ReoGrid.NET")]
+[assembly: AssemblyCompany("Calcita")]
+[assembly: AssemblyProduct("Calcita.Demo")]
+[assembly: AssemblyCopyright("Copyright © 2012-2024 Jingwood, unvell and Calcita contributors.")]
+[assembly: AssemblyTrademark("Calcita.NET")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -19,8 +19,17 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3dcb28d4-cada-4a2c-a591-089345a8d93c")]
+//In order to begin building localizable applications, set 
+//<UICulture>CultureYouAreCodingWith</UICulture> in your .csproj file
+//inside a <PropertyGroup>.  For example, if you are using US english
+//in your source files, set the <UICulture> to en-US.  Then uncomment
+//the NeutralResourceLanguage attribute below.  Update the "en-US" in
+//the line below to match the UICulture setting in the project file.
+
+//[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
+
+
+
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +41,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.3.0.0")]
-[assembly: AssemblyFileVersion("3.3.0.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
