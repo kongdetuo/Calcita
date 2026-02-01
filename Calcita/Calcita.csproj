@@ -122,7 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.11" />
-    <PackageReference Include="DotNetZip" Version="1.16.0" />
+    <!--<PackageReference Include="DotNetZip" Version="1.16.0" />-->
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="System.Security.Permissions" Version="7.0.0" />
   </ItemGroup>
