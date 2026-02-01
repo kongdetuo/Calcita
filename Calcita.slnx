@@ -1,0 +1,36 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="WPFDebug" />
+    <BuildType Name="WPFRelease" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="README.md" />
+    <File Path="README.txt" />
+    <File Path="Samples/background_color_patterns.rgf" />
+    <File Path="Samples/border_styles.rgf" />
+    <File Path="Samples/calendar_2008_1.rgf" />
+    <File Path="Samples/calendar_2013.rgf" />
+    <File Path="Samples/cell_format.rgf" />
+    <File Path="Samples/change_colors.rgf" />
+    <File Path="Samples/Financial_Ratios.rgf" />
+    <File Path="Samples/input_form.rgf" />
+    <File Path="Samples/Maze.rgf" />
+    <File Path="Samples/merged_range.rgf" />
+    <File Path="Samples/order_sample.rgf" />
+    <File Path="Samples/outline.rgf" />
+    <File Path="Samples/printable_report.rgf" />
+    <File Path="Samples/project_cost_summary.rgf" />
+  </Folder>
+  <Project Path="Calcita/Calcita.csproj">
+    <BuildType Solution="Debug|*" Project="AvaloniaDebug" />
+    <BuildType Solution="Release|*" Project="AvaloniaRelease" />
+    <BuildType Solution="WPFDebug|*" Project="AvaloniaDebug" />
+  </Project>
+  <Project Path="Demo/Demo.csproj">
+    <BuildType Solution="WPFDebug|*" Project="Debug" />
+    <BuildType Solution="WPFRelease|*" Project="Release" />
+  </Project>
+</Solution>
