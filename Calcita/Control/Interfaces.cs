@@ -23,6 +23,7 @@ using Calcita.Graphics;
 
 using Calcita.Views;
 using Calcita.Rendering;
+using Avalonia.Controls.Primitives;
 
 namespace Calcita.Main
 {
@@ -45,10 +46,10 @@ namespace Calcita.Main
 
 	internal interface IContextMenuControl
 	{
-		Avalonia.Controls.ContextMenu CellsContextMenu { get; }
-		Avalonia.Controls.ContextMenu RowHeaderContextMenu { get; }
-		Avalonia.Controls.ContextMenu ColumnHeaderContextMenu { get; }
-		Avalonia.Controls.ContextMenu LeadHeaderContextMenu { get; }
+		FlyoutBase? CellsContextFlyout { get; }
+        FlyoutBase? RowHeaderContextFlyout { get; }
+        FlyoutBase? ColumnHeaderContextFlyout { get; }
+        FlyoutBase? LeadHeaderContextFlyout { get; }
     }
 
 #if EX_SCRIPT

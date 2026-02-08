@@ -586,24 +586,17 @@ namespace Calcita
 
             public void ShowContextMenuStrip(ViewTypes viewType, Graphics.Point containerLocation)
             {
-                switch (viewType)
+                var flyout = viewType switch
                 {
-                    default:
-                    case ViewTypes.Cells:
-                        this.canvas.BaseContextMenu = this.canvas.CellsContextMenu;
-                        break;
-
-                    case ViewTypes.ColumnHeader:
-                        this.canvas.BaseContextMenu = this.canvas.ColumnHeaderContextMenu;
-                        break;
-
-                    case ViewTypes.RowHeader:
-                        this.canvas.BaseContextMenu = this.canvas.RowHeaderContextMenu;
-                        break;
-
-                    case ViewTypes.LeadHeader:
-                        this.canvas.BaseContextMenu = this.canvas.LeadHeaderContextMenu;
-                        break;
+                    ViewTypes.ColumnHeader => this.canvas.ColumnHeaderContextFlyout,
+                    ViewTypes.RowHeader => this.canvas.RowHeaderContextFlyout,
+                    ViewTypes.LeadHeader => this.canvas.LeadHeaderContextFlyout,
+                    _ => this.canvas.CellsContextFlyout,
+                };
+                if (flyout != null)
+                {
+                    flyout.SetValue(Flyout.PlacementProperty, PlacementMode.Pointer);
+                    flyout.ShowAt(this.canvas);
                 }
             }
 
@@ -1147,27 +1140,67 @@ namespace Calcita
         #endregion // Editor - TextBox
 
         #region Context Menu Strips
-        internal ContextMenu BaseContextMenu { get { return base.ContextMenu; } set { base.ContextMenu = value; } }
 
         /// <summary>
-        /// Get or set the cells context menu
+        /// CellsContextFlyout StyledProperty definition
         /// </summary>
-        public ContextMenu CellsContextMenu { get; set; }
+        public static readonly StyledProperty<FlyoutBase?> CellsContextFlyoutProperty =
+            AvaloniaProperty.Register<CalcitaControl, FlyoutBase?>(nameof(CellsContextFlyout));
 
         /// <summary>
-        /// Get or set the row header context menu
+        /// RowHeaderContextFlyout StyledProperty definition
         /// </summary>
-        public ContextMenu RowHeaderContextMenu { get; set; }
+        public static readonly StyledProperty<FlyoutBase?> RowHeaderContextFlyoutProperty =
+            AvaloniaProperty.Register<CalcitaControl, FlyoutBase?>(nameof(RowHeaderContextFlyout));
 
         /// <summary>
-        /// Get or set the column header context menu
+        /// ColumnHeaderContextFlyout StyledProperty definition
         /// </summary>
-        public ContextMenu ColumnHeaderContextMenu { get; set; }
+        public static readonly StyledProperty<FlyoutBase?> ColumnHeaderContextFlyoutProperty =
+            AvaloniaProperty.Register<CalcitaControl, FlyoutBase?>(nameof(ColumnHeaderContextFlyout));
 
         /// <summary>
-        /// Get or set the lead header context menu
+        /// LeadHeaderContextFlyout StyledProperty definition
         /// </summary>
-        public ContextMenu LeadHeaderContextMenu { get; set; }
+        public static readonly StyledProperty<FlyoutBase?> LeadHeaderContextFlyoutProperty =
+            AvaloniaProperty.Register<CalcitaControl, FlyoutBase?>(nameof(LeadHeaderContextFlyout));
+
+        /// <summary>
+        /// Get or set the cells context flyout
+        /// </summary>
+        public FlyoutBase? CellsContextFlyout
+        {
+            get => GetValue(CellsContextFlyoutProperty);
+            set => SetValue(CellsContextFlyoutProperty, value);
+        }
+
+        /// <summary>
+        /// Get or set the row header context flyout
+        /// </summary>
+        public FlyoutBase? RowHeaderContextFlyout
+        {
+            get => GetValue(RowHeaderContextFlyoutProperty);
+            set => SetValue(RowHeaderContextFlyoutProperty, value);
+        }
+
+        /// <summary>
+        /// Get or set the column header context flyout
+        /// </summary>
+        public FlyoutBase? ColumnHeaderContextFlyout
+        {
+            get => GetValue(ColumnHeaderContextFlyoutProperty);
+            set => SetValue(ColumnHeaderContextFlyoutProperty, value);
+        }
+
+        /// <summary>
+        /// Get or set the lead header context flyout
+        /// </summary>
+        public FlyoutBase? LeadHeaderContextFlyout
+        {
+            get => GetValue(LeadHeaderContextFlyoutProperty);
+            set => SetValue(LeadHeaderContextFlyoutProperty, value);
+        }
+
         #endregion // Context Menu Strips
 
         /// <summary>
