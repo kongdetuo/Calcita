@@ -38,11 +38,9 @@ namespace Calcita
     partial class ReoGridView
 #endif // ANDROID || iOS
     {
-        private IRenderer renderer;
-
         internal IRenderer Renderer
         {
-            get { return renderer; }
+            get { return this.SheetCanvas.renderer; }
         }
 
         #region Initialize
@@ -438,6 +436,7 @@ namespace Calcita
                     this.sheetTab.SelectedIndex = GetWorksheetIndex(this.currentWorksheet);
                     this.sheetTab.ScrollToItem(this.sheetTab.SelectedIndex);
 
+                    this.SheetCanvas.Worksheet = value;
                     this.adapter.Invalidate();
                 }
             }
@@ -1308,36 +1307,7 @@ namespace Calcita
 
         #endregion // Appearance
 
-        #region Mouse
-        private void OnWorksheetMouseDown(RGPointF location, MouseButtons buttons)
-        {
-            var sheet = this.currentWorksheet;
 
-            if (sheet != null)
-            {
-                // if currently control is in editing mode, make the input fields invisible
-                if (sheet.currentEditingCell != null)
-                {
-                    if (this.adapter is IEditableControlAdapter editableAdapter)
-                    {
-                        sheet.EndEdit(editableAdapter.GetEditControlText());
-                    }
-                }
-
-                sheet.ViewportController?.OnMouseDown(location, buttons);
-            }
-        }
-
-        private void OnWorksheetMouseMove(RGPointF location, MouseButtons buttons)
-        {
-            this.currentWorksheet?.ViewportController?.OnMouseMove(location, buttons);
-        }
-
-        private void OnWorksheetMouseUp(RGPointF location, MouseButtons buttons)
-        {
-            this.currentWorksheet?.ViewportController?.OnMouseUp(location, buttons);
-        }
-        #endregion // Mouse
 
 
         protected override void OnPointerExited(Avalonia.Input.PointerEventArgs args)

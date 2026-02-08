@@ -54,21 +54,18 @@ namespace Calcita
     {
         internal const int ScrollBarSize = 18;
 
-        private ReoGridAvaloniaControlAdapter adapter;
-        //private Grid bottomGrid;
+        internal ReoGridAvaloniaControlAdapter adapter;
         private SheetTabControl sheetTab;
-        private InputTextBox editTextbox;
+        private InputTextBox editTextbox => SheetCanvas.editTextbox;
 
         private ScrollBar horScrollbar;
         private ScrollBar verScrollbar;
 
-        //private Canvas canvas;
+        private SheetCanvas SheetCanvas;
 
-        //private DockPanel layout;
-
-    /// <summary>
-    /// Create Calcita spreadsheet control
-    /// </summary>
+        /// <summary>
+        /// Create Calcita spreadsheet control
+        /// </summary>
         public CalcitaControl()
         {
 
@@ -77,23 +74,16 @@ namespace Calcita
                 Source = new Uri("avares://Calcita/Avalonia/Theme/Styles.axaml")
             });
 
-
-            //this.SnapsToDevicePixels = true;
             this.Focusable = true;
-            //this.FocusVisualStyle = null;
 
             this.BeginInit();
-            //this.canvas = new Canvas();
-
-            //layout = new DockPanel();
-
-            //this.bottomGrid = new DockPanel() { Height = ScrollBarSize };
-
-            //this.bottomGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(ScrollBarWidth) });
 
             this.sheetTab = new SheetTabControl()
             {
                 ControlWidth = 400,
+                Height = ScrollBarSize,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Margin = new Thickness(0,0,0,5)
             };
 
             this.horScrollbar = new ScrollBar()
@@ -101,6 +91,8 @@ namespace Calcita
                 Orientation = Orientation.Horizontal,
                 Height = ScrollBarSize,
                 SmallChange = Worksheet.InitDefaultColumnWidth,
+                [Grid.RowProperty] = 0,
+                [Grid.ColumnProperty] = 1,
                 [!ScrollBar.IsVisibleProperty] = this[!HorizontalScrollBarVisibleProperty],
                 [!ScrollBar.ValueProperty] = this.GetObservable(OffsetProperty, p => p.X).ToBinding(),
                 [!ScrollBar.MaximumProperty] = this.GetObservable(ScrollBarMaximumProperty, p => p.X).ToBinding(),
@@ -111,6 +103,8 @@ namespace Calcita
 
             this.verScrollbar = new ScrollBar()
             {
+                [Grid.ColumnProperty] = 1,
+
                 Orientation = Orientation.Vertical,
                 Width = ScrollBarSize,
                 SmallChange = Worksheet.InitDefaultRowHeight,
@@ -121,16 +115,37 @@ namespace Calcita
                 [!ScrollBar.LargeChangeProperty] = this.GetObservable(LargeChangeProperty, p => p.Height).ToBinding(),
                 [!ScrollBar.ViewportSizeProperty] = this.GetObservable(LargeChangeProperty, p => p.Height).ToBinding(),
             };
-            this.Child = new Canvas();
-            var canvas = Child as Canvas;
 
-            canvas.Children.Add(this.sheetTab);
-            canvas.Children.Add(this.horScrollbar);
+            this.SheetCanvas = new SheetCanvas()
+            {
+                Owner = this,
+            };
 
-            Grid.SetColumn(this.horScrollbar, 1);
+            this.Child = new Grid()
+            {
+                ColumnDefinitions = new ColumnDefinitions("* auto"),
+                RowDefinitions = new RowDefinitions("* auto"),
+                [!Grid.BackgroundProperty] = this.Resources.GetResourceObservable("ThemeControlMidBrush").ToBinding(),
 
-            //this.Children.Add(this.bottomGrid);
-            canvas.Children.Add(this.verScrollbar);
+                Children =
+                {
+                    SheetCanvas,
+                    verScrollbar,
+                    new Grid()
+                    {
+                        [Grid.RowProperty] = 1,
+                        ColumnDefinitions = new ColumnDefinitions("*, 400"),
+                        Children = {
+                            sheetTab,
+                            new GridSplitter()
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Right
+                            },
+                            horScrollbar
+                        }
+                    },
+                },
+            };
 
             this.horScrollbar.Scroll += (s, e) =>
             {
@@ -159,41 +174,16 @@ namespace Calcita
                 this.SheetTabWidth = width;
 
                 this.UpdateSheetTabAndScrollBarsLayout();
-
-                //this.bottomGrid.ColumnDefinitions[0].Width = new GridLength(width);
-
-                //double newScrollWidth = this.Bounds.Size.Width
-                //	- this.bottomGrid.ColumnDefinitions[0].Width - this.bottomGrid.ColumnDefinitions[2].Width;
-
-                //if (newScrollWidth < 0) newScrollWidth = 0;
-
-                //this.bottomGrid.ColumnDefinitions[1].Width = new GridLength(newScrollWidth);
-                //this.horScrollbar.Width = this.bottomGrid.ColumnDefinitions[1].Width;
             };
 
             this.InitControl();
-
-            this.editTextbox = new InputTextBox()
-            {
-                Owner = this,
-                Padding = new Thickness(0),
-                Margin = new Thickness(0),
-                [ScrollViewer.HorizontalScrollBarVisibilityProperty] = ScrollBarVisibility.Hidden,
-                [ScrollViewer.VerticalScrollBarVisibilityProperty] = ScrollBarVisibility.Hidden,
-            };
-
-            canvas.Children.Add(editTextbox);
 
             this.adapter = new ReoGridAvaloniaControlAdapter(this);
             this.adapter.editTextbox = this.editTextbox;
 
             InitWorkbook(this.adapter);
 
-            //TextCompositionManager.AddPreviewTextInputHandler(this, OnTextInputStart);
-
             this.EndInit();
-
-            this.renderer = new AvaloniaRenderer();
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -204,75 +194,15 @@ namespace Calcita
                 }
             }, Avalonia.Threading.DispatcherPriority.Input);
 
-            this.SizeChanged += CalcitaControl_SizeChanged;
-            this.AddHandler(PointerPressedEvent, MouseDownHandler, handledEventsToo: true);
-            this.AddHandler(PointerReleasedEvent, MouseUpHandler, handledEventsToo: true);
-            PointerMoved += OnMouseMove;
-            PointerWheelChanged += OnMouseWheel;
+
 
         }
 
-
-        private void MouseUpHandler(object sender, PointerReleasedEventArgs e)
+        protected override void OnKeyDown(KeyEventArgs e)
         {
-            this.OnWorksheetMouseUp(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(e.InitialPressMouseButton));
-
-            //if (mouseCaptured) ReleaseMouseCapture();
+            base.OnKeyDown(e);
         }
 
-        private void MouseDownHandler(object sender, PointerPressedEventArgs e)
-        {
-            Focus();
-
-            var pos = e.GetPosition(this);
-
-            double right = this.Bounds.Size.Width;
-            double bottom = this.Bounds.Size.Height;
-
-            if (this.verScrollbar.IsVisible)
-            {
-                right = Canvas.GetLeft(this.verScrollbar);
-            }
-
-            if (this.sheetTab.IsVisible)
-            {
-                bottom = Canvas.GetTop(this.sheetTab);
-            }
-            else if (this.horScrollbar.IsVisible)
-            {
-                bottom = Canvas.GetTop(this.horScrollbar);
-            }
-
-            if (pos.X < right && pos.Y < bottom)
-            {
-                if (e.ClickCount == 2)
-                {
-                    this.currentWorksheet.OnMouseDoubleClick(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(e));
-                }
-                else
-                {
-                    this.OnWorksheetMouseDown(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(e));
-                    //if (CaptureMouse()) mouseCaptured = true;
-                }
-            }
-        }
-
-        private void CalcitaControl_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-            if (this.IsVisible)
-            {
-                if (e.PreviousSize.Width > 0)
-                {
-                    this.SheetTabWidth += e.NewSize.Width - e.PreviousSize.Width;
-                    if (this.SheetTabWidth < 0) this.SheetTabWidth = 0;
-                }
-            }
-
-            this.UpdateSheetTabAndScrollBarsLayout();
-
-            this.InvalidateVisual();
-        }
 
         #region SheetTab & Scroll Bars Visibility
 
@@ -317,41 +247,41 @@ namespace Calcita
             this.horScrollbar.Width = stWidth;
         }
 
-        private void UpdateSheetTabAndScrollBarsLayout()
+        internal void UpdateSheetTabAndScrollBarsLayout()
         {
-            Canvas.SetTop(this.sheetTab, this.Bounds.Size.Height - ScrollBarSize);
-            Canvas.SetTop(this.horScrollbar, this.Bounds.Size.Height - ScrollBarSize);
+            //Canvas.SetTop(this.sheetTab, this.Bounds.Size.Height - ScrollBarSize);
+            //Canvas.SetTop(this.horScrollbar, this.Bounds.Size.Height - ScrollBarSize);
 
-            this.sheetTab.Height = ScrollBarSize;
-            this.horScrollbar.Height = ScrollBarSize;
+            //this.sheetTab.Height = ScrollBarSize;
+            //this.horScrollbar.Height = ScrollBarSize;
 
-            Canvas.SetLeft(verScrollbar, this.Bounds.Size.Width - ScrollBarSize);
+            //Canvas.SetLeft(verScrollbar, this.Bounds.Size.Width - ScrollBarSize);
 
-            var vsbHeight = this.Bounds.Size.Height - ScrollBarSize;
-            if (vsbHeight < 0) vsbHeight = 0;
-            verScrollbar.Height = vsbHeight;
+            //var vsbHeight = this.Bounds.Size.Height - ScrollBarSize;
+            //if (vsbHeight < 0) vsbHeight = 0;
+            //verScrollbar.Height = vsbHeight;
 
-            if (this.sheetTab.IsVisible
-                && this.horScrollbar.IsVisible)
-            {
-                this.sheetTab.Width = this.SheetTabWidth;
+            //if (this.sheetTab.IsVisible
+            //    && this.horScrollbar.IsVisible)
+            //{
+            //    this.sheetTab.Width = this.SheetTabWidth;
 
-                Canvas.SetLeft(this.horScrollbar, this.SheetTabWidth);
-                SetHorizontalScrollBarSize();
-            }
-            else if (this.sheetTab.IsVisible)
-            {
-                this.sheetTab.Width = this.Width;
-            }
-            else if (this.horScrollbar.IsVisible)
-            {
-                Canvas.SetLeft(this.horScrollbar, 0);
-                SetHorizontalScrollBarSize();
-            }
-            else
-            {
-                this.verScrollbar.Height = this.Bounds.Size.Height;
-            }
+            //    Canvas.SetLeft(this.horScrollbar, this.SheetTabWidth);
+            //    SetHorizontalScrollBarSize();
+            //}
+            //else if (this.sheetTab.IsVisible)
+            //{
+            //    this.sheetTab.Width = this.Width;
+            //}
+            //else if (this.horScrollbar.IsVisible)
+            //{
+            //    Canvas.SetLeft(this.horScrollbar, 0);
+            //    SetHorizontalScrollBarSize();
+            //}
+            //else
+            //{
+            //    this.verScrollbar.Height = this.Bounds.Size.Height;
+            //}
 
             this.currentWorksheet.UpdateViewportControllBounds();
         }
@@ -412,167 +342,6 @@ namespace Calcita
 
         #endregion // SheetTab & Scroll Bars Visibility
 
-        #region Render
-
-        /// <summary>
-        /// Handle repaint event to draw component.
-        /// </summary>
-        /// <param name="dc">Platform independence drawing context.</param>
-        public override void Render(Avalonia.Media.DrawingContext dc)
-        {
-#if DEBUG
-            Stopwatch watch = Stopwatch.StartNew();
-#endif
-
-            using var ds = dc.PushTransform(Matrix.CreateTranslation(0.5, 0.5));
-            if (this.currentWorksheet != null
-                && this.currentWorksheet.workbook != null
-                && this.currentWorksheet.controlAdapter != null)
-            {
-
-                SolidColorBrush bgBrush;
-                if (this.controlStyle.TryGetColor(ControlAppearanceColors.GridBackground, out SolidColor bgColor))
-                {
-                    bgBrush = new SolidColorBrush(bgColor);
-                }
-                else
-                {
-                    bgBrush = new SolidColorBrush(Colors.White);
-                }
-
-                dc.DrawRectangle(bgBrush, null, new Rect(0, 0, this.Bounds.Size.Width, this.Bounds.Size.Height));
-
-                this.renderer.Reset();
-
-                ((AvaloniaRenderer)this.renderer).SetPlatformGraphics(dc);
-
-                var rgdc = new CellDrawingContext(this.currentWorksheet, DrawMode.View, this.renderer);
-                this.currentWorksheet.ViewportController.Draw(rgdc);
-
-            }
-
-#if DEBUG
-
-            watch.Stop();
-            long ms = watch.ElapsedMilliseconds;
-            if (ms > 30)
-            {
-                Debug.WriteLine(string.Format("end draw: {0} ms.", watch.ElapsedMilliseconds));
-            }
-#endif
-            base.Render(dc);
-        }
-
-        #endregion // Render
-
-        #region Mouse
-
-        bool mouseCaptured = false;
-
-        protected void OnMouseMove(object sender, PointerEventArgs e)
-        {
-            var point = e.GetCurrentPoint(this);
-            this.OnWorksheetMouseMove(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(point.Properties));
-        }
-
-        protected void OnMouseWheel(object sender, PointerWheelEventArgs e)
-        {
-            this.currentWorksheet.OnMouseWheel(e.GetPosition(this), e.Delta * 120, e.KeyModifiers,
-                AvaloniaUtility.ConvertToUIMouseButtons(MouseButton.Middle));
-        }
-
-        #endregion // Mouse
-
-        #region Keyboard
-
-        /// <summary>
-        /// Handle event when key down.
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            if (!this.currentWorksheet.IsEditing)
-            {
-                var wfkeys = AvaloniaUtility.GetKeyCode(e.Key);
-
-                if ((e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control)
-                {
-                    wfkeys |= KeyCode.Control;
-                }
-                else if ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift)
-                {
-                    wfkeys |= KeyCode.Shift;
-                }
-                else if ((e.KeyModifiers & KeyModifiers.Alt) == KeyModifiers.Alt)
-                {
-                    wfkeys |= KeyCode.Alt;
-                }
-
-                if (wfkeys != KeyCode.Control
-                    && wfkeys != KeyCode.Shift
-                    && wfkeys != KeyCode.Alt)
-                {
-                    if (this.currentWorksheet.OnKeyDown(wfkeys))
-                    {
-                        e.Handled = true;
-                    }
-                }
-            }
-        }
-
-        protected override void OnKeyUp(KeyEventArgs e)
-        {
-            if (!this.currentWorksheet.IsEditing)
-            {
-                var wfkeys = AvaloniaUtility.GetKeyCode(e.Key);
-
-                if ((e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control)
-                {
-                    wfkeys |= KeyCode.Control;
-                }
-                else if ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift)
-                {
-                    wfkeys |= KeyCode.Shift;
-                }
-                else if ((e.KeyModifiers & KeyModifiers.Alt) == KeyModifiers.Alt)
-                {
-                    wfkeys |= KeyCode.Alt;
-                }
-
-                if (wfkeys != KeyCode.Control
-                    && wfkeys != KeyCode.Shift
-                    && wfkeys != KeyCode.Alt)
-                {
-                    if (this.currentWorksheet.OnKeyUp(wfkeys))
-                    {
-                        e.Handled = true;
-                    }
-                }
-
-                //base.OnKeyUp(e);
-            }
-        }
-
-        /// <summary>
-        /// Handle event when text inputted
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnTextInput(TextInputEventArgs e)
-        {
-            base.OnTextInput(e);
-        }
-
-        private void OnTextInputStart(object sender, TextInputEventArgs args)
-        {
-            if (!this.currentWorksheet.IsEditing)
-            {
-                this.currentWorksheet.StartEdit();
-                this.currentWorksheet.CellEditText = string.Empty;
-            }
-        }
-
-        #endregion // Keyboard
-
         #region Adapter
         internal class ReoGridAvaloniaControlAdapter : IControlAdapter
         {
@@ -595,7 +364,7 @@ namespace Calcita
 
             public ControlAppearanceStyle ControlStyle { get { return this.canvas.controlStyle; } }
 
-            public IRenderer Renderer { get { return this.canvas.renderer; } }
+            public IRenderer Renderer { get { return this.canvas.SheetCanvas.renderer; } }
 
             public void ShowContextMenuStrip(ViewTypes viewType, Graphics.Point containerLocation)
             {
@@ -609,7 +378,7 @@ namespace Calcita
                 if (flyout != null)
                 {
                     flyout.SetValue(Flyout.PlacementProperty, PlacementMode.Pointer);
-                    flyout.ShowAt(this.canvas);
+                    flyout.ShowAt(this.canvas.SheetCanvas);
                 }
             }
 
@@ -661,6 +430,8 @@ namespace Calcita
 
             public Rectangle GetContainerBounds()
             {
+                return this.canvas.SheetCanvas.Bounds.WithX(0).WithY(0);
+
                 double w = this.canvas.Bounds.Width;
                 double h = this.canvas.Bounds.Height + 1;
 
@@ -683,12 +454,12 @@ namespace Calcita
 
             public void Focus()
             {
-                this.canvas.Focus();
+                this.canvas.SheetCanvas.Focus();
             }
 
             public void Invalidate()
             {
-                this.canvas.InvalidateVisual();
+                this.canvas.SheetCanvas.InvalidateVisual();
             }
 
             //public void ChangeBackColor(Color color)
@@ -703,7 +474,7 @@ namespace Calcita
 
             public Graphics.Point PointToScreen(Graphics.Point p)
             {
-                var pixelPoint = this.canvas.PointToScreen(p);
+                var pixelPoint = this.canvas.SheetCanvas.PointToScreen(p);
                 return new Point(pixelPoint.X, pixelPoint.Y);
             }
 
@@ -955,7 +726,7 @@ namespace Calcita
         #region Editor - TextBox
         internal class InputTextBox : TextBox
         {
-            internal CalcitaControl Owner { get; set; }
+            internal SheetCanvas Owner { get; set; }
             internal bool TextWrap { get; set; }
             internal Avalonia.Size CellSize { get; set; }
             internal ReoGridVerAlign VAlign { get; set; }
@@ -1016,7 +787,7 @@ namespace Calcita
 
             protected override void OnLostFocus(RoutedEventArgs e)
             {
-                var sheet = this.Owner.CurrentWorksheet;
+                var sheet = this.Owner.Worksheet;
 
                 if (sheet.currentEditingCell != null && IsVisible)
                 {
@@ -1028,7 +799,7 @@ namespace Calcita
 
             private void OnPreviewKeyDown(object sender, KeyEventArgs e)
             {
-                var sheet = this.Owner.CurrentWorksheet;
+                var sheet = this.Owner.Worksheet;
 
                 // in single line text
                 if (!TextWrap && Text.IndexOf('\n') == -1)
@@ -1062,7 +833,7 @@ namespace Calcita
 
             protected override void OnKeyDown(KeyEventArgs e)
             {
-                var sheet = this.Owner.CurrentWorksheet;
+                var sheet = this.Owner.Worksheet;
 
                 if (sheet.currentEditingCell != null && IsVisible)
                 {
@@ -1115,7 +886,7 @@ namespace Calcita
                 var @this = args.Sender as InputTextBox;
                 if (@this is not null && args.NewValue == false)
                 {
-                    @this.Owner.CurrentWorksheet.EndEdit(@this.Text, EndEditReason.NormalFinish);
+                    @this.Owner.Worksheet?.EndEdit(@this.Text, EndEditReason.NormalFinish);
                 }
             }
             private static void OnTextChanged(AvaloniaPropertyChangedEventArgs e)
@@ -1123,7 +894,7 @@ namespace Calcita
                 var @this = e.Sender as InputTextBox;
                 if (@this != null)
                 {
-                    @this.Text = @this.Owner.currentWorksheet.RaiseCellEditTextChanging(@this.Text);
+                    @this.Text = @this.Owner.Worksheet?.RaiseCellEditTextChanging(@this.Text);
                 }
             }
 
@@ -1132,7 +903,7 @@ namespace Calcita
                 if (e.Text.Length > 0)
                 {
                     int inputChar = e.Text[0];
-                    if (inputChar != this.Owner.currentWorksheet.RaiseCellEditCharInputed(inputChar))
+                    if (inputChar != this.Owner.Worksheet?.RaiseCellEditCharInputed(inputChar))
                     {
 
                         e.Handled = true;
