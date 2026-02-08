@@ -28,6 +28,7 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <Configurations>Debug;Release</Configurations>
      <AvaloniaVersion>11.3.11</AvaloniaVersion>
+     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
