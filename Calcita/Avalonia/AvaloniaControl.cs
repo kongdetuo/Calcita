@@ -15,12 +15,9 @@
  * Copyright (c) 2012-2025 UNVELL Inc. All rights reserved.
  * 
  ****************************************************************************/
-#if AVALONIA
-
 
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Chrome;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
@@ -32,14 +29,13 @@ using Avalonia.Media;
 using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.Threading;
-using System;
-using System.Diagnostics;
 using Calcita.AvaloniaPlatform;
 using Calcita.Graphics;
 using Calcita.Interaction;
 using Calcita.Main;
 using Calcita.Rendering;
 using Calcita.Views;
+using System;
 using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using Point = Calcita.Graphics.Point;
 using Size = Avalonia.Size;
@@ -68,7 +64,6 @@ namespace Calcita
         /// </summary>
         public CalcitaControl()
         {
-
             this.Styles.Add(new StyleInclude(new Uri("avares://Calcita/"))
             {
                 Source = new Uri("avares://Calcita/Avalonia/Theme/Styles.axaml")
@@ -176,6 +171,9 @@ namespace Calcita
                 this.UpdateSheetTabAndScrollBarsLayout();
             };
 
+            this.sheetTab.NewSheetClick += SheetTab_NewSheetClick;
+            this.sheetTab.TabMoved += SheetTab_TabMoved;
+
             this.InitControl();
 
             this.adapter = new ReoGridAvaloniaControlAdapter(this);
@@ -196,6 +194,27 @@ namespace Calcita
 
 
 
+        }
+
+        private void SheetTab_TabMoved(object? sender, SheetTabMovedEventArgs e)
+        {
+            var workbook = this.Workbook;
+
+            if (workbook != null)
+            {
+                workbook.MoveWorksheet(e.Index, e.TargetIndex);
+            }
+        }
+
+        private void SheetTab_NewSheetClick(object? sender, EventArgs e)
+        {
+            var workbook = this.Workbook;
+
+            if (workbook != null)
+            {
+                var sheet = workbook.CreateWorksheet();
+                workbook.AddWorksheet(sheet);
+            }
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -283,7 +302,7 @@ namespace Calcita
             //    this.verScrollbar.Height = this.Bounds.Size.Height;
             //}
 
-            this.currentWorksheet.UpdateViewportControllBounds();
+            this.currentWorksheet?.UpdateViewportControllBounds();
         }
 
         private void ShowSheetTabControl()
@@ -341,6 +360,260 @@ namespace Calcita
         }
 
         #endregion // SheetTab & Scroll Bars Visibility
+
+        #region Workbook
+
+        /// <summary>
+        /// Workbook StyledProperty definition
+        /// </summary>
+        public static readonly StyledProperty<IWorkbook?> WorkbookProperty =
+            AvaloniaProperty.Register<CalcitaControl, IWorkbook?>(nameof(Workbook));
+
+        /// <summary>
+        /// Gets or sets the Workbook property. This StyledProperty
+        /// indicates ....
+        /// </summary>
+        public IWorkbook? Workbook
+        {
+            get => this.GetValue(WorkbookProperty);
+            set => SetValue(WorkbookProperty, value);
+        }
+
+        private void OnWorkbookChanged(AvaloniaPropertyChangedEventArgs e)
+        {
+            var old = e.GetOldValue<IWorkbook?>();
+            var workbook = e.GetNewValue<IWorkbook?>();
+
+            if(old != null)
+            {
+                old.WorkbookLoaded -= Workbook_WorkbookLoaded;
+                old.WorkbookSaved -= Workbook_WorkbookSaved;
+
+                old.WorksheetCreated -= Workbook_WorksheetCreated;
+                old.WorksheetInserted -= Workbook_WorksheetInserted;
+                old.WorksheetRemoved -= WorkBook_WorksheetRemoved;
+                old.WorksheetMoved -= WorkBook_WorksheetMoved;
+
+                old.WorksheetNameChanged -= Workbook_WorksheetNameChanged;
+                old.WorksheetNameBackColorChanged -= Workbook_WorksheetNameBackColorChanged;
+                old.WorksheetNameTextColorChanged -= Workbook_WorksheetNameTextColorChanged;
+
+                old.ExceptionHappened -= Workbook_ExceptionHappened;
+
+                if (old is Workbook w)
+                {
+                    w.SettingsChanged -= Workbook_SettingsChanged;
+                }
+            }
+
+            if (workbook != null)
+            {
+
+                workbook.WorkbookLoaded += Workbook_WorkbookLoaded;
+                workbook.WorkbookSaved += Workbook_WorkbookSaved;
+
+                workbook.WorksheetCreated += Workbook_WorksheetCreated; ;
+                workbook.WorksheetInserted += Workbook_WorksheetInserted;
+                workbook.WorksheetRemoved += WorkBook_WorksheetRemoved;
+                workbook.WorksheetMoved += WorkBook_WorksheetMoved;
+
+                workbook.WorksheetNameChanged += Workbook_WorksheetNameChanged;
+                workbook.WorksheetNameBackColorChanged += Workbook_WorksheetNameBackColorChanged;
+                workbook.WorksheetNameTextColorChanged += Workbook_WorksheetNameTextColorChanged;
+
+                workbook.ExceptionHappened += Workbook_ExceptionHappened;
+
+                if(workbook is Workbook w)
+                {
+                    this.workbook = w;
+
+                    w.SettingsChanged += Workbook_SettingsChanged;
+                }
+            }
+        }
+
+        private void Workbook_SettingsChanged(object? sender, EventArgs e)
+        {
+            var workbook = (Workbook)sender!;
+            if (workbook.HasSettings(WorkbookSettings.View_ShowSheetTabControl))
+            {
+                ShowSheetTabControl();
+            }
+            else
+            {
+                HideSheetTabControl();
+            }
+
+            if (workbook.HasSettings(WorkbookSettings.View_ShowHorScroll))
+            {
+                ShowHorScrollBar();
+            }
+            else
+            {
+                HideHorScrollBar();
+            }
+
+            if (workbook.HasSettings(WorkbookSettings.View_ShowVerScroll))
+            {
+                ShowVerScrollBar();
+            }
+            else
+            {
+                HideVerScrollBar();
+            }
+
+            this.SettingsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Workbook_WorkbookSaved(object? sender, EventArgs e)
+        {
+            this.WorkbookSaved?.Invoke(sender, e);
+        }
+
+        private void Workbook_WorkbookLoaded(object? sender, EventArgs e)
+        {
+            if (this.workbook.worksheets.Count <= 0)
+            {
+                this.currentWorksheet = null;
+            }
+            else
+            {
+                if (this.currentWorksheet != this.workbook.worksheets[0])
+                {
+                    this.currentWorksheet = this.workbook.worksheets[0];
+                }
+                else
+                {
+                    this.currentWorksheet.UpdateViewportControllBounds();
+                }
+            }
+
+            this.WorkbookLoaded?.Invoke(sender, e);
+        }
+
+        private void Workbook_ExceptionHappened(object? sender, Events.ExceptionHappenEventArgs e)
+        {
+            this.ExceptionHappened?.Invoke(this, e);
+        }
+
+        private void Workbook_WorksheetCreated(object? sender, Events.WorksheetCreatedEventArgs e)
+        {
+            this.WorksheetCreated?.Invoke(this, e);
+        }
+
+        private void Workbook_WorksheetNameTextColorChanged(object? sender, Events.WorksheetEventArgs e)
+        {
+            var workbook = this.Workbook as Workbook;
+            if (workbook != null)
+            {
+                var index = workbook.GetWorksheetIndex(e.Worksheet);
+                var worksheet = e.Worksheet;
+                if (this.sheetTab != null)
+                {
+                    this.sheetTab.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
+                }
+            }
+        }
+
+        private void Workbook_WorksheetNameBackColorChanged(object? sender, Events.WorksheetEventArgs e)
+        {
+            var workbook = this.Workbook as Workbook;
+            if (workbook != null)
+            {
+                var index = workbook.GetWorksheetIndex(e.Worksheet);
+                var worksheet = e.Worksheet;
+                if (this.sheetTab != null)
+                {
+                    this.sheetTab.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
+                }
+            }
+        }
+
+        private void Workbook_WorksheetNameChanged(object? sender, Events.WorksheetNameChangingEventArgs e)
+        {
+            var workbook = this.Workbook as Workbook;
+            if (workbook != null)
+            {
+                var index = workbook.GetWorksheetIndex(e.Worksheet);
+                var worksheet = e.Worksheet;
+                if (this.sheetTab != null)
+                {
+                    this.sheetTab.UpdateTab(index, e.NewName, worksheet.NameBackColor, worksheet.NameTextColor);
+                }
+
+                this.WorksheetNameChanged?.Invoke(this, e);
+            }
+        }
+
+        private void WorkBook_WorksheetMoved(object? sender, Events.WorksheetMovedEventArgs e)
+        {
+            var workbook = this.Workbook;
+            if (workbook != null)
+            {
+                var sheet = workbook.Worksheets[e.NewIndex];
+
+                this.sheetTab.RemoveTab(e.Index);
+                // sheet management
+                this.sheetTab.InsertTab(e.NewIndex, sheet.Name);
+            }
+        }
+
+        private void WorkBook_WorksheetRemoved(object? sender, Events.WorksheetRemovedEventArgs e)
+        {
+            var workbook = this.Workbook;
+            if (this.sheetTab != null)
+            {
+                this.sheetTab.RemoveTab(e.Index);
+            }
+
+            this.ClearActionHistoryForWorksheet(e.Worksheet);
+
+            if (workbook?.Worksheets.Count > 0)
+            {
+                int index = this.sheetTab.SelectedIndex;
+
+                if (index >= workbook.Worksheets.Count)
+                {
+                    index = workbook.Worksheets.Count - 1;
+                }
+
+                this.sheetTab.SelectedIndex = index;
+                this.currentWorksheet = this.workbook.worksheets[this.sheetTab.SelectedIndex];
+            }
+            else
+            {
+                this.sheetTab.SelectedIndex = -1;
+                this.currentWorksheet = null;
+            }
+
+            this.adapter.Invalidate();
+
+            this.WorksheetRemoved?.Invoke(this, e);
+        }
+
+        private void Workbook_WorksheetInserted(object? sender, Events.WorksheetInsertedEventArgs e)
+        {
+            var workbook = this.Workbook;
+            if(workbook != null)
+            {
+                var index = e.Index;
+                var sheet = workbook.Worksheets[index];
+
+                // sheet management
+                this.sheetTab.InsertTab(index, sheet.Name);
+                this.sheetTab.SelectedIndex = index;
+
+                // update current worksheet
+                if (this.adapter != null && this.adapter.ControlInstance.CurrentWorksheet == null)
+                {
+                    this.adapter.ControlInstance.CurrentWorksheet = sheet;
+                }
+
+                this.WorksheetInserted?.Invoke(this, e);
+            }
+        }
+
+        #endregion
 
         #region Adapter
         internal class ReoGridAvaloniaControlAdapter : IControlAdapter
@@ -1076,6 +1349,8 @@ namespace Calcita
                 (o, v) => o.ScrollBarMinimum = v);
 
         private Vector _ScrollBarMinimum = default;
+
+
         /// <summary>
         /// Gets or sets the ScrollBarMinimum property. This DirectProperty 
         /// indicates ....
@@ -1096,8 +1371,3 @@ namespace Calcita
         public void Dispose() { }
     }
 }
-
-#endif
-
-
-

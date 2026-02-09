@@ -127,10 +127,35 @@ namespace Calcita.Events
 		}
 	}
 
-	/// <summary>
-	/// Worksheet removing event argument
-	/// </summary>
-	public class WorksheetRemovedEventArgs : WorksheetEventArgs
+    /// <summary>
+    /// Worksheet inserting event argument
+    /// </summary>
+    public class WorksheetMovedEventArgs : WorksheetEventArgs
+    {
+        /// <summary>
+        /// Zero-based number of sheet is inserted
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
+        /// Zero-based number of sheet is inserted
+        /// </summary>
+        public int NewIndex { get; set; }
+
+        /// <summary>
+        /// Create this event argument with specified worksheet
+        /// </summary>
+        /// <param name="sheet">instance of worksheet</param>
+        public WorksheetMovedEventArgs(Worksheet sheet)
+            : base(sheet)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Worksheet removing event argument
+    /// </summary>
+    public class WorksheetRemovedEventArgs : WorksheetEventArgs
 	{
 		/// <summary>
 		/// Index of worksheet in workbook before removing

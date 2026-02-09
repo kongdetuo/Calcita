@@ -28,6 +28,7 @@ using Calcita.Interaction;
 
 using Calcita.Main;
 using Calcita.Rendering;
+using Avalonia;
 
 namespace Calcita
 {
@@ -50,6 +51,12 @@ namespace Calcita
 #if NETCOREAPP3_1_OR_GREATER
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif // NETCOREAPP3_1_OR_GREATER
+
+            WorkbookProperty.Changed.AddClassHandler<CalcitaControl>((x, e) =>
+            {
+                x.OnWorkbookChanged(e);
+            });
+
         }
 
         private void InitControl()
@@ -97,7 +104,7 @@ namespace Calcita
         private void InitWorkbook(IControlAdapter adapter)
         {
             // create workbook
-            this.workbook = new Workbook(adapter);
+            this.Workbook = new Workbook(adapter);
 
             #region Workbook Event Attach
             this.workbook.WorksheetCreated += (s, e) =>
@@ -202,31 +209,7 @@ namespace Calcita
                 }
             };
 
-            this.workbook.WorkbookLoaded += (s, e) =>
-            {
-                if (this.workbook.worksheets.Count <= 0)
-                {
-                    this.currentWorksheet = null;
-                }
-                else
-                {
-                    if (this.currentWorksheet != this.workbook.worksheets[0])
-                    {
-                        this.currentWorksheet = this.workbook.worksheets[0];
-                    }
-                    else
-                    {
-                        this.currentWorksheet.UpdateViewportControllBounds();
-                    }
-                }
 
-                this.WorkbookLoaded?.Invoke(s, e);
-            };
-
-            this.workbook.WorkbookSaved += (s, e) =>
-                {
-                    this.WorkbookSaved?.Invoke(s, e);
-                };
 
             this.actionManager.BeforePerformAction += (s, e) =>
                 {
@@ -628,6 +611,9 @@ namespace Calcita
         /// Event raised when worksheet is removed from this workbook.
         /// </summary>
         public event EventHandler<WorksheetRemovedEventArgs> WorksheetRemoved;
+
+
+        public event EventHandler<WorksheetMovedEventArgs> WorksheetMoved;
 
         /// <summary>
         /// Event raised when the name of worksheet managed by this workbook is changed.

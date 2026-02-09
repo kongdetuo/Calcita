@@ -40,6 +40,7 @@ namespace Calcita
 	{
 		internal List<Worksheet> worksheets = new List<Worksheet>();
 
+        [Obsolete("从 Workbook 中剥离")]
 		internal IControlAdapter controlAdapter;
 
 		public CalcitaControl ControlInstance { get { return (CalcitaControl)this.controlAdapter.ControlInstance; } }
@@ -80,8 +81,6 @@ namespace Calcita
 			if (adapter != null)
 			{
 				this.controlAdapter = adapter;
-
-				this.AttachSheetTabControl(this.controlAdapter.SheetTabControl);
 			}
 
 			// default control styles
@@ -336,24 +335,6 @@ namespace Calcita
 			sheet.workbook = this;
 			sheet.ControlAdapter = this.controlAdapter;
 
-			// sheet management
-			if (this.sheetTab != null)
-			{
-				this.sheetTab.InsertTab(index, sheet.Name);
-
-				if (this.worksheets.Count > 0 
-					&& this.sheetTab.SelectedIndex == -1 || this.sheetTab.SelectedIndex >= this.worksheets.Count)
-				{
-					this.sheetTab.SelectedIndex = 0;
-				}
-			}
-
-			// update current worksheet
-			if (this.controlAdapter != null && this.controlAdapter.ControlInstance.CurrentWorksheet == null)
-			{
-				this.controlAdapter.ControlInstance.CurrentWorksheet = sheet;
-			}
-
 			// event
 			this.WorksheetInserted?.Invoke(this, new WorksheetInsertedEventArgs(sheet)
 			{
@@ -366,20 +347,12 @@ namespace Calcita
 			if (index < 0 || index >= this.worksheets.Count)
 				throw new ArgumentOutOfRangeException("index");
 
-			if (this.sheetTab != null)
-			{
-				this.sheetTab.RemoveTab(index);
-			}
-
 			var sheet = this.worksheets[index];
 			sheet.workbook = null;
 
 			this.worksheets.RemoveAt(index);
 
 			this.WorksheetRemoved?.Invoke(this, new WorksheetRemovedEventArgs(sheet));
-
-			this.controlAdapter?.Invalidate();
-
 			return true;
 		}
 
@@ -469,17 +442,17 @@ namespace Calcita
 
 			var sheet = this.worksheets[index];
 
-			if (index == newIndex) return sheet;
+			if (index == newIndex) 
+                return sheet;
 
-			this.sheetTab.RemoveTab(index);
 			this.worksheets.RemoveAt(index);
-
-			//if (newIndex > index) newIndex--;
-
 			this.worksheets.Insert(newIndex, sheet);
 
-			// sheet management
-			this.sheetTab.InsertTab(newIndex, sheet.Name);
+            this.WorksheetMoved?.Invoke(this, new WorksheetMovedEventArgs(sheet)
+            {
+                Index = index,
+                NewIndex = newIndex
+            });
 
 			return sheet;
 		}
@@ -570,6 +543,11 @@ namespace Calcita
 		public event EventHandler<WorksheetRemovedEventArgs> WorksheetRemoved;
 
 		/// <summary>
+		/// Event raised when new worksheet is inserted
+		/// </summary>
+		public event EventHandler<WorksheetMovedEventArgs> WorksheetMoved;
+
+		/// <summary>
 		/// Event raised before name of worksheet changing
 		/// </summary>
 		public event EventHandler<WorksheetNameChangingEventArgs> BeforeWorksheetNameChange;
@@ -622,11 +600,6 @@ namespace Calcita
 
 			if (index >= 0 && index < this.worksheets.Count)
 			{
-				if (this.sheetTab != null)
-				{
-					this.sheetTab.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
-				}
-
 				if (this.WorksheetNameChanged != null)
 				{
 					this.WorksheetNameChanged(this, new WorksheetNameChangingEventArgs(worksheet, worksheet.Name));
@@ -640,11 +613,6 @@ namespace Calcita
 
 			if (index >= 0 && index < this.worksheets.Count)
 			{
-				if (this.sheetTab != null)
-				{
-					this.sheetTab.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
-				}
-
 				if (this.WorksheetNameBackColorChanged != null)
 				{
 					this.WorksheetNameBackColorChanged(this, new WorksheetEventArgs(worksheet));
@@ -658,11 +626,6 @@ namespace Calcita
 
 			if (index >= 0 && index < this.worksheets.Count)
 			{
-				if (this.sheetTab != null)
-				{
-					this.sheetTab.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
-				}
-
 				if (this.WorksheetNameTextColorChanged != null)
 				{
 					this.WorksheetNameTextColorChanged(this, new WorksheetEventArgs(worksheet));
@@ -693,15 +656,6 @@ namespace Calcita
 					this.WorksheetRemoved(this, new WorksheetRemovedEventArgs(sheet));
 				}
 			}
-
-			if (this.sheetTab != null)
-			{
-				this.sheetTab.ClearTabs();
-			}
-
-#if DEBUG
-			Debug.Assert(this.worksheets.Count == 0);
-#endif // DEBUG
 		}
 
 		public int WorksheetCount { get { return this.worksheets.Count; } }
@@ -732,55 +686,7 @@ namespace Calcita
 			}
 		}
 
-		#endregion // Worksheet Management
-
-		#region Sheet Tab Control Interaction
-
-		private ISheetTabControl sheetTab;
-
-		internal void AttachSheetTabControl(ISheetTabControl sheetTab)
-		{
-			this.sheetTab = sheetTab;
-
-			this.sheetTab.NewSheetClick += sheetTab_NewSheetClick;
-			this.sheetTab.TabMoved += sheetTab_TabMoved;
-		}
-
-		internal void DetechSheetTabControl()
-		{
-			if (this.sheetTab != null)
-			{
-				this.sheetTab.NewSheetClick -= sheetTab_NewSheetClick;
-				this.sheetTab.TabMoved -= sheetTab_TabMoved;
-
-				this.sheetTab = null;
-			}
-		}
-
-		#region Sheet Tab Events
-		void sheetTab_NewSheetClick(object sender, EventArgs e)
-		{
-			var sheet = this.CreateWorksheet();
-
-			if (sheet != null)
-			{
-				this.AddWorksheet(sheet);
-				sheetTab.SelectedIndex = this.worksheets.Count - 1;
-			}
-		}
-
-		void sheetTab_TabMoved(object sender, SheetTabMovedEventArgs e)
-		{
-			var sheet = this.worksheets[e.Index];
-			this.worksheets.RemoveAt(e.Index);
-			var targetIndex = e.TargetIndex;
-			if (targetIndex > e.Index) targetIndex--;
-			this.worksheets.Insert(targetIndex, sheet);
-		}
-
-		#endregion // Sheet Tab Events
-
-		#endregion // Sheet Tab Control Interaction
+        #endregion // Worksheet Management
 
 		#region Settings
 
@@ -918,12 +824,6 @@ namespace Calcita
 
 		public void Dispose()
 		{
-			if (this.sheetTab != null)
-			{
-				this.DetechSheetTabControl();
-				this.sheetTab = null;
-			}
-
 			this.Clear();
 		}
 	}

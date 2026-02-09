@@ -229,10 +229,15 @@ namespace Calcita
 		/// </summary>
 		event EventHandler<WorksheetRemovedEventArgs> WorksheetRemoved;
 
-		/// <summary>
-		/// Event raised when name of worksheet is changed.
-		/// </summary>
-		event EventHandler<WorksheetNameChangingEventArgs> WorksheetNameChanged;
+        /// <summary>
+        /// Event raised when new worksheet is inserted
+        /// </summary>
+        event EventHandler<WorksheetMovedEventArgs> WorksheetMoved;
+
+        /// <summary>
+        /// Event raised when name of worksheet is changed.
+        /// </summary>
+        event EventHandler<WorksheetNameChangingEventArgs> WorksheetNameChanged;
 
 		/// <summary>
 		/// Event raised when background color of worksheet name is changed.
