@@ -41,12 +41,12 @@ namespace Calcita
 {
 	partial class Workbook
 	{
-		private string script;
+		private string? script;
 
 		/// <summary>
 		/// Script content for this control
 		/// </summary>
-		public string Script { get { return script; } set { script = value; } }
+		public string? Script { get { return script; } set { script = value; } }
 
 #if EX_SCRIPT
 		/// <summary>

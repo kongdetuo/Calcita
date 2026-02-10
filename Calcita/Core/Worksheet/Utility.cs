@@ -31,7 +31,7 @@ namespace Calcita
 		/// Clone this worksheet, create a new instance.
 		/// </summary>
 		/// <returns>New instance cloned from current worksheet.</returns>
-		public Worksheet Clone(string newName = null)
+		public Worksheet Clone(string? newName = null)
 		{
 			if (workbook == null)
 			{

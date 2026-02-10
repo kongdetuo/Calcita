@@ -40,7 +40,7 @@ namespace Calcita.Views
         {
             var sheet = this.ViewportController.Worksheet;
 
-            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+            var controlStyle = dc.Renderer.ControlStyle;
 
             var linePen = dc.Renderer.GetPen(
                 controlStyle[ControlAppearanceColors.OutlinePanelBorder]);
@@ -70,7 +70,7 @@ namespace Calcita.Views
         public override void Draw(CellDrawingContext dc)
         {
             var g = dc.Renderer;
-            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+            var controlStyle = dc.Renderer.ControlStyle;
 
             var outlines = sheet.outlines[Flag];
 
@@ -333,7 +333,7 @@ namespace Calcita.Views
         public override void Draw(CellDrawingContext dc)
         {
             var g = dc.Graphics;
-            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+            var controlStyle = dc.Renderer.ControlStyle;
 
             g.FillRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height + 1,
                 controlStyle[ControlAppearanceColors.OutlinePanelBackground]);
@@ -347,7 +347,7 @@ namespace Calcita.Views
         public override void DrawView(CellDrawingContext dc)
         {
             var g = dc.Graphics;
-            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+            var controlStyle = dc.Renderer.ControlStyle;
 
 #if DEBUG
             Stopwatch sw = Stopwatch.StartNew();
@@ -473,7 +473,7 @@ namespace Calcita.Views
         public override void Draw(CellDrawingContext dc)
         {
             var g = dc.Graphics;
-            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+            var controlStyle = dc.Renderer.ControlStyle;
 
             g.FillRectangle(bounds.X, bounds.Y, bounds.Width + 1, bounds.Height,
                 controlStyle[ControlAppearanceColors.OutlinePanelBackground]);
@@ -487,7 +487,7 @@ namespace Calcita.Views
         public override void DrawView(CellDrawingContext dc)
         {
             var g = dc.Graphics;
-            var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+            var controlStyle = dc.Renderer.ControlStyle;
 
 #if DEBUG
             Stopwatch sw = Stopwatch.StartNew();

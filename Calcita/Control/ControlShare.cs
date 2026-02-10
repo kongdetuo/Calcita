@@ -101,10 +101,12 @@ namespace Calcita
             this.WorksheetScrolled += (s, e) => { this.ScrollCurrentWorksheet(e.X, e.Y); };
         }
 
-        private void InitWorkbook(IControlAdapter adapter)
+        private void InitWorkbook()
         {
+            // todo 在 OnWorkbookChanged 中初始化控件
+
             // create workbook
-            this.Workbook = new Workbook(adapter);
+            this.Workbook = new Workbook();
 
             #region Workbook Event Attach
             this.workbook.WorksheetCreated += (s, e) =>
@@ -246,7 +248,7 @@ namespace Calcita
         /// <returns>Instance of memory workbook.</returns>
         public static IWorkbook CreateMemoryWorkbook()
         {
-            var workbook = new Workbook(null);
+            var workbook = new Workbook();
 
             var defaultWorksheet = workbook.CreateWorksheet();
             workbook.AddWorksheet(defaultWorksheet);
@@ -402,8 +404,11 @@ namespace Calcita
                     {
                         this.currentWorksheet.EndEdit(EndEditReason.NormalFinish);
                     }
+                    this.currentWorksheet?.ControlAdapter = null;
 
                     this.currentWorksheet = value;
+                    this.currentWorksheet?.ControlAdapter = this.adapter;
+
 
                     // update bounds for viewport of worksheet
                     this.currentWorksheet.UpdateViewportControllBounds();
@@ -1275,6 +1280,8 @@ namespace Calcita
                     this.controlStyle = value;
                 }
                 //workbook.SetControlStyle(value);
+
+                this.SheetCanvas.renderer.ControlStyle = value;
 
                 this.ApplyControlStyle();
             }

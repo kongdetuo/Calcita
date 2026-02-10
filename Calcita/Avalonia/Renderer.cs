@@ -565,7 +565,11 @@ namespace Calcita.Rendering
         internal AvaloniaRenderer()
         {
             this.headerTextTypeface = PlatformUtility.GetFontDefaultTypeface(FontManager.Current.SystemFonts.First());
+            this.ControlStyle = ControlAppearanceStyle.CreateDefaultControlStyle();
         }
+
+
+        public ControlAppearanceStyle ControlStyle { get; set; }
 
         public Graphics.Size MeasureCellText(Cell cell, DrawMode drawMode, double scale)
         {
@@ -770,6 +774,7 @@ namespace Calcita.Rendering
         {
             get { return this.resourceManager; }
         }
+
     }
 
     #endregion // Renderer

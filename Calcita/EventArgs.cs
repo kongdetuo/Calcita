@@ -239,17 +239,17 @@ namespace Calcita.Events
 		}
 	}
 
-	#endregion // Worksheet Managements
+    #endregion // Worksheet Managements
 
-	#endregion // Workbook Arguments
+    #endregion // Workbook Arguments
 
-	#region Worksheet Arguments
+    #region Worksheet Arguments
 
-	#region Cell Operations
-	/// <summary>
-	/// Position event argument on spreadsheet
-	/// </summary>
-	public class CellPosEventArgs : EventArgs
+    #region Cell Operations
+    /// <summary>
+    /// Position event argument on spreadsheet
+    /// </summary>
+    public class CellPosEventArgs : EventArgs
 	{
 		/// <summary>
 		/// Zero-based two-dimensional coordinates to locate a cell on spreadsheet

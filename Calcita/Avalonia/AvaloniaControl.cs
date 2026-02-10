@@ -179,7 +179,7 @@ namespace Calcita
             this.adapter = new ReoGridAvaloniaControlAdapter(this);
             this.adapter.editTextbox = this.editTextbox;
 
-            InitWorkbook(this.adapter);
+            InitWorkbook();
 
             this.EndInit();
 
@@ -403,12 +403,13 @@ namespace Calcita
                 if (old is Workbook w)
                 {
                     w.SettingsChanged -= Workbook_SettingsChanged;
+                    w.WorkbookSaving -= Workbook_WorkbookSaving;
+                    w.WorkbookLoading -= Workbook_WorkbookLoading;
                 }
             }
 
             if (workbook != null)
             {
-
                 workbook.WorkbookLoaded += Workbook_WorkbookLoaded;
                 workbook.WorkbookSaved += Workbook_WorkbookSaved;
 
@@ -428,10 +429,20 @@ namespace Calcita
                     this.workbook = w;
 
                     w.SettingsChanged += Workbook_SettingsChanged;
+                    w.WorkbookSaving += Workbook_WorkbookSaving;
+                    w.WorkbookLoading += Workbook_WorkbookLoading;
                 }
             }
         }
 
+        private void Workbook_WorkbookSaving(object? sender, EventArgs e)
+        {
+            this.adapter.ChangeCursor(CursorStyle.Busy);
+        }
+        private void Workbook_WorkbookLoading(object? sender, EventArgs e)
+        {
+            this.adapter.ChangeCursor(CursorStyle.Busy);
+        }
         private void Workbook_SettingsChanged(object? sender, EventArgs e)
         {
             var workbook = (Workbook)sender!;

@@ -971,7 +971,7 @@ namespace Calcita.Views
                 && sheet.SelectionStyle != WorksheetSelectionStyle.None)
             {
                 var g = dc.Graphics;
-                var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+                var controlStyle = dc.Renderer.ControlStyle;
 
                 var selectionBorderWidth = controlStyle.SelectionBorderWidth;
 

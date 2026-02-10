@@ -33,17 +33,9 @@ using Calcita.Print;
 
 namespace Calcita
 {
-	internal partial class Workbook : IWorkbook
-#if (WINFORM || WPF) && PRINT
-		, IPrintableContainer
-#endif // (WINFORM || WPF) && PRINT
+    sealed partial class Workbook : IWorkbook
 	{
-		internal List<Worksheet> worksheets = new List<Worksheet>();
-
-        [Obsolete("从 Workbook 中剥离")]
-		internal IControlAdapter controlAdapter;
-
-		public CalcitaControl ControlInstance { get { return (CalcitaControl)this.controlAdapter.ControlInstance; } }
+		internal List<Worksheet> worksheets = [];
 
 		#region Readonly
 		private bool isReadonly = false;
@@ -70,34 +62,16 @@ namespace Calcita
 		/// Create workbook instance
 		/// </summary>
 		/// <param name="adapter">Control instance adapter</param>
-		public Workbook(IControlAdapter adapter)
+		public Workbook()
 		{
-
-#if DEBUG
-			Stopwatch sw = Stopwatch.StartNew();
-			Debug.WriteLine("start creating workbook...");
-#endif // DEBUG
-
-			if (adapter != null)
-			{
-				this.controlAdapter = adapter;
-			}
-
-			// default control styles
-			//SetControlStyle(ControlAppearanceStyle.DefaultControlStyle);
-
-#if DEBUG
-			sw.Stop();
-			long ms = sw.ElapsedMilliseconds;
-			Debug.WriteLine("creating workbook done: " + ms + " ms.");
-#endif
+  
 		}
 
 		static Workbook()
 		{
-			FileFormatProviders[FileFormat.ReoGridFormat] = (IFileFormatProvider)new ReoGridFileFormatProvider();
-			FileFormatProviders[FileFormat.Excel2007] = (IFileFormatProvider)new ExcelFileFormatProvider();
-			FileFormatProviders[FileFormat.CSV] = (IFileFormatProvider)new CSVFileFormatProvider();
+			FileFormatProviders[FileFormat.ReoGridFormat] = new ReoGridFileFormatProvider();
+			FileFormatProviders[FileFormat.Excel2007] = new ExcelFileFormatProvider();
+			FileFormatProviders[FileFormat.CSV] = new CSVFileFormatProvider();
 		}
 
 		/// <summary>
@@ -110,8 +84,7 @@ namespace Calcita
 
 		#region Save & Load
 
-		public static readonly Dictionary<FileFormat, IFileFormatProvider> FileFormatProviders =
-			new Dictionary<FileFormat, IFileFormatProvider>();
+		public static readonly Dictionary<FileFormat, IFileFormatProvider> FileFormatProviders = [];
 
 		public void Save(string path)
 		{
@@ -142,11 +115,9 @@ namespace Calcita
 				}
 			}
 
-			using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
-			{
-				Save(fs, fileFormat, encoding);
-			}
-		}
+            using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+            Save(fs, fileFormat, encoding);
+        }
 
 		public void Save(System.IO.Stream stream, IO.FileFormat fileFormat)
 		{
@@ -160,26 +131,14 @@ namespace Calcita
 				throw new FileFormatNotSupportException("Specified file format is not supported");
 			}
 
-			if (this.controlAdapter != null)
-			{
-				this.controlAdapter.ChangeCursor(CursorStyle.Busy);
-			}
-
-			try
+            WorkbookSaving?.Invoke(this, EventArgs.Empty);
+            try
 			{
 				provider.Save(this, stream, encoding, null);
 			}
 			finally
 			{
-				if (this.controlAdapter != null)
-				{
-					this.controlAdapter.ChangeCursor(CursorStyle.PlatformDefault);
-				}
-
-				if (this.WorkbookSaved != null)
-				{
-					this.WorkbookSaved(this, null);
-				}
+                WorkbookSaved?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
@@ -214,7 +173,7 @@ namespace Calcita
 
 			using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
 			{
-				this.Load(fs, fileFormat, encoding == null ? Encoding.Default : encoding);
+				this.Load(fs, fileFormat, encoding ?? Encoding.Default);
 			}
 
 			// for csv only
@@ -244,12 +203,9 @@ namespace Calcita
 				throw new FileFormatNotSupportException("Specified file format is not supported.");
 			}
 
-			if (this.controlAdapter != null)
-			{
-				this.controlAdapter.ChangeCursor(CursorStyle.Busy);
-			}
+            this.WorkbookLoading?.Invoke(this, EventArgs.Empty);
 
-			if (encoding == null) encoding = Encoding.Default;
+            encoding ??= Encoding.Default;
 
 			try
 			{
@@ -257,30 +213,30 @@ namespace Calcita
 			}
 			finally
 			{
-				if (this.controlAdapter != null)
-				{
-					this.controlAdapter.ChangeCursor(CursorStyle.PlatformDefault);
-				}
-
-				this.WorkbookLoaded?.Invoke(this, null);
+				this.WorkbookLoaded?.Invoke(this, EventArgs.Empty);
 			}
 		}
 
 		/// <summary>
 		/// Event raised when workbook loaded from stream or file
 		/// </summary>
-		public event EventHandler WorkbookLoaded;
+		public event EventHandler? WorkbookLoaded;
+		public event EventHandler? WorkbookLoading;
 
-		/// <summary>
-		/// Event raised when workbook saved into stream or file
-		/// </summary>
-		public event EventHandler WorkbookSaved;
+        /// <summary>
+        /// Event raised when workbook saved into stream or file
+        /// </summary>
+        public event EventHandler? WorkbookSaved;
 
-		#endregion // Save & Load
+        /// <summary>
+        /// Event raised when workbook saved into stream or file
+        /// </summary>
+        public event EventHandler? WorkbookSaving;
+        #endregion // Save & Load
 
-		#region Worksheet Management
+        #region Worksheet Management
 
-		internal string GetAvailableWorksheetName()
+        internal string GetAvailableWorksheetName()
 		{
 			string name;
 			int index = 1;
@@ -288,7 +244,7 @@ namespace Calcita
 			return name;
 		}
 
-		public Worksheet CreateWorksheet(string name = null)
+		public Worksheet CreateWorksheet(string? name = null)
 		{
 			if (string.IsNullOrEmpty(name))
 			{
@@ -311,7 +267,7 @@ namespace Calcita
 			this.InsertWorksheet(this.worksheets.Count, sheet);
 		}
 
-		public void NewWorksheet(string name = null)
+		public void NewWorksheet(string? name = null)
 		{
 			this.AddWorksheet(this.CreateWorksheet(name));
 		}
@@ -320,7 +276,7 @@ namespace Calcita
 		{
 			if (index < 0 || index > this.worksheets.Count)
 			{
-				throw new ArgumentOutOfRangeException("index");
+				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
 			if (sheet.Workbook != null && sheet.Workbook != this)
@@ -333,7 +289,6 @@ namespace Calcita
 			this.worksheets.Insert(index, sheet);
 
 			sheet.workbook = this;
-			sheet.ControlAdapter = this.controlAdapter;
 
 			// event
 			this.WorksheetInserted?.Invoke(this, new WorksheetInsertedEventArgs(sheet)
@@ -345,7 +300,7 @@ namespace Calcita
 		public bool RemoveWorksheet(int index)
 		{
 			if (index < 0 || index >= this.worksheets.Count)
-				throw new ArgumentOutOfRangeException("index");
+				throw new ArgumentOutOfRangeException(nameof(index));
 
 			var sheet = this.worksheets[index];
 			sheet.workbook = null;
@@ -375,14 +330,14 @@ namespace Calcita
 		/// <param name="newIndex">position used to insert duplicated new instance</param>
 		/// <param name="newName">New name to be apply to copied worksheet</param>
 		/// <returns>instance of duplicated worksheet from specified worksheet</returns>
-		public Worksheet CopyWorksheet(int index, int newIndex, string newName = null)
+		public Worksheet CopyWorksheet(int index, int newIndex, string? newName = null)
 		{
 			if (newIndex < 0 || newIndex > this.worksheets.Count)
 			{
-				throw new ArgumentOutOfRangeException("newIndex");
+                throw new ArgumentOutOfRangeException(nameof(newIndex));
 			}
 
-			return CopyWorksheet(this.worksheets[index], newIndex, newName);
+            return CopyWorksheet(this.worksheets[index], newIndex, newName);
 		}
 
 		/// <summary>
@@ -397,7 +352,7 @@ namespace Calcita
 		/// this workbook.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">when the position used to insert
 		/// duplicated instace of worksheet is out of valid range of this workbook.</exception>
-		public Worksheet CopyWorksheet(Worksheet sheet, int newIndex, string newName = null)
+		public Worksheet CopyWorksheet(Worksheet sheet, int newIndex, string? newName = null)
 		{
 			if (sheet.workbook != this)
 			{
@@ -406,17 +361,14 @@ namespace Calcita
 
 			if (newIndex < 0 || newIndex > this.worksheets.Count)
 			{
-				throw new ArgumentOutOfRangeException("newIndex");
+				throw new ArgumentOutOfRangeException(nameof(newIndex));
 			}
 
 			var newSheet = sheet.Clone(newName);
 
-			if (this.WorksheetCreated != null)
-			{
-				this.WorksheetCreated(this, new WorksheetCreatedEventArgs(newSheet));
-			}
+            this.WorksheetCreated?.Invoke(this, new (newSheet));
 
-			InsertWorksheet(newIndex, newSheet);
+            InsertWorksheet(newIndex, newSheet);
 
 			return newSheet;
 		}
@@ -432,12 +384,12 @@ namespace Calcita
 		{
 			if (index < 0 || index > this.worksheets.Count)
 			{
-				throw new ArgumentOutOfRangeException("index");
+				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
 			if (newIndex < 0 || newIndex > this.worksheets.Count)
 			{
-				throw new ArgumentOutOfRangeException("newIndex");
+				throw new ArgumentOutOfRangeException(nameof(newIndex));
 			}
 
 			var sheet = this.worksheets[index];
@@ -448,7 +400,7 @@ namespace Calcita
 			this.worksheets.RemoveAt(index);
 			this.worksheets.Insert(newIndex, sheet);
 
-            this.WorksheetMoved?.Invoke(this, new WorksheetMovedEventArgs(sheet)
+            this.WorksheetMoved?.Invoke(this, new (sheet)
             {
                 Index = index,
                 NewIndex = newIndex
@@ -501,71 +453,59 @@ namespace Calcita
 		/// </summary>
 		/// <param name="name">Name to find worksheet</param>
 		/// <returns>Instance of worksheet that is found by specified name; otherwise return null</returns>
-		public Worksheet GetWorksheetByName(string name)
+		public Worksheet? GetWorksheetByName(string name)
 		{
 			return this.worksheets.FirstOrDefault(w => string.Compare(w.Name, name, true) == 0);
 		}
 
-		#region Collection of worksheet
-		private WorksheetCollection worksheetCollection;
+        #region Collection of worksheet
 
-		/// <summary>
-		/// Collection of worksheets
-		/// </summary>
-		public WorksheetCollection Worksheets
-		{
-			get
-			{
-				if (this.worksheetCollection == null)
-				{
-					this.worksheetCollection = new WorksheetCollection(this);
-				}
+        /// <summary>
+        /// Collection of worksheets
+        /// </summary>
+        public WorksheetCollection Worksheets => field ??= new WorksheetCollection(this);
 
-				return this.worksheetCollection;
-			}
-		}
+        #endregion Collection of worksheet
 
-		#endregion Collection of worksheet
-
-		/// <summary>
-		/// Event raised when new worksheet is created
-		/// </summary>
-		public event EventHandler<WorksheetCreatedEventArgs> WorksheetCreated;
+        /// <summary>
+        /// Event raised when new worksheet is created
+        /// </summary>
+        public event EventHandler<WorksheetCreatedEventArgs>? WorksheetCreated;
 
 		/// <summary>
 		/// Event raised when new worksheet is inserted
 		/// </summary>
-		public event EventHandler<WorksheetInsertedEventArgs> WorksheetInserted;
+		public event EventHandler<WorksheetInsertedEventArgs>? WorksheetInserted;
 
 		/// <summary>
 		/// Event raised when new worksheet is removed
 		/// </summary>
-		public event EventHandler<WorksheetRemovedEventArgs> WorksheetRemoved;
+		public event EventHandler<WorksheetRemovedEventArgs>? WorksheetRemoved;
 
 		/// <summary>
 		/// Event raised when new worksheet is inserted
 		/// </summary>
-		public event EventHandler<WorksheetMovedEventArgs> WorksheetMoved;
+		public event EventHandler<WorksheetMovedEventArgs>? WorksheetMoved;
 
 		/// <summary>
 		/// Event raised before name of worksheet changing
 		/// </summary>
-		public event EventHandler<WorksheetNameChangingEventArgs> BeforeWorksheetNameChange;
+		public event EventHandler<WorksheetNameChangingEventArgs>? BeforeWorksheetNameChange;
 
 		/// <summary>
 		/// Event raised when name of worksheet is changed
 		/// </summary>
-		public event EventHandler<WorksheetNameChangingEventArgs> WorksheetNameChanged;
+		public event EventHandler<WorksheetNameChangingEventArgs>? WorksheetNameChanged;
 
 		/// <summary>
 		/// Event raised when background color of worksheet name is changed.
 		/// </summary>
-		public event EventHandler<WorksheetEventArgs> WorksheetNameBackColorChanged;
+		public event EventHandler<WorksheetEventArgs>? WorksheetNameBackColorChanged;
 
 		/// <summary>
 		/// Event raised when text color of worksheet name is changed.
 		/// </summary>
-		public event EventHandler<WorksheetEventArgs> WorksheetNameTextColorChanged;
+		public event EventHandler<WorksheetEventArgs>? WorksheetNameTextColorChanged;
 
 		internal bool CheckWorksheetName(string name)
 		{
@@ -600,11 +540,8 @@ namespace Calcita
 
 			if (index >= 0 && index < this.worksheets.Count)
 			{
-				if (this.WorksheetNameChanged != null)
-				{
-					this.WorksheetNameChanged(this, new WorksheetNameChangingEventArgs(worksheet, worksheet.Name));
-				}
-			}
+                this.WorksheetNameChanged?.Invoke(this, new WorksheetNameChangingEventArgs(worksheet, worksheet.Name));
+            }
 		}
 
 		internal void RaiseWorksheetNameBackColorChangedEvent(Worksheet worksheet)
@@ -613,11 +550,8 @@ namespace Calcita
 
 			if (index >= 0 && index < this.worksheets.Count)
 			{
-				if (this.WorksheetNameBackColorChanged != null)
-				{
-					this.WorksheetNameBackColorChanged(this, new WorksheetEventArgs(worksheet));
-				}
-			}
+                this.WorksheetNameBackColorChanged?.Invoke(this, new (worksheet));
+            }
 		}
 
 		internal void RaiseWorksheetNameTextColorChangedEvent(Worksheet worksheet)
@@ -626,20 +560,8 @@ namespace Calcita
 
 			if (index >= 0 && index < this.worksheets.Count)
 			{
-				if (this.WorksheetNameTextColorChanged != null)
-				{
-					this.WorksheetNameTextColorChanged(this, new WorksheetEventArgs(worksheet));
-				}
-			}
-		}
-
-		internal void RaiseWorksheetScrolledEvent(Worksheet worksheet, RGFloat x, RGFloat y)
-		{
-			if (this.controlAdapter != null
-				&& this.controlAdapter.ControlInstance != null)
-			{
-				this.controlAdapter.ControlInstance.RaiseWorksheetScrolledEvent(worksheet, x, y);
-			}
+                this.WorksheetNameTextColorChanged?.Invoke(this, new (worksheet));
+            }
 		}
 
 		internal void ClearWorksheets()
@@ -651,11 +573,8 @@ namespace Calcita
 				this.worksheets.Remove(sheet);
 				sheet.workbook = null;
 
-				if (this.WorksheetRemoved != null)
-				{
-					this.WorksheetRemoved(this, new WorksheetRemovedEventArgs(sheet));
-				}
-			}
+                this.WorksheetRemoved?.Invoke(this, new (sheet));
+            }
 		}
 
 		public int WorksheetCount { get { return this.worksheets.Count; } }
@@ -705,11 +624,8 @@ namespace Calcita
 				{
 					this.settings |= settings;
 
-					if (this.SettingsChanged != null)
-					{
-						this.SettingsChanged(this, null);
-					}
-				}
+                    this.SettingsChanged?.Invoke(this, EventArgs.Empty);
+                }
 			}
 			else
 			{
@@ -717,11 +633,8 @@ namespace Calcita
 				{
 					this.settings &= ~settings;
 
-					if (this.SettingsChanged != null)
-					{
-						this.SettingsChanged(this, null);
-					}
-				}
+                    this.SettingsChanged?.Invoke(this, EventArgs.Empty);
+                }
 			}
 		}
 
@@ -747,7 +660,7 @@ namespace Calcita
 		/// <summary>
 		/// Event raised when workbook settings is changed
 		/// </summary>
-		public event EventHandler SettingsChanged;
+		public event EventHandler? SettingsChanged;
 		#endregion // Settings
 
 		#region Internal Exceptions
@@ -755,7 +668,7 @@ namespace Calcita
 		/// <summary>
 		/// Event is used to notify if there are any internal exceptions happen on worksheets
 		/// </summary>
-		public event EventHandler<ExceptionHappenEventArgs> ExceptionHappened;
+		public event EventHandler<ExceptionHappenEventArgs>? ExceptionHappened;
 
 		/// <summary>
 		/// Notify that there are exceptions happen on any worksheet. 
@@ -767,11 +680,8 @@ namespace Calcita
 		{
 			Logger.Log("workbook", "internal exception: " + ex.Message);
 
-			if (this.ExceptionHappened != null)
-			{
-				this.ExceptionHappened(this, new ExceptionHappenEventArgs(sheet, ex));
-			}
-		}
+            this.ExceptionHappened?.Invoke(this, new ExceptionHappenEventArgs(sheet, ex));
+        }
 		#endregion // Internal Exceptions
 
 		#region Appearance

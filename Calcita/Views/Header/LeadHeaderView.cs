@@ -36,7 +36,7 @@ namespace Calcita.Views
 			if (bounds.Width <= 0 || bounds.Height <= 0 || sheet.controlAdapter == null) return;
 
 			var g = dc.Graphics;
-			var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+			var controlStyle = dc.Renderer.ControlStyle;
 
 			g.FillRectangle(bounds, controlStyle.Colors[ControlAppearanceColors.LeadHeadNormal]);
 

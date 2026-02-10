@@ -11,12 +11,10 @@ namespace Calcita
 	/// </summary>
 	public class WorksheetCollection : IList<Worksheet>
 	{
-		private IControlAdapter adapter;
 		private Workbook workbook;
 
 		internal WorksheetCollection(Workbook workbook)
 		{
-			this.adapter = workbook.controlAdapter;
 			this.workbook = workbook;
 		}
 

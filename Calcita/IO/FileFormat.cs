@@ -75,7 +75,7 @@ namespace Calcita.IO
 		/// <param name="stream">Stream to input serialized data of workbook</param>
 		/// <param name="encoding">Encoding used to read plain-text file format</param>
 		/// <param name="arg">Arguments of format provider</param>
-		void Load(IWorkbook workbook, Stream stream, Encoding encoding, object arg);
+		void Load(IWorkbook workbook, Stream stream, Encoding encoding, object? arg);
 
 		/// <summary>
 		/// Save spreadsheet to specified stream
@@ -84,7 +84,7 @@ namespace Calcita.IO
 		/// <param name="stream">Stream to output serialized data of workbook</param>
 		/// <param name="encoding">Encoding used to write plain-text file format</param>
 		/// <param name="arg">Arguments of format provider</param>
-		void Save(IWorkbook workbook, Stream stream, Encoding encoding, object arg);
+		void Save(IWorkbook workbook, Stream stream, Encoding encoding, object? arg);
 	}
 
 	#endregion // File Format Provider Interface

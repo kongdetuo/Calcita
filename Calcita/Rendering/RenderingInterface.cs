@@ -37,6 +37,8 @@ namespace Calcita.Rendering
 		, System.IDisposable
 #endif // WINFORM
     {
+        ControlAppearanceStyle ControlStyle { get; }
+
         void DrawRunningFocusRect(RGFloat x, RGFloat y, RGFloat w, RGFloat h, SolidColor color, int runningOffset);
 
         void BeginCappedLine(LineCapStyles startCap, Size startSize, LineCapStyles endCap, Size endSize, SolidColor color, RGFloat width);

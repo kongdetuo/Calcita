@@ -163,7 +163,7 @@ namespace Calcita
 		/// </summary>
 		/// <param name="name">Name to find worksheet.</param>
 		/// <returns>Instance of worksheet that is found by specified name; otherwise return null</returns>
-		Worksheet GetWorksheetByName(string name);
+		Worksheet? GetWorksheetByName(string name);
 
 		/// <summary>
 		/// Create a cloned worksheet and put into specified position.

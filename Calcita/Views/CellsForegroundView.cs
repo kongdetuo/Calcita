@@ -64,7 +64,7 @@ namespace Calcita.Views
 			if (sheet == null || sheet.controlAdapter == null) return;
 
 			var g = dc.Graphics;
-			var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+			var controlStyle = dc.Renderer.ControlStyle;
 
 			switch (sheet.operationStatus)
 			{

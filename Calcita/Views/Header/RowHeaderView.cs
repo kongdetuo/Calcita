@@ -48,7 +48,7 @@ namespace Calcita.Views
 				return;
 			}
 
-			var controlStyle = sheet.workbook.controlAdapter.ControlStyle;
+			var controlStyle = dc.Renderer.ControlStyle;
 
 			g.BeginDrawHeaderText(this.scaleFactor);
 

@@ -31,6 +31,7 @@ using Calcita.Graphics;
 using Calcita.Interaction;
 using Calcita.Main;
 using Calcita.Rendering;
+using Avalonia.Controls;
 
 namespace Calcita
 {
@@ -40,9 +41,9 @@ namespace Calcita
     public sealed partial class Worksheet : IDisposable
     {
         #region ControlAdapter
-        internal IControlAdapter controlAdapter;
+        internal IControlAdapter? controlAdapter;
 
-        internal IControlAdapter ControlAdapter
+        internal IControlAdapter? ControlAdapter
         {
             get
             {
@@ -104,12 +105,12 @@ namespace Calcita
         #endregion
 
         #region Workbook Relation
-        internal Workbook workbook;
+        internal Workbook? workbook;
 
         /// <summary>
         /// Instance of workbook of this worksheet
         /// </summary>
-        public IWorkbook Workbook { get { return this.workbook; } }
+        public IWorkbook? Workbook { get { return this.workbook; } }
 
         private void CheckWorkbookAssociated()
         {
@@ -237,7 +238,6 @@ namespace Calcita
             this.workbook = workbook;
 
             this.name = name;
-            this.ControlAdapter = workbook.controlAdapter;
 
             // initialize spreadsheet 
             InitGrid(rows, cols);
@@ -1384,24 +1384,12 @@ namespace Calcita
         internal CellPosition focusMovingRangeOffset = CellPosition.Empty;
 
         #region OnMouseWheel
-#if AVALONIA
+
         internal void OnMouseWheel(Point location, Avalonia.Vector delta, Avalonia.Input.KeyModifiers keyModifiers, MouseButtons buttons)
-#else
-        internal void OnMouseWheel(Point location, int delta, MouseButtons buttons)
-#endif
         {
             this.waitingEndDirection = false;
-#if WINFORM || WPF
-            if (Toolkit.IsKeyDown(Win32.VKey.VK_CONTROL))
-            {
-                if (this.HasSettings(WorksheetSettings.Behavior_MouseWheelToZoom))
-                {
-                    SetScale(this.ScaleFactor + 0.001f * delta);
-                }
-            }
-            else
-#elif AVALONIA
-            var control = this.workbook.ControlInstance;
+
+            var control = this.ControlAdapter.ControlInstance as Control;
 
             if (PlatformUtility.IsKeyDown(KeyCode.ControlKey, keyModifiers, control))
             {
@@ -1411,7 +1399,6 @@ namespace Calcita
                 }
             }
             else
-#endif // WINFORM || WPF
             {
                 if (!this.selStart.IsEmpty)
                 {
@@ -1429,11 +1416,7 @@ namespace Calcita
 
                     var cellWheelEvent = new CellMouseEventArgs(this, cell, this.selStart, rp, location, buttons, 0)
                     {
-#if AVALONIA
                         Delta = Convert.ToInt32(delta.Y),
-#else
-                        Delta = delta,
-#endif
                         CellPosition = this.selStart,
                     };
 
@@ -1447,16 +1430,6 @@ namespace Calcita
                 {
                     if (this.viewportController is IScrollableViewportController svc)
                     {
-#if WINFORM || WPF
-                        if (Toolkit.IsKeyDown(Win32.VKey.VK_SHIFT))
-                        {
-                            svc.ScrollOffsetViews(ScrollDirection.Horizontal, -delta, 0);
-                        }
-                        else
-                        {
-                            svc.ScrollOffsetViews(ScrollDirection.Vertical, 0, -delta);
-                        }
-#elif AVALONIA
                         if (PlatformUtility.IsKeyDown(KeyCode.ShiftKey, keyModifiers, control))
                         {
                             svc.ScrollOffsetViews(ScrollDirection.Horizontal, -delta.Y, 0);
@@ -1467,9 +1440,6 @@ namespace Calcita
                             svc.ScrollOffsetViews(ScrollDirection.Horizontal, -delta.X, 0);
                             svc.ScrollOffsetViews(ScrollDirection.Vertical, 0, -delta.Y);
                         }
-#else
-                            svc.ScrollViews(ScrollDirection.Vertical, 0, -delta);
-#endif // WINFORM || WPF
                     }
                 }
             }

@@ -906,7 +906,7 @@ namespace Calcita.Views
             scrollHorValue = this.mainViewport.ScrollX;
             scrollVerValue = this.mainViewport.ScrollY;
 
-            this.worksheet.workbook?.RaiseWorksheetScrolledEvent(this.worksheet, x, y);
+            this.Worksheet.ControlAdapter?.ControlInstance?.RaiseWorksheetScrolledEvent(worksheet, x, y);
         }
 
         public virtual void ScrollToRange(RangePosition range, CellPosition basePos)
