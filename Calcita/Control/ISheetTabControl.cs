@@ -106,24 +106,6 @@ namespace Calcita.Main
 	/// </summary>
 	internal interface ISheetTabControl
 	{
-		///// <summary>
-		///// Get or set the border color.
-		///// </summary>
-		//[Description("Get or set the border color")]
-		//RGColor BorderColor { get; set; }
-
-		///// <summary>
-		///// Get or set the background color for selected tab.
-		///// </summary>
-		//[Description("Get or set the background color for selected tab")]
-		//RGColor SelectedBackColor { get; set; }
-
-		///// <summary>
-		///// Get or set the text color for selected tab.
-		///// </summary>
-		//[Description("Get or set the text color for selected tab")]
-		//RGColor SelectedTextColor { get; set; }
-
 		/// <summary>
 		/// Get or set the current tab index.
 		/// </summary>
@@ -134,29 +116,10 @@ namespace Calcita.Main
 		/// </summary>
 		event EventHandler<SheetTabMovedEventArgs> TabMoved;
 
-		///// <summary>
-		///// Convert the absolute point on this sheet tab control to scrolled view point.
-		///// </summary>
-		///// <param name="p">point to be converted.</param>
-		///// <returns>converted view point.</returns>
-		//RGFloat TranslateScrollPoint(int p);
-
-		///// <summary>
-		///// Get rectangle of specified tab item.
-		///// </summary>
-		///// <param name="index">Number of tab to get bounds.</param>
-		///// <returns>Rectangle bounds of specified tab.</returns>
-		//RGRect GetItemBounds(int index);
-
 		/// <summary>
 		/// Event raised when selected tab is changed.
 		/// </summary>
 		event EventHandler SelectedIndexChanged;
-
-		/// <summary>
-		/// Event raised when splitter is moved.
-		/// </summary>
-		event EventHandler SplitterMoving;
 
 		/// <summary>
 		/// Event raised when sheet list button is clicked.
@@ -167,11 +130,6 @@ namespace Calcita.Main
 		/// Event raised when new sheet butotn is clicked.
 		/// </summary>
 		event EventHandler NewSheetClick;
-
-		/// <summary>
-		/// Event raised when mouse is pressed down on tab items.
-		/// </summary>
-		event EventHandler<SheetTabMouseEventArgs> TabMouseDown;
 
 		///// <summary>
 		///// Move item to specified position.
@@ -185,11 +143,6 @@ namespace Calcita.Main
 		/// </summary>
 		/// <param name="index">Number of item to scrolled.</param>
 		void ScrollToItem(int index);
-
-		/// <summary>
-		/// Get or set the width of sheet tab control
-		/// </summary>
-		RGIntDouble ControlWidth { get; set; }
 
 		/// <summary>
 		/// Add tab.

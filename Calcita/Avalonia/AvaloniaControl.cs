@@ -76,9 +76,7 @@ namespace Calcita
             this.sheetTab = new SheetTabControl()
             {
                 ControlWidth = 400,
-                Height = ScrollBarSize,
-                VerticalAlignment = VerticalAlignment.Stretch,
-                Margin = new Thickness(0,0,0,5)
+                VerticalAlignment = VerticalAlignment.Stretch
             };
 
             this.horScrollbar = new ScrollBar()
@@ -87,7 +85,7 @@ namespace Calcita
                 Height = ScrollBarSize,
                 SmallChange = Worksheet.InitDefaultColumnWidth,
                 [Grid.RowProperty] = 0,
-                [Grid.ColumnProperty] = 1,
+                [Grid.ColumnProperty] = 2,
                 [!ScrollBar.IsVisibleProperty] = this[!HorizontalScrollBarVisibleProperty],
                 [!ScrollBar.ValueProperty] = this.GetObservable(OffsetProperty, p => p.X).ToBinding(),
                 [!ScrollBar.MaximumProperty] = this.GetObservable(ScrollBarMaximumProperty, p => p.X).ToBinding(),
@@ -129,12 +127,15 @@ namespace Calcita
                     new Grid()
                     {
                         [Grid.RowProperty] = 1,
-                        ColumnDefinitions = new ColumnDefinitions("*, 400"),
+                        Height = 24,
+                        ColumnDefinitions = new ColumnDefinitions("*, auto, 400"),
                         Children = {
                             sheetTab,
                             new GridSplitter()
                             {
-                                HorizontalAlignment = HorizontalAlignment.Right
+                                [Grid.ColumnProperty] = 1,
+                                HorizontalAlignment = HorizontalAlignment,
+                                ResizeBehavior = GridResizeBehavior.PreviousAndNext,
                             },
                             horScrollbar
                         }
@@ -156,19 +157,6 @@ namespace Calcita
                 {
                     ((IScrollableViewportController)this.currentWorksheet.ViewportController).VerticalScroll(e.NewValue);
                 }
-            };
-
-            this.sheetTab.SplitterMoving += (s, e) =>
-            {
-                var arg = e as PointerEventArgs;
-
-                double width = arg.GetPosition(this).X + 3;
-                if (width < 75) width = 75;
-                if (width > this.Bounds.Size.Width - ScrollBarSize) width = this.Bounds.Size.Width - ScrollBarSize;
-
-                this.SheetTabWidth = width;
-
-                this.UpdateSheetTabAndScrollBarsLayout();
             };
 
             this.sheetTab.NewSheetClick += SheetTab_NewSheetClick;

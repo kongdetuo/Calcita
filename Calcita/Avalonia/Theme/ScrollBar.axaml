@@ -28,8 +28,7 @@
 								   Orientation="{TemplateBinding Orientation}"
 								   ViewportSize="{TemplateBinding ViewportSize}"
 								   DeferThumbDrag="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-								   Value="{TemplateBinding Value,
-								   Mode=TwoWay}">
+								   Value="{TemplateBinding Value, Mode=TwoWay}">
 								<Track.DecreaseButton>
 									<RepeatButton Name="PART_PageUpButton"
 												  Classes="repeattrack"
@@ -84,8 +83,7 @@
 								   Orientation="{TemplateBinding Orientation}"
 								   ViewportSize="{TemplateBinding ViewportSize}"
 								   DeferThumbDrag="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
-								   Value="{TemplateBinding Value,
-								   Mode=TwoWay}">
+								   Value="{TemplateBinding Value, Mode=TwoWay}">
 								<Track.DecreaseButton>
 									<RepeatButton Name="PART_PageUpButton"
 												  Classes="repeattrack"

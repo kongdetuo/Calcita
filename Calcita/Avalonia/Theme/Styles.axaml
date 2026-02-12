@@ -10,8 +10,10 @@
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<MergeResourceInclude Source="/Avalonia/Theme/Base.axaml" />
+				<MergeResourceInclude Source="/Avalonia/Theme/Button.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/RepeatButton.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/ScrollBar.axaml" />
+				<MergeResourceInclude Source="/Avalonia/Theme/SheetTabControl.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/TabStrip.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/TabStripItem.axaml" />
 			</ResourceDictionary.MergedDictionaries>
