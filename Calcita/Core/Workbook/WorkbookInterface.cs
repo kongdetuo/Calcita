@@ -266,10 +266,6 @@ namespace Calcita
 		/// <param name="ex">Exception to describe the details of error information</param>
 		void NotifyExceptionHappen(Worksheet sheet, Exception ex);
         #endregion // Internal Exceptions
-
-        WorkbookSettings GetSettings();
-        bool HasSettings(WorkbookSettings settings);
-        void SetSettings(WorkbookSettings settings, bool enable);
     }
 
     //internal interface IScreenWorkbook : IWorkbook

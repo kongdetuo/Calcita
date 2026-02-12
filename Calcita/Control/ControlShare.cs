@@ -622,42 +622,6 @@ namespace Calcita
 
         #endregion // Actions
 
-        #region Settings
-
-        /// <summary>
-        /// Set specified workbook settings
-        /// </summary>
-        /// <param name="settings">Settings to be set</param>
-        /// <param name="value">True to enable the settings, false to disable the settings</param>
-        public void SetSettings(WorkbookSettings settings, bool value)
-        {
-            this.Workbook.SetSettings(settings, value);
-        }
-
-        /// <summary>
-        /// Enable specified settings for workbook.
-        /// </summary>
-        /// <param name="settings">Settings to be enabled.</param>
-        public void EnableSettings(WorkbookSettings settings)
-        {
-            this.Workbook.SetSettings(settings, true);
-        }
-
-        /// <summary>
-        /// Disable specified settings for workbook.
-        /// </summary>
-        /// <param name="settings">Settings to be disabled.</param>
-        public void DisableSettings(WorkbookSettings settings)
-        {
-            this.Workbook.SetSettings(settings, false);
-        }
-
-        /// <summary>
-        /// Event raised when settings is changed
-        /// </summary>
-        public event EventHandler SettingsChanged;
-        #endregion // Settings
-
         #region Script
 
         ///// <summary>
@@ -916,23 +880,21 @@ namespace Calcita
 
         #region SheetTabControl
 
+
         /// <summary>
-        /// Show or hide the built-in sheet tab control.
+        /// SheetTabVisible StyledProperty definition
+        /// </summary>
+        public static readonly StyledProperty<bool> SheetTabVisibleProperty =
+            AvaloniaProperty.Register<CalcitaControl, bool>(nameof(SheetTabVisible), true);
+
+        /// <summary>
+        /// Gets or sets the SheetTabVisible property. This StyledProperty
+        /// indicates ....
         /// </summary>
         public bool SheetTabVisible
         {
-            get { return (this.Workbook?.HasSettings(WorkbookSettings.View_ShowSheetTabControl) == true); }
-            set
-            {
-                if (value)
-                {
-                    this.Workbook?.SetSettings(WorkbookSettings.View_ShowSheetTabControl, true);
-                }
-                else
-                {
-                    this.Workbook?.SetSettings(WorkbookSettings.View_ShowSheetTabControl, false);
-                }
-            }
+            get => this.GetValue(SheetTabVisibleProperty);
+            set => SetValue(SheetTabVisibleProperty, value);
         }
 
         /// <summary>

@@ -143,50 +143,6 @@ namespace Calcita
 		}
 
 		/// <summary>
-		/// Check whether the settings flags contains specified setting flags
-		/// </summary>
-		/// <param name="settings">the setting flags container to be checked from</param>
-		/// <param name="target">the target setting flags to be checked</param>
-		/// <returns>true if the settings flags contains specified setting flags</returns>
-		public static bool Has(this WorkbookSettings settings, WorkbookSettings target)
-		{
-			return (settings & target) == target;
-		}
-
-		/// <summary>
-		/// Check whether the settings flags contains any one of specified setting flags
-		/// </summary>
-		/// <param name="settings">the setting flags container to be checked from</param>
-		/// <param name="target">the target setting flags to be checked</param>
-		/// <returns>true if the settings flags contains any one of setting flags</returns>
-		public static bool HasAny(this WorkbookSettings settings, WorkbookSettings target)
-		{
-			return (settings & target) > 0;
-		}
-
-		/// <summary>
-		/// Set setting flags
-		/// </summary>
-		/// <param name="settings">setting flags used to save the specified flags</param>
-		/// <param name="target">target flags to be set</param>
-		/// <returns>changed setting flags</returns>
-		public static WorkbookSettings Add(this WorkbookSettings settings, WorkbookSettings target)
-		{
-			return settings |= target;
-		}
-
-		/// <summary>
-		/// Remove setting flags
-		/// </summary>
-		/// <param name="settings">setting flags used to remove the specified flags</param>
-		/// <param name="target">target flags to be removed</param>
-		/// <returns>changed setting flags</returns>
-		public static WorkbookSettings Remove(this WorkbookSettings settings, WorkbookSettings target)
-		{
-			return settings &= ~target;
-		}
-
-		/// <summary>
 		/// Comparing 2 Generic Dictionary Instances
 		/// quoted from LukeH
 		/// http://stackoverflow.com/questions/3928822/comparing-2-dictionarystring-string-instances

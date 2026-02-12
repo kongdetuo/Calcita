@@ -77,7 +77,8 @@ namespace Calcita
             this.sheetTab = new SheetTabControl()
             {
                 ControlWidth = 400,
-                VerticalAlignment = VerticalAlignment.Stretch
+                VerticalAlignment = VerticalAlignment.Stretch,
+                [!SheetTabControl.IsVisibleProperty] = this[!SheetTabVisibleProperty],
             };
 
             this.horScrollbar = new ScrollBar()
@@ -385,9 +386,6 @@ namespace Calcita
             set => SetValue(CurrentWorksheetProperty, value);
         }
 
-
-
-
         private void OnWorkbookChanged(AvaloniaPropertyChangedEventArgs e)
         {
             var old = e.GetOldValue<IWorkbook?>();
@@ -410,7 +408,6 @@ namespace Calcita
 
                 if (old is Workbook w)
                 {
-                    w.SettingsChanged -= Workbook_SettingsChanged;
                     w.WorkbookSaving -= Workbook_WorkbookSaving;
                     w.WorkbookLoading -= Workbook_WorkbookLoading;
                 }
@@ -438,7 +435,6 @@ namespace Calcita
                 {
                     this.Workbook = w;
 
-                    w.SettingsChanged += Workbook_SettingsChanged;
                     w.WorkbookSaving += Workbook_WorkbookSaving;
                     w.WorkbookLoading += Workbook_WorkbookLoading;
                 }
@@ -495,38 +491,6 @@ namespace Calcita
         private void Workbook_WorkbookLoading(object? sender, EventArgs e)
         {
             this.adapter.ChangeCursor(CursorStyle.Busy);
-        }
-        private void Workbook_SettingsChanged(object? sender, EventArgs e)
-        {
-            var workbook = (Workbook)sender!;
-            if (workbook.HasSettings(WorkbookSettings.View_ShowSheetTabControl))
-            {
-                ShowSheetTabControl();
-            }
-            else
-            {
-                HideSheetTabControl();
-            }
-
-            if (workbook.HasSettings(WorkbookSettings.View_ShowHorScroll))
-            {
-                ShowHorScrollBar();
-            }
-            else
-            {
-                HideHorScrollBar();
-            }
-
-            if (workbook.HasSettings(WorkbookSettings.View_ShowVerScroll))
-            {
-                ShowVerScrollBar();
-            }
-            else
-            {
-                HideVerScrollBar();
-            }
-
-            this.SettingsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void Workbook_WorkbookSaved(object? sender, EventArgs e)

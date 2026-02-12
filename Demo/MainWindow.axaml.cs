@@ -28,8 +28,7 @@ namespace Calcita.Demo
             grid.Worksheets.Clear();
 
             // handles event to update menu check status.
-            grid.SettingsChanged += (s, e) => UpdateMenuChecks();
-            //grid.CurrentWorksheetChanged += (s, e) => UpdateMenuChecks();
+            grid.PropertyChanged += (s, e) => UpdateMenuChecks();
            
             grid.GetObservable(CalcitaControl.CurrentWorksheetProperty).Subscribe(new AnonymousObserver<Worksheet?>(ws => UpdateMenuChecks()));
 
@@ -47,8 +46,8 @@ namespace Calcita.Demo
 
         private void UpdateMenuChecks()
         {
-            this.viewSheetTabVisible.IsChecked = workbook.HasSettings(Calcita.WorkbookSettings.View_ShowHorScroll);
-            this.viewVerticalScrollbarVisible.IsChecked = workbook.HasSettings(Calcita.WorkbookSettings.View_ShowVerScroll);
+            this.viewSheetTabVisible.IsChecked = grid.HorizontalScrollBarVisible;// workbook.HasSettings(Calcita.WorkbookSettings.View_ShowHorScroll);
+            this.viewVerticalScrollbarVisible.IsChecked = grid.VerticalScrollBarVisible;// workbook.HasSettings(Calcita.WorkbookSettings.View_ShowVerScroll);
             this.viewSheetTabVisible.IsChecked = grid.SheetTabVisible;
             this.viewSheetTabNewButtonVisible.IsChecked = grid.SheetTabNewButtonVisible;
 
@@ -350,7 +349,7 @@ namespace Calcita.Demo
         #region Menu - View
         private void View_SheetTab_Click(object sender, RoutedEventArgs e)
         {
-            workbook.SetSettings(Calcita.WorkbookSettings.View_ShowSheetTabControl, (sender as MenuItem)?.IsChecked == true);
+            grid.SheetTabVisible = (sender as MenuItem)?.IsChecked == true;
         }
 
         private void View_SheetTabNewButton_Click(object sender, RoutedEventArgs e)
@@ -360,12 +359,12 @@ namespace Calcita.Demo
 
         private void View_HorizontalScrollbar_Click(object sender, RoutedEventArgs e)
         {
-            workbook.SetSettings(Calcita.WorkbookSettings.View_ShowHorScroll, (sender as MenuItem)?.IsChecked == true);
+            grid.HorizontalScrollBarVisible = (sender as MenuItem)?.IsChecked == true;
         }
 
         private void View_VerticalScrollbar_Click(object sender, RoutedEventArgs e)
         {
-            workbook.SetSettings(Calcita.WorkbookSettings.View_ShowVerScroll, (sender as MenuItem)?.IsChecked == true);
+            grid.VerticalScrollBarVisible = (sender as MenuItem)?.IsChecked == true;
         }
 
         private void View_GuideLine_Click(object sender, RoutedEventArgs e)

@@ -614,62 +614,6 @@ namespace Calcita
 
         #endregion // Worksheet Management
 
-		#region Settings
-
-		private WorkbookSettings settings = WorkbookSettings.Default;
-
-		/// <summary>
-		/// Set settings for this workbook
-		/// </summary>
-		/// <param name="settings">settings to be set</param>
-		/// <param name="value">set true to enable specified settings, false to disable</param>
-		public void SetSettings(WorkbookSettings settings, bool value)
-		{
-			if (value)
-			{
-				if ((this.settings & settings) != settings)
-				{
-					this.settings |= settings;
-
-                    this.SettingsChanged?.Invoke(this, EventArgs.Empty);
-                }
-			}
-			else
-			{
-				if ((this.settings & settings) > 0)
-				{
-					this.settings &= ~settings;
-
-                    this.SettingsChanged?.Invoke(this, EventArgs.Empty);
-                }
-			}
-		}
-
-		/// <summary>
-		/// Get current settings of workbook
-		/// </summary>
-		/// <returns>Workbook settings set</returns>
-		public WorkbookSettings GetSettings()
-		{
-			return this.settings;
-		}
-
-		/// <summary>
-		/// Determine whether or not specified settings are set
-		/// </summary>
-		/// <param name="settings">settings to be checked</param>
-		/// <returns>true if specified settings are set in current workbook</returns>
-		public bool HasSettings(WorkbookSettings settings)
-		{
-			return this.settings.Has(settings);
-		}
-
-		/// <summary>
-		/// Event raised when workbook settings is changed
-		/// </summary>
-		public event EventHandler? SettingsChanged;
-		#endregion // Settings
-
 		#region Internal Exceptions
 
 		/// <summary>
