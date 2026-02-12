@@ -25,7 +25,7 @@ namespace Calcita.Demo
 
             // don't use Clear method in actual application,
             // instead, load template into the first worksheet directly.
-            grid.Worksheets.Clear();
+            workbook.Worksheets.Clear();
 
             // handles event to update menu check status.
             grid.PropertyChanged += (s, e) => UpdateMenuChecks();

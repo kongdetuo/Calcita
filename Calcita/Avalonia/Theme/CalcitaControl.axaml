@@ -1,0 +1,64 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ca="using:Calcita.AvaloniaPlatform"
+                    xmlns:c="using:Calcita"
+                    >
+  <!-- Add Resources Here -->
+    <ControlTheme x:Key="{x:Type c:CalcitaControl}"
+                  TargetType="c:CalcitaControl">
+        <Setter Property="Background" Value="{DynamicResource ThemeControlMidBrush}" />
+
+        <Setter Property="Template">
+			<ControlTemplate TargetType="c:CalcitaControl">
+
+                <Grid ColumnDefinitions="* auto" 
+                      RowDefinitions="* auto"
+                      Background="{TemplateBinding Background}">
+                    <c:SheetCanvas x:Name="PART_SheetCanvas"/>
+
+					<ScrollBar Name="PART_VerticalScrollBar"
+                               Grid.Column="1" 
+                               Orientation="Vertical"/>
+
+                    <Grid Grid.Row="1"
+                          ColumnDefinitions="* auto 400">
+						<ca:SheetTabControl x:Name="PART_SheetTabControl"
+                                            IsVisible="{TemplateBinding SheetTabVisible}"/>
+
+                        <GridSplitter Name="PART_GridSplitter" Height="24"
+                                      Grid.Column="1"
+                                      ResizeBehavior="PreviousAndNext" Width="5"/>
+
+                        <ScrollBar Name="PART_HorizontalScrollBar" 
+                                   Orientation="Horizontal"
+                                   IsVisible="{TemplateBinding HorizontalScrollBarVisible}"/>
+                    </Grid>
+
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        
+        <Style Selector="^ /template/ ScrollBar#PART_HorizontalScrollBar">
+			<Setter Property="Grid.Column" Value="2"/>
+        </Style>
+
+        <Style Selector="^[SheetTabVisible=false] /template/ ScrollBar#PART_HorizontalScrollBar">
+			<Setter Property="Grid.Column" Value="0"/>
+			<Setter Property="Grid.ColumnSpan" Value="3"/>
+        </Style>
+
+        <Style Selector="^[SheetTabVisible=false] /template/ GridSplitter#PART_GridSplitter">
+			<Setter Property="IsVisible" Value="False"/>
+        </Style>
+        
+        <Style Selector="^[HorizontalScrollBarVisible=false] /template/ GridSplitter#PART_GridSplitter">
+			<Setter Property="IsVisible" Value="False"/>
+        </Style>
+
+        <Style Selector="^[HorizontalScrollBarVisible=false] /template/ ca|SheetTabControl#PART_SheetTabControl">
+            <Setter Property="Grid.ColumnSpan" Value="3"/>
+        </Style>
+
+    </ControlTheme>
+    
+</ResourceDictionary>

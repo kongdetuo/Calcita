@@ -139,43 +139,6 @@ namespace Calcita.Main
 		//void MoveItem(int index, int targetIndex);
 
 		/// <summary>
-		/// Scroll view to show tab item by specified index.
-		/// </summary>
-		/// <param name="index">Number of item to scrolled.</param>
-		void ScrollToItem(int index);
-
-		/// <summary>
-		/// Add tab.
-		/// </summary>
-		/// <param name="title">Title of tab.</param>
-		void AddTab(string title);
-
-		/// <summary>
-		/// Insert tab
-		/// </summary>
-		/// <param name="index">Zero-based number of tab.</param>
-		/// <param name="title">Title of tab.</param>
-		void InsertTab(int index, string title);
-
-		/// <summary>
-		/// Update tab title.
-		/// </summary>
-		/// <param name="index">Zero-based number of tab.</param>
-		/// <param name="title">Title of tab.</param>
-		void UpdateTab(int index, string title, RGColor backgroundColor, RGColor foregroundColor);
-
-		/// <summary>
-		/// Remove specified tab.
-		/// </summary>
-		/// <param name="index">Zero-based number of tab.</param>
-		void RemoveTab(int index);
-
-		/// <summary>
-		/// Clear all tabs.
-		/// </summary>
-		void ClearTabs();
-
-		/// <summary>
 		/// Determine whether or not allow to move tab by dragging mouse.
 		/// </summary>
 		bool AllowDragToMove { get; set; }

@@ -3,6 +3,7 @@
 					xmlns:ca="clr-namespace:Calcita.AvaloniaPlatform">
 	<ControlTheme x:Key="{x:Type ca:SheetTabControl}"
 				  TargetType="ca:SheetTabControl">
+		<Setter Property="Cursor" Value="Arrow" />
 		<Setter Property="Template">
 			<ControlTemplate>
 				<Grid ColumnDefinitions="auto Auto Auto * Auto">

@@ -120,31 +120,6 @@ namespace Calcita.AvaloniaPlatform
         public bool AllowDragToMove { get; set; }
 
         #region Tab Management
-        public void AddTab(string title)
-        {
-            int index = this.Items.Count;
-            InsertTab(index, title);
-        }
-
-        public void InsertTab(int index, string title)
-        {
-            this.Items.Insert(index, title);
-        }
-
-        public void RemoveTab(int index)
-        {
-            this.Items.RemoveAt(index);
-        }
-
-        public void UpdateTab(int index, string title, Avalonia.Media.Color backColor, Avalonia.Media.Color textColor)
-        {
-            this.Items[index] = title;
-        }
-
-        public void ClearTabs()
-        {
-            this.Items.Clear();
-        }
 
         #endregion // Tab Management
 
@@ -164,13 +139,6 @@ namespace Calcita.AvaloniaPlatform
             this.Items.Insert(targetIndex, tab);
         }
 
-        public void ScrollToItem(int index)
-        {
-            this.ScrollIntoView(this.Items[index]!);
-        }
-
-        public double ControlWidth { get; set; }
-
         public event EventHandler<SheetTabMovedEventArgs>? TabMoved;
 
         public event EventHandler? SelectedIndexChanged;
@@ -186,29 +154,6 @@ namespace Calcita.AvaloniaPlatform
     public class SheetTabItem : ListBoxItem
     {
 
-    }
-
-    class RightThumb : Control
-    {
-        private SheetTabControl owner;
-
-        public RightThumb(SheetTabControl owner)
-        {
-            this.owner = owner;
-        }
-
-        //public override void Render(DrawingContext drawingContext)
-        //{
-        //    var g = drawingContext;
-
-        //    var b = new SolidColorBrush(owner.BorderColor);
-        //    var p = new Avalonia.Media.Pen(b, 1);
-
-        //    for (double y = 3; y < this.Bounds.Size.Height - 3; y += 4)
-        //    {
-        //        g.DrawRectangle(new SolidColorBrush(SystemColors.ControlDark), null, new Rect(0, y, 2, 2));
-        //    }
-        //}
     }
 }
 

@@ -30,6 +30,7 @@ using Calcita.Main;
 using Calcita.Rendering;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using static Calcita.CalcitaControl;
 
 namespace Calcita
@@ -132,7 +133,10 @@ namespace Calcita
         #region Init
         static SheetCanvas()
         {
-
+            WorksheetProperty.Changed.AddClassHandler<SheetCanvas>((s, e) =>
+            {
+                s.Invalidate();
+            });
         }
 
         public SheetCanvas()
@@ -213,18 +217,12 @@ namespace Calcita
 
         private void CalcitaControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            Invalidate();
+        }
 
-            if (this.IsVisible)
-            {
-                if (e.PreviousSize.Width > 0)
-                {
-                    this.Owner.SheetTabWidth += e.NewSize.Width - e.PreviousSize.Width;
-                    if (this.Owner.SheetTabWidth < 0) this.Owner.SheetTabWidth = 0;
-                }
-            }
-
-            this.Owner.UpdateSheetTabAndScrollBarsLayout();
-
+        internal void Invalidate()
+        {
+            this.Worksheet?.UpdateViewportControllBounds();
             this.InvalidateVisual();
         }
 
@@ -459,7 +457,7 @@ namespace Calcita
 
         Rectangle ICompViewAdapter.GetContainerBounds()
         {
-            return this.Bounds;
+            return new Rectangle(0,0,this.Bounds.Width, this.Bounds.Height);
         }
 
         void ICompViewAdapter.Focus()

@@ -16,6 +16,7 @@
 				<MergeResourceInclude Source="/Avalonia/Theme/SheetTabControl.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/TabStrip.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/TabStripItem.axaml" />
+				<MergeResourceInclude Source="/Avalonia/Theme/CalcitaControl.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Styles.Resources>

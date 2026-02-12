@@ -29,6 +29,7 @@ using Calcita.Interaction;
 using Calcita.Main;
 using Calcita.Rendering;
 using Avalonia;
+using System.Runtime.CompilerServices;
 
 namespace Calcita
 {
@@ -50,6 +51,18 @@ namespace Calcita
             WorkbookProperty.Changed.AddClassHandler<CalcitaControl>((x, e) =>
             {
                 x.OnWorkbookChanged(e);
+            });
+            SelectedIndexProperty.Changed.AddClassHandler<CalcitaControl>((x, e) =>
+            {
+                var index = e.GetNewValue<int>();
+                if(index >= 0 && x.Workbook?.Worksheets.Count > index) 
+                {
+                    x.CurrentWorksheet = x.Workbook?.Worksheets[x.SelectedIndex];
+                }
+                else
+                {
+                    x.CurrentWorksheet = null;
+                }
             });
             CurrentWorksheetProperty.Changed.AddClassHandler<CalcitaControl>((x, e) =>
             {
@@ -119,7 +132,7 @@ namespace Calcita
             // create and set default worksheet
             this.Workbook.AddWorksheet(this.Workbook.CreateWorksheet());
 
-            this.sheetTab.SelectedIndexChanged += (s, e) =>
+            this.sheetTab?.SelectedIndexChanged += (s, e) =>
             {
                 if (this.sheetTab.SelectedIndex >= 0 && this.sheetTab.SelectedIndex < this.Workbook.Worksheets.Count)
                 {
@@ -239,16 +252,6 @@ namespace Calcita
 
         #region Worksheet Management
 
-        /// <summary>
-        /// Get the collection of worksheet.
-        /// </summary>
-        //[System.ComponentModel.Editor(typeof(WinForm.Designer.WorkbookEditor),
-        //	typeof(System.Drawing.Design.UITypeEditor))]
-        public WorksheetCollection Worksheets
-        {
-            get { return this.Workbook.Worksheets; }
-        }
-
         #endregion // Worksheet Management
 
         /// <summary>
@@ -264,7 +267,7 @@ namespace Calcita
             }
             set
             {
-                this.Workbook.Readonly = value;
+                this.Workbook?.Readonly = value;
             }
         }
 
@@ -830,12 +833,12 @@ namespace Calcita
 
                 if (this.controlStyle != value)
                 {
-                    if (this.controlStyle != null) this.controlStyle.CurrentControl = null;
+                    if (this.controlStyle != null) this.controlStyle?.CurrentControl = null;
                     this.controlStyle = value;
                 }
                 //workbook.SetControlStyle(value);
 
-                this.SheetCanvas.renderer.ControlStyle = value;
+                this.SheetCanvas?.renderer.ControlStyle = value;
 
                 this.ApplyControlStyle();
             }
@@ -843,9 +846,9 @@ namespace Calcita
 
         internal void ApplyControlStyle()
         {
-            this.controlStyle.CurrentControl = this;
+            this.controlStyle?.CurrentControl = this;
 
-            sheetTab.Background = new Avalonia.Media.SolidColorBrush(this.controlStyle[ControlAppearanceColors.SheetTabBackground]);
+            sheetTab?.Background = new Avalonia.Media.SolidColorBrush(this.controlStyle[ControlAppearanceColors.SheetTabBackground]);
 
             this.adapter?.Invalidate();
         }
@@ -863,7 +866,7 @@ namespace Calcita
             if (this.CurrentWorksheet != null)
             {
                 this.adapter.ChangeCursor(CursorStyle.PlatformDefault);
-                this.CurrentWorksheet.HoverPos = CellPosition.Empty;
+                this.CurrentWorksheet?.HoverPos = CellPosition.Empty;
             }
         }
 
@@ -898,21 +901,12 @@ namespace Calcita
         }
 
         /// <summary>
-        /// Get or set the width of sheet tab control.
-        /// </summary>
-        public IntOrDouble SheetTabWidth
-        {
-            get { return this.sheetTab.ControlWidth; }
-            set { this.sheetTab.ControlWidth = value; }
-        }
-
-        /// <summary>
         /// Determines that whether or not to display the new button on sheet tab control.
         /// </summary>
         public bool SheetTabNewButtonVisible
         {
-            get { return this.sheetTab.NewButtonVisible; }
-            set { this.sheetTab.NewButtonVisible = value; }
+            get { return this.sheetTab?.NewButtonVisible == true; }
+            set { this.sheetTab?.NewButtonVisible = value; }
         }
         #endregion // SheetTabControl
 

@@ -17,6 +17,7 @@
  ****************************************************************************/
 
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
@@ -46,128 +47,45 @@ namespace Calcita
     /// <summary>
     /// Calcita Spreadsheet Control
     /// </summary>
-    public partial class CalcitaControl : Decorator, IVisualWorkbook,
+    public partial class CalcitaControl : TemplatedControl, IVisualWorkbook,
     IRangePickableControl, IContextMenuControl, IPersistenceWorkbook, IActionControl
     {
         internal const int ScrollBarSize = 18;
 
         internal ReoGridAvaloniaControlAdapter adapter;
         private SheetTabControl sheetTab;
-        private InputTextBox editTextbox => SheetCanvas.editTextbox;
 
         private ScrollBar horScrollbar;
         private ScrollBar verScrollbar;
 
         private SheetCanvas SheetCanvas;
 
+        private readonly AvaloniaList<string> sheets = [];
+
         /// <summary>
         /// Create Calcita spreadsheet control
         /// </summary>
         public CalcitaControl()
         {
-            this.Styles.Add(new StyleInclude(new Uri("avares://Calcita/"))
-            {
-                Source = new Uri("avares://Calcita/Avalonia/Theme/Styles.axaml")
-            });
-
             this.Focusable = true;
 
             this.BeginInit();
 
-            this.sheetTab = new SheetTabControl()
-            {
-                ControlWidth = 400,
-                VerticalAlignment = VerticalAlignment.Stretch,
-                [!SheetTabControl.IsVisibleProperty] = this[!SheetTabVisibleProperty],
-            };
+            //this.horScrollbar.Scroll += (s, e) =>
+            //{
+            //    horScrollBar_Scroll(s, e);
+            //};
 
-            this.horScrollbar = new ScrollBar()
-            {
-                Orientation = Orientation.Horizontal,
-                Height = ScrollBarSize,
-                SmallChange = Worksheet.InitDefaultColumnWidth,
-                [Grid.RowProperty] = 0,
-                [Grid.ColumnProperty] = 2,
-                [!ScrollBar.IsVisibleProperty] = this[!HorizontalScrollBarVisibleProperty],
-                [!ScrollBar.ValueProperty] = this.GetObservable(OffsetProperty, p => p.X).ToBinding(),
-                [!ScrollBar.MaximumProperty] = this.GetObservable(ScrollBarMaximumProperty, p => p.X).ToBinding(),
-                [!ScrollBar.MinimumProperty] = this.GetObservable(ScrollBarMinimumProperty, p => p.X).ToBinding(),
-                [!ScrollBar.LargeChangeProperty] = this.GetObservable(LargeChangeProperty, p => p.Width).ToBinding(),
-                [!ScrollBar.ViewportSizeProperty] = this.GetObservable(LargeChangeProperty, p => p.Width).ToBinding(),
-            };
+            //this.verScrollbar.Scroll += (s, e) =>
+            //{
+            //    verScrollBar_Sroll(s, e);
+            //};
 
-            this.verScrollbar = new ScrollBar()
-            {
-                [Grid.ColumnProperty] = 1,
-
-                Orientation = Orientation.Vertical,
-                Width = ScrollBarSize,
-                SmallChange = Worksheet.InitDefaultRowHeight,
-                [!ScrollBar.IsVisibleProperty] = this[!VerticalScrollBarVisibleProperty],
-                [!ScrollBar.ValueProperty] = this.GetObservable(OffsetProperty, p=>p.Y).ToBinding(),
-                [!ScrollBar.MaximumProperty] = this.GetObservable(ScrollBarMaximumProperty, p => p.Y).ToBinding(),
-                [!ScrollBar.MinimumProperty] = this.GetObservable(ScrollBarMinimumProperty, p => p.Y).ToBinding(),
-                [!ScrollBar.LargeChangeProperty] = this.GetObservable(LargeChangeProperty, p => p.Height).ToBinding(),
-                [!ScrollBar.ViewportSizeProperty] = this.GetObservable(LargeChangeProperty, p => p.Height).ToBinding(),
-            };
-
-            this.SheetCanvas = new SheetCanvas()
-            {
-                Owner = this,
-            };
-
-            this.Child = new Grid()
-            {
-                ColumnDefinitions = new ColumnDefinitions("* auto"),
-                RowDefinitions = new RowDefinitions("* auto"),
-                [!Grid.BackgroundProperty] = this.Resources.GetResourceObservable("ThemeControlMidBrush").ToBinding(),
-
-                Children =
-                {
-                    SheetCanvas,
-                    verScrollbar,
-                    new Grid()
-                    {
-                        [Grid.RowProperty] = 1,
-                        Height = 24,
-                        ColumnDefinitions = new ColumnDefinitions("*, auto, 400"),
-                        Children = {
-                            sheetTab,
-                            new GridSplitter()
-                            {
-                                [Grid.ColumnProperty] = 1,
-                                HorizontalAlignment = HorizontalAlignment,
-                                ResizeBehavior = GridResizeBehavior.PreviousAndNext,
-                            },
-                            horScrollbar
-                        }
-                    },
-                },
-            };
-
-            this.horScrollbar.Scroll += (s, e) =>
-            {
-                if (CurrentWorksheet?.ViewportController is IScrollableViewportController)
-                {
-                    ((IScrollableViewportController)CurrentWorksheet.ViewportController).HorizontalScroll(e.NewValue);
-                }
-            };
-
-            this.verScrollbar.Scroll += (s, e) =>
-            {
-                if (CurrentWorksheet?.ViewportController is IScrollableViewportController)
-                {
-                    ((IScrollableViewportController)CurrentWorksheet.ViewportController).VerticalScroll(e.NewValue);
-                }
-            };
-
-            this.sheetTab.NewSheetClick += SheetTab_NewSheetClick;
-            this.sheetTab.TabMoved += SheetTab_TabMoved;
+            //this.sheetTab.NewSheetClick += SheetTab_NewSheetClick;
+            //this.sheetTab.TabMoved += SheetTab_TabMoved;
 
             this.InitControl();
 
-            this.adapter = new ReoGridAvaloniaControlAdapter(this);
-            this.adapter.editTextbox = this.editTextbox;
 
             InitWorkbook();
 
@@ -185,6 +103,95 @@ namespace Calcita
 
 
         }
+
+        private void verScrollBar_Sroll(object? s, ScrollEventArgs e)
+        {
+            if (CurrentWorksheet?.ViewportController is IScrollableViewportController)
+            {
+                ((IScrollableViewportController)CurrentWorksheet.ViewportController).VerticalScroll(e.NewValue);
+            }
+        }
+
+        private void horScrollBar_Scroll(object? s, ScrollEventArgs e)
+        {
+            if (CurrentWorksheet?.ViewportController is IScrollableViewportController)
+            {
+                ((IScrollableViewportController)CurrentWorksheet.ViewportController).HorizontalScroll(e.NewValue);
+            }
+        }
+
+        private IDisposable?[] Disposables = [];
+        protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+        {
+            base.OnApplyTemplate(e);
+            foreach (var disposable in Disposables)
+            {
+                disposable?.Dispose();
+            }
+
+            this.horScrollbar?.Scroll -= horScrollBar_Scroll;
+            this.verScrollbar?.Scroll -= verScrollBar_Sroll;
+            this.sheetTab?.NewSheetClick -= this.SheetTab_NewSheetClick;
+            this.sheetTab?.TabMoved -= this.SheetTab_TabMoved;
+
+            this.SheetCanvas = e.NameScope.Find<SheetCanvas>("PART_SheetCanvas");
+            this.horScrollbar = e.NameScope.Find<ScrollBar>("PART_HorizontalScrollBar");
+            this.verScrollbar = e.NameScope.Find<ScrollBar>("PART_VerticalScrollBar");
+            this.sheetTab = e.NameScope.Find<SheetTabControl>("PART_SheetTabControl");
+
+            this.horScrollbar?.SmallChange = Worksheet.InitDefaultColumnWidth;
+            this.verScrollbar?.SmallChange = Worksheet.InitDefaultRowHeight;
+            this.SheetCanvas?.Owner = this;
+
+            var w = Workbook;
+            if (w != null)
+            {
+                this.sheetTab?.ItemsSource = sheets;
+            }
+
+            this.adapter = new ReoGridAvaloniaControlAdapter(this);
+
+            this.horScrollbar?.Scroll += horScrollBar_Scroll;
+            this.verScrollbar?.Scroll += verScrollBar_Sroll;
+            this.sheetTab?.NewSheetClick += this.SheetTab_NewSheetClick;
+            this.sheetTab?.TabMoved += this.SheetTab_TabMoved;
+
+            sheetTab?.SelectedIndexChanged += (s, e) =>
+            {
+                this.SelectedIndex = (s as SheetTabControl)!.SelectedIndex;
+            };
+
+            Disposables = [
+                SheetCanvas?.Bind(SheetCanvas.WorksheetProperty, this[!CurrentWorksheetProperty]),
+                sheetTab?.Bind(SheetTabControl.SelectedIndexProperty, this[!SelectedIndexProperty]),
+                //bind(SheetCanvas, SheetCanvas.WorksheetProperty, () => this.GetObservable(CurrentWorksheetProperty)),
+
+                bind(horScrollbar, ScrollBar.ValueProperty, () => this.GetObservable(OffsetProperty, p => p.X)),
+                bind(horScrollbar, ScrollBar.MaximumProperty, () => this.GetObservable(ScrollBarMaximumProperty, p => p.X)),
+                bind(horScrollbar, ScrollBar.MinimumProperty, () => this.GetObservable(ScrollBarMinimumProperty, p => p.X)),
+                bind(horScrollbar, ScrollBar.LargeChangeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Width)),
+                bind(horScrollbar, ScrollBar.ViewportSizeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Width)),
+
+                bind(verScrollbar, ScrollBar.ValueProperty, () => this.GetObservable(OffsetProperty, p => p.Y)),
+                bind(verScrollbar, ScrollBar.MaximumProperty, () => this.GetObservable(ScrollBarMaximumProperty, p => p.Y)),
+                bind(verScrollbar, ScrollBar.MinimumProperty, () => this.GetObservable(ScrollBarMinimumProperty, p => p.Y)),
+                bind(verScrollbar, ScrollBar.LargeChangeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Height)),
+                bind(verScrollbar, ScrollBar.ViewportSizeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Height)),
+
+                bind(sheetTab, SheetTabControl.IsVisibleProperty, () => this.GetObservable(SheetTabVisibleProperty)),
+                //bind(sheetTab, SheetTabControl.SelectedIndexProperty, ()=> this.GetObservable(SelectedIndexProperty)),
+            ];
+
+            this.CurrentWorksheet?.ControlAdapter = this.adapter;
+            this.adapter.Invalidate();
+
+            static IDisposable? bind<T>(Control? control, AvaloniaProperty<T> property, Func<IObservable<T>> observableFactory)
+            {
+                return control?.Bind(property, observableFactory(), Avalonia.Data.BindingPriority.Template);
+            }
+        }
+
+
 
         private void SheetTab_TabMoved(object? sender, SheetTabMovedEventArgs e)
         {
@@ -211,145 +218,6 @@ namespace Calcita
         {
             base.OnKeyDown(e);
         }
-
-
-        #region SheetTab & Scroll Bars Visibility
-
-
-        private void SetHorizontalScrollBarSize()
-        {
-            double hsbWidth = this.Bounds.Width;
-
-            if (this.sheetTab.IsVisible)
-            {
-                hsbWidth -= this.SheetTabWidth;
-            }
-
-            if (this.verScrollbar.IsVisible)
-            {
-                hsbWidth -= ScrollBarSize;
-            }
-
-            if (hsbWidth < 0) hsbWidth = 0;
-            this.horScrollbar.Width = hsbWidth;
-        }
-
-        private void SetSheetTabSize()
-        {
-            double stWidth = 0;
-
-            if (this.horScrollbar.IsVisible)
-            {
-                stWidth = this.SheetTabWidth;
-            }
-            else
-            {
-                stWidth = this.Width;
-            }
-
-            if (this.verScrollbar.IsVisible)
-            {
-                stWidth -= ScrollBarSize;
-            }
-
-            if (stWidth < 0) stWidth = 0;
-            this.horScrollbar.Width = stWidth;
-        }
-
-        internal void UpdateSheetTabAndScrollBarsLayout()
-        {
-            //Canvas.SetTop(this.sheetTab, this.Bounds.Size.Height - ScrollBarSize);
-            //Canvas.SetTop(this.horScrollbar, this.Bounds.Size.Height - ScrollBarSize);
-
-            //this.sheetTab.Height = ScrollBarSize;
-            //this.horScrollbar.Height = ScrollBarSize;
-
-            //Canvas.SetLeft(verScrollbar, this.Bounds.Size.Width - ScrollBarSize);
-
-            //var vsbHeight = this.Bounds.Size.Height - ScrollBarSize;
-            //if (vsbHeight < 0) vsbHeight = 0;
-            //verScrollbar.Height = vsbHeight;
-
-            //if (this.sheetTab.IsVisible
-            //    && this.horScrollbar.IsVisible)
-            //{
-            //    this.sheetTab.Width = this.SheetTabWidth;
-
-            //    Canvas.SetLeft(this.horScrollbar, this.SheetTabWidth);
-            //    SetHorizontalScrollBarSize();
-            //}
-            //else if (this.sheetTab.IsVisible)
-            //{
-            //    this.sheetTab.Width = this.Width;
-            //}
-            //else if (this.horScrollbar.IsVisible)
-            //{
-            //    Canvas.SetLeft(this.horScrollbar, 0);
-            //    SetHorizontalScrollBarSize();
-            //}
-            //else
-            //{
-            //    this.verScrollbar.Height = this.Bounds.Size.Height;
-            //}
-
-            CurrentWorksheet?.UpdateViewportControllBounds();
-        }
-
-        private void ShowSheetTabControl()
-        {
-            if (!this.sheetTab.IsVisible)
-            {
-                this.sheetTab.IsVisible = true;
-                this.UpdateSheetTabAndScrollBarsLayout();
-            }
-        }
-
-        private void HideSheetTabControl()
-        {
-            if (this.sheetTab.IsVisible)
-            {
-                this.sheetTab.IsVisible = false;
-                this.UpdateSheetTabAndScrollBarsLayout();
-            }
-        }
-
-        private void ShowHorScrollBar()
-        {
-            if (!this.horScrollbar.IsVisible)
-            {
-                this.horScrollbar.IsVisible = true;
-                this.UpdateSheetTabAndScrollBarsLayout();
-            }
-        }
-
-        private void HideHorScrollBar()
-        {
-            if (this.horScrollbar.IsVisible)
-            {
-                this.horScrollbar.IsVisible = false;
-                this.UpdateSheetTabAndScrollBarsLayout();
-            }
-        }
-
-        private void ShowVerScrollBar()
-        {
-            if (!this.verScrollbar.IsVisible)
-            {
-                this.verScrollbar.IsVisible = true;
-                this.UpdateSheetTabAndScrollBarsLayout();
-            }
-        }
-
-        private void HideVerScrollBar()
-        {
-            if (this.verScrollbar.IsVisible)
-            {
-                this.verScrollbar.IsVisible = false;
-                this.UpdateSheetTabAndScrollBarsLayout();
-            }
-        }
-
-        #endregion // SheetTab & Scroll Bars Visibility
 
         #region Workbook
 
@@ -386,12 +254,28 @@ namespace Calcita
             set => SetValue(CurrentWorksheetProperty, value);
         }
 
+        /// <summary>
+        /// SelectedIndex StyledProperty definition
+        /// </summary>
+        public static readonly StyledProperty<int> SelectedIndexProperty =
+            AvaloniaProperty.Register<CalcitaControl, int>(nameof(SelectedIndex), -1);
+
+        /// <summary>
+        /// Gets or sets the SelectedIndex property. This StyledProperty
+        /// indicates ....
+        /// </summary>
+        public int SelectedIndex
+        {
+            get => this.GetValue(SelectedIndexProperty);
+            set => SetValue(SelectedIndexProperty, value);
+        }
+
         private void OnWorkbookChanged(AvaloniaPropertyChangedEventArgs e)
         {
             var old = e.GetOldValue<IWorkbook?>();
             var workbook = e.GetNewValue<IWorkbook?>();
 
-            if(old != null)
+            if (old != null)
             {
                 old.WorkbookLoaded -= Workbook_WorkbookLoaded;
                 old.WorkbookSaved -= Workbook_WorkbookSaved;
@@ -413,7 +297,7 @@ namespace Calcita
                 }
             }
 
-            this.sheetTab.ClearTabs();
+            this.sheets.Clear();
             this.CurrentWorksheet = null;
 
             if (workbook != null)
@@ -431,7 +315,7 @@ namespace Calcita
 
                 workbook.ExceptionHappened += Workbook_ExceptionHappened;
 
-                if(workbook is Workbook w)
+                if (workbook is Workbook w)
                 {
                     this.Workbook = w;
 
@@ -441,7 +325,7 @@ namespace Calcita
 
                 foreach (var sheet in workbook.Worksheets)
                 {
-                    this.sheetTab.AddTab(sheet.Name);
+                    this.sheets.Add(sheet.Name);
                 }
                 this.CurrentWorksheet = workbook.Worksheets.FirstOrDefault();
 
@@ -451,7 +335,7 @@ namespace Calcita
         private void OnCurrentWorksheetChanged(AvaloniaPropertyChangedEventArgs e)
         {
             var oldSheet = e.GetOldValue<Worksheet?>();
-        
+
             if (oldSheet != null)
             {
                 if (oldSheet != null && oldSheet.IsEditing)
@@ -461,9 +345,7 @@ namespace Calcita
                 oldSheet?.ControlAdapter = null;
 
             }
-            oldSheet = e.GetNewValue<Worksheet?>();
             var newSheet = e.GetNewValue<Worksheet?>();
-            //this.sheetTab.SelectedItem = value;
             if (newSheet != null)
             {
                 newSheet.ControlAdapter = this.adapter;
@@ -475,22 +357,17 @@ namespace Calcita
                 {
                     scrollableViewportController.SynchronizeScrollBar();
                 }
-
-                this.sheetTab.SelectedIndex = newSheet.Workbook!.GetWorksheetIndex(newSheet);
-                this.sheetTab.ScrollToItem(this.sheetTab.SelectedIndex);
-
             }
-            this.SheetCanvas.Worksheet = newSheet;
-            this.adapter.Invalidate();
+            this.adapter?.Invalidate();
         }
 
         private void Workbook_WorkbookSaving(object? sender, EventArgs e)
         {
-            this.adapter.ChangeCursor(CursorStyle.Busy);
+            this.adapter?.ChangeCursor(CursorStyle.Busy);
         }
         private void Workbook_WorkbookLoading(object? sender, EventArgs e)
         {
-            this.adapter.ChangeCursor(CursorStyle.Busy);
+            this.adapter?.ChangeCursor(CursorStyle.Busy);
         }
 
         private void Workbook_WorkbookSaved(object? sender, EventArgs e)
@@ -531,10 +408,7 @@ namespace Calcita
             {
                 var index = workbook.GetWorksheetIndex(e.Worksheet);
                 var worksheet = e.Worksheet;
-                if (this.sheetTab != null)
-                {
-                    this.sheetTab.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
-                }
+                this.sheets[index] = worksheet.Name;//.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
             }
         }
 
@@ -545,10 +419,7 @@ namespace Calcita
             {
                 var index = workbook.GetWorksheetIndex(e.Worksheet);
                 var worksheet = e.Worksheet;
-                if (this.sheetTab != null)
-                {
-                    this.sheetTab.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
-                }
+                this.sheets[index] = worksheet.Name;//.UpdateTab(index, worksheet.Name, worksheet.NameBackColor, worksheet.NameTextColor);
             }
         }
 
@@ -559,10 +430,8 @@ namespace Calcita
             {
                 var index = workbook.GetWorksheetIndex(e.Worksheet);
                 var worksheet = e.Worksheet;
-                if (this.sheetTab != null)
-                {
-                    this.sheetTab.UpdateTab(index, e.NewName, worksheet.NameBackColor, worksheet.NameTextColor);
-                }
+
+                this.sheets[index] = e.NewName;//.UpdateTab(index, e.NewName, worksheet.NameBackColor, worksheet.NameTextColor);
             }
         }
 
@@ -573,54 +442,53 @@ namespace Calcita
             {
                 var sheet = workbook.Worksheets[e.NewIndex];
 
-                this.sheetTab.RemoveTab(e.Index);
+                this.sheets.RemoveAt(e.Index);
                 // sheet management
-                this.sheetTab.InsertTab(e.NewIndex, sheet.Name);
+                this.sheets.Insert(e.NewIndex, sheet.Name);
             }
         }
 
         private void WorkBook_WorksheetRemoved(object? sender, Events.WorksheetRemovedEventArgs e)
         {
             var workbook = this.Workbook;
-            if (this.sheetTab != null)
-            {
-                this.sheetTab.RemoveTab(e.Index);
-            }
+
+            this.sheets.RemoveAt(e.Index);
+
 
             this.ClearActionHistoryForWorksheet(e.Worksheet);
 
             if (workbook?.Worksheets.Count > 0)
             {
-                int index = this.sheetTab.SelectedIndex;
+                int index = this.SelectedIndex;
 
                 if (index >= workbook.Worksheets.Count)
                 {
                     index = workbook.Worksheets.Count - 1;
                 }
 
-                this.sheetTab.SelectedIndex = index;
-                CurrentWorksheet = this.Workbook.Worksheets[this.sheetTab.SelectedIndex];
+                this.SelectedIndex = index;
+                CurrentWorksheet = workbook.Worksheets[this.SelectedIndex];
             }
             else
             {
-                this.sheetTab.SelectedIndex = -1;
+                this.SelectedIndex = -1;
                 CurrentWorksheet = null;
             }
 
-            this.adapter.Invalidate();
+            this.adapter?.Invalidate();
         }
 
         private void Workbook_WorksheetInserted(object? sender, Events.WorksheetInsertedEventArgs e)
         {
             var workbook = this.Workbook;
-            if(workbook != null)
+            if (workbook != null)
             {
                 var index = e.Index;
                 var sheet = workbook.Worksheets[index];
 
                 // sheet management
-                this.sheetTab.InsertTab(index, sheet.Name);
-                this.sheetTab.SelectedIndex = index;
+                this.sheets?.Insert(index, sheet.Name);
+                this.SelectedIndex = index;
 
                 // update current worksheet
                 if (this.adapter != null && this.adapter.ControlInstance.CurrentWorksheet == null)
@@ -637,7 +505,7 @@ namespace Calcita
         {
             #region Constructor
             private readonly CalcitaControl canvas;
-            internal InputTextBox editTextbox;
+            internal InputTextBox editTextbox => canvas.SheetCanvas.editTextbox;
 
             internal ReoGridAvaloniaControlAdapter(CalcitaControl canvas)
             {
@@ -654,7 +522,7 @@ namespace Calcita
 
             public ControlAppearanceStyle ControlStyle { get { return this.canvas.controlStyle; } }
 
-            public IRenderer Renderer { get { return this.canvas.SheetCanvas.renderer; } }
+            public IRenderer Renderer { get { return this.canvas.SheetCanvas?.renderer; } }
 
             public void ShowContextMenuStrip(ViewTypes viewType, Graphics.Point containerLocation)
             {
@@ -720,7 +588,7 @@ namespace Calcita
 
             public Rectangle GetContainerBounds()
             {
-                return this.canvas.SheetCanvas.Bounds.WithX(0).WithY(0);
+                return this.canvas.SheetCanvas?.Bounds.WithX(0).WithY(0) ?? new Rect(0, 0, 0, 0);
 
                 double w = this.canvas.Bounds.Width;
                 double h = this.canvas.Bounds.Height + 1;
@@ -749,7 +617,7 @@ namespace Calcita
 
             public void Invalidate()
             {
-                this.canvas.SheetCanvas.InvalidateVisual();
+                this.canvas.SheetCanvas?.Invalidate();
             }
 
             //public void ChangeBackColor(Color color)
@@ -943,7 +811,7 @@ namespace Calcita
 
             public bool ScrollBarVerticalVisible
             {
-                get => this.canvas.VerticalScrollBarVisible; 
+                get => this.canvas.VerticalScrollBarVisible;
                 set => this.canvas.VerticalScrollBarVisible = value;
             }
 
@@ -1090,7 +958,7 @@ namespace Calcita
             private void OnPreviewKeyDown(object sender, KeyEventArgs e)
             {
                 var sheet = this.Owner.Worksheet;
-                if(sheet == null) return;
+                if (sheet == null) return;
 
                 // in single line text
                 if (!TextWrap && Text.IndexOf('\n') == -1)
