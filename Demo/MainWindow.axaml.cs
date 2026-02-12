@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -17,6 +18,7 @@ namespace Calcita.Demo
     /// </summary>
     public partial class MainWindow : Window
     {
+        Workbook workbook = new();
         public MainWindow()
         {
             InitializeComponent();
@@ -27,7 +29,9 @@ namespace Calcita.Demo
 
             // handles event to update menu check status.
             grid.SettingsChanged += (s, e) => UpdateMenuChecks();
-            grid.CurrentWorksheetChanged += (s, e) => UpdateMenuChecks();
+            //grid.CurrentWorksheetChanged += (s, e) => UpdateMenuChecks();
+           
+            grid.GetObservable(CalcitaControl.CurrentWorksheetProperty).Subscribe(new AnonymousObserver<Worksheet?>(ws => UpdateMenuChecks()));
 
             // add demo sheet 1: document template
             AddDemoSheet1();
@@ -37,25 +41,27 @@ namespace Calcita.Demo
 
             // add demo sheet 3: cell types
             AddDemoSheet3();
+
+            grid.Workbook = workbook;
         }
 
         private void UpdateMenuChecks()
         {
-            this.viewSheetTabVisibleCheckBox.IsChecked = grid.HasSettings(Calcita.WorkbookSettings.View_ShowHorScroll);
-            this.viewVerticalScrollbarVisibleCheckBox.IsChecked = grid.HasSettings(Calcita.WorkbookSettings.View_ShowVerScroll);
-            this.viewSheetTabVisibleCheckBox.IsChecked = grid.SheetTabVisible;
-            this.viewSheetTabNewButtonVisibleCheckBox.IsChecked = grid.SheetTabNewButtonVisible;
+            this.viewSheetTabVisible.IsChecked = workbook.HasSettings(Calcita.WorkbookSettings.View_ShowHorScroll);
+            this.viewVerticalScrollbarVisible.IsChecked = workbook.HasSettings(Calcita.WorkbookSettings.View_ShowVerScroll);
+            this.viewSheetTabVisible.IsChecked = grid.SheetTabVisible;
+            this.viewSheetTabNewButtonVisible.IsChecked = grid.SheetTabNewButtonVisible;
 
             var sheet = grid.CurrentWorksheet;
-            this.viewGuideLineVisibleCheckBox.IsChecked = sheet.HasSettings(WorksheetSettings.View_ShowGridLine);
-            this.viewPageBreaksVisibleCheckBox.IsChecked = sheet.HasSettings(WorksheetSettings.View_ShowPageBreaks);
+            this.viewGuideLineVisible.IsChecked = sheet?.HasSettings(WorksheetSettings.View_ShowGridLine) == true;
+            this.viewPageBreaksVisible.IsChecked = sheet?.HasSettings(WorksheetSettings.View_ShowPageBreaks) == true;
         }
 
         #region Demo Sheet 1 : Document Template
         private void AddDemoSheet1()
         {
             /****************** Sheet1 : Document Template ********************/
-            var worksheet = grid.NewWorksheet("Document");
+            var worksheet = workbook.AddWorksheet("Document");
 
             // load template
             using (MemoryStream ms = new MemoryStream(Properties.Resources.order_sample))
@@ -85,7 +91,7 @@ namespace Calcita.Demo
         private void AddDemoSheet2()
         {
             /****************** Sheet2 : Chart & Drawing ********************/
-            var worksheet = grid.NewWorksheet("Chart & Drawing");
+            var worksheet = workbook.AddWorksheet("Chart & Drawing");
 
             worksheet["A2"] = new object[,] {
                     {null, 2008,  2009, 2010, 2011, 2012},
@@ -163,7 +169,7 @@ namespace Calcita.Demo
         private void AddDemoSheet3()
         {
             /****************** Sheet3 : Built-in Cell Types ********************/
-            var worksheet = grid.NewWorksheet("Cell Types");
+            var worksheet = workbook.AddWorksheet("Cell Types");
 
             // set default sheet style
             worksheet.SetRangeStyles(RangePosition.EntireRange, new WorksheetRangeStyle
@@ -344,32 +350,32 @@ namespace Calcita.Demo
         #region Menu - View
         private void View_SheetTab_Click(object sender, RoutedEventArgs e)
         {
-            grid.SetSettings(Calcita.WorkbookSettings.View_ShowSheetTabControl, viewSheetTabVisibleCheckBox.IsChecked??false);
+            workbook.SetSettings(Calcita.WorkbookSettings.View_ShowSheetTabControl, (sender as MenuItem)?.IsChecked == true);
         }
 
         private void View_SheetTabNewButton_Click(object sender, RoutedEventArgs e)
         {
-            grid.SheetTabNewButtonVisible = viewSheetTabNewButtonVisibleCheckBox.IsChecked??false;
+            grid.SheetTabNewButtonVisible = (sender as MenuItem)?.IsChecked == true;
         }
 
         private void View_HorizontalScrollbar_Click(object sender, RoutedEventArgs e)
         {
-            grid.SetSettings(Calcita.WorkbookSettings.View_ShowHorScroll, viewHorizontalScrollbarVisibleCheckBox.IsChecked??false);
+            workbook.SetSettings(Calcita.WorkbookSettings.View_ShowHorScroll, (sender as MenuItem)?.IsChecked == true);
         }
 
         private void View_VerticalScrollbar_Click(object sender, RoutedEventArgs e)
         {
-            grid.SetSettings(Calcita.WorkbookSettings.View_ShowVerScroll, viewSheetTabNewButtonVisibleCheckBox.IsChecked ?? false);
+            workbook.SetSettings(Calcita.WorkbookSettings.View_ShowVerScroll, (sender as MenuItem)?.IsChecked == true);
         }
 
         private void View_GuideLine_Click(object sender, RoutedEventArgs e)
         {
-            grid.CurrentWorksheet.SetSettings(WorksheetSettings.View_ShowGridLine, viewSheetTabNewButtonVisibleCheckBox.IsChecked ?? false);
+            grid.CurrentWorksheet.SetSettings(WorksheetSettings.View_ShowGridLine, (sender as MenuItem)?.IsChecked == true);
         }
 
         private void View_PageBreaks_Click(object sender, RoutedEventArgs e)
         {
-            grid.CurrentWorksheet.SetSettings(WorksheetSettings.View_ShowPageBreaks, viewSheetTabNewButtonVisibleCheckBox.IsChecked ?? false);
+            grid.CurrentWorksheet.SetSettings(WorksheetSettings.View_ShowPageBreaks, (sender as MenuItem)?.IsChecked == true);
         }
         #endregion // Menu - View
 

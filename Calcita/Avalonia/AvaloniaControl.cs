@@ -36,6 +36,7 @@ using Calcita.Main;
 using Calcita.Rendering;
 using Calcita.Views;
 using System;
+using System.Linq;
 using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using Point = Calcita.Graphics.Point;
 using Size = Avalonia.Size;
@@ -46,7 +47,7 @@ namespace Calcita
     /// Calcita Spreadsheet Control
     /// </summary>
     public partial class CalcitaControl : Decorator, IVisualWorkbook,
-    IRangePickableControl, IContextMenuControl, IPersistenceWorkbook, IActionControl, IWorkbook
+    IRangePickableControl, IContextMenuControl, IPersistenceWorkbook, IActionControl
     {
         internal const int ScrollBarSize = 18;
 
@@ -145,17 +146,17 @@ namespace Calcita
 
             this.horScrollbar.Scroll += (s, e) =>
             {
-                if (this.currentWorksheet.ViewportController is IScrollableViewportController)
+                if (CurrentWorksheet?.ViewportController is IScrollableViewportController)
                 {
-                    ((IScrollableViewportController)this.currentWorksheet.ViewportController).HorizontalScroll(e.NewValue);
+                    ((IScrollableViewportController)CurrentWorksheet.ViewportController).HorizontalScroll(e.NewValue);
                 }
             };
 
             this.verScrollbar.Scroll += (s, e) =>
             {
-                if (this.currentWorksheet.ViewportController is IScrollableViewportController)
+                if (CurrentWorksheet?.ViewportController is IScrollableViewportController)
                 {
-                    ((IScrollableViewportController)this.currentWorksheet.ViewportController).VerticalScroll(e.NewValue);
+                    ((IScrollableViewportController)CurrentWorksheet.ViewportController).VerticalScroll(e.NewValue);
                 }
             };
 
@@ -176,7 +177,7 @@ namespace Calcita
                 if (!string.IsNullOrEmpty(this.LoadFromFile))
                 {
                     var file = new System.IO.FileInfo(this.LoadFromFile);
-                    this.currentWorksheet.Load(file.FullName);
+                    CurrentWorksheet?.Load(file.FullName);
                 }
             }, Avalonia.Threading.DispatcherPriority.Input);
 
@@ -290,7 +291,7 @@ namespace Calcita
             //    this.verScrollbar.Height = this.Bounds.Size.Height;
             //}
 
-            this.currentWorksheet?.UpdateViewportControllBounds();
+            CurrentWorksheet?.UpdateViewportControllBounds();
         }
 
         private void ShowSheetTabControl()
@@ -355,7 +356,7 @@ namespace Calcita
         /// Workbook StyledProperty definition
         /// </summary>
         public static readonly StyledProperty<IWorkbook?> WorkbookProperty =
-            AvaloniaProperty.Register<CalcitaControl, IWorkbook?>(nameof(Workbook));
+            AvaloniaProperty.Register<CalcitaControl, IWorkbook?>(nameof(Calcita.Workbook));
 
         /// <summary>
         /// Gets or sets the Workbook property. This StyledProperty
@@ -367,6 +368,26 @@ namespace Calcita
             set => SetValue(WorkbookProperty, value);
         }
 
+
+        /// <summary>
+        /// CurrentWorksheet StyledProperty definition
+        /// </summary>
+        public static readonly StyledProperty<Worksheet?> CurrentWorksheetProperty =
+            AvaloniaProperty.Register<CalcitaControl, Worksheet?>(nameof(CurrentWorksheet));
+
+        /// <summary>
+        /// Gets or sets the CurrentWorksheet property. This StyledProperty
+        /// indicates ....
+        /// </summary>
+        public Worksheet? CurrentWorksheet
+        {
+            get => this.GetValue(CurrentWorksheetProperty);
+            set => SetValue(CurrentWorksheetProperty, value);
+        }
+
+
+
+
         private void OnWorkbookChanged(AvaloniaPropertyChangedEventArgs e)
         {
             var old = e.GetOldValue<IWorkbook?>();
@@ -377,7 +398,6 @@ namespace Calcita
                 old.WorkbookLoaded -= Workbook_WorkbookLoaded;
                 old.WorkbookSaved -= Workbook_WorkbookSaved;
 
-                old.WorksheetCreated -= Workbook_WorksheetCreated;
                 old.WorksheetInserted -= Workbook_WorksheetInserted;
                 old.WorksheetRemoved -= WorkBook_WorksheetRemoved;
                 old.WorksheetMoved -= WorkBook_WorksheetMoved;
@@ -396,12 +416,14 @@ namespace Calcita
                 }
             }
 
+            this.sheetTab.ClearTabs();
+            this.CurrentWorksheet = null;
+
             if (workbook != null)
             {
                 workbook.WorkbookLoaded += Workbook_WorkbookLoaded;
                 workbook.WorkbookSaved += Workbook_WorkbookSaved;
 
-                workbook.WorksheetCreated += Workbook_WorksheetCreated; ;
                 workbook.WorksheetInserted += Workbook_WorksheetInserted;
                 workbook.WorksheetRemoved += WorkBook_WorksheetRemoved;
                 workbook.WorksheetMoved += WorkBook_WorksheetMoved;
@@ -414,13 +436,56 @@ namespace Calcita
 
                 if(workbook is Workbook w)
                 {
-                    this.workbook = w;
+                    this.Workbook = w;
 
                     w.SettingsChanged += Workbook_SettingsChanged;
                     w.WorkbookSaving += Workbook_WorkbookSaving;
                     w.WorkbookLoading += Workbook_WorkbookLoading;
                 }
+
+                foreach (var sheet in workbook.Worksheets)
+                {
+                    this.sheetTab.AddTab(sheet.Name);
+                }
+                this.CurrentWorksheet = workbook.Worksheets.FirstOrDefault();
+
             }
+        }
+
+        private void OnCurrentWorksheetChanged(AvaloniaPropertyChangedEventArgs e)
+        {
+            var oldSheet = e.GetOldValue<Worksheet?>();
+        
+            if (oldSheet != null)
+            {
+                if (oldSheet != null && oldSheet.IsEditing)
+                {
+                    oldSheet.EndEdit(EndEditReason.NormalFinish);
+                }
+                oldSheet?.ControlAdapter = null;
+
+            }
+            oldSheet = e.GetNewValue<Worksheet?>();
+            var newSheet = e.GetNewValue<Worksheet?>();
+            //this.sheetTab.SelectedItem = value;
+            if (newSheet != null)
+            {
+                newSheet.ControlAdapter = this.adapter;
+                // update bounds for viewport of worksheet
+                newSheet.UpdateViewportControllBounds();
+
+                // update bounds for viewport of worksheet
+                if (newSheet.ViewportController is IScrollableViewportController scrollableViewportController)
+                {
+                    scrollableViewportController.SynchronizeScrollBar();
+                }
+
+                this.sheetTab.SelectedIndex = newSheet.Workbook!.GetWorksheetIndex(newSheet);
+                this.sheetTab.ScrollToItem(this.sheetTab.SelectedIndex);
+
+            }
+            this.SheetCanvas.Worksheet = newSheet;
+            this.adapter.Invalidate();
         }
 
         private void Workbook_WorkbookSaving(object? sender, EventArgs e)
@@ -471,19 +536,19 @@ namespace Calcita
 
         private void Workbook_WorkbookLoaded(object? sender, EventArgs e)
         {
-            if (this.workbook.worksheets.Count <= 0)
+            if (this.Workbook.Worksheets.Count <= 0)
             {
-                this.currentWorksheet = null;
+                CurrentWorksheet = null;
             }
             else
             {
-                if (this.currentWorksheet != this.workbook.worksheets[0])
+                if (CurrentWorksheet != this.Workbook.Worksheets[0])
                 {
-                    this.currentWorksheet = this.workbook.worksheets[0];
+                    CurrentWorksheet = this.Workbook.Worksheets[0];
                 }
                 else
                 {
-                    this.currentWorksheet.UpdateViewportControllBounds();
+                    CurrentWorksheet.UpdateViewportControllBounds();
                 }
             }
 
@@ -493,11 +558,6 @@ namespace Calcita
         private void Workbook_ExceptionHappened(object? sender, Events.ExceptionHappenEventArgs e)
         {
             this.ExceptionHappened?.Invoke(this, e);
-        }
-
-        private void Workbook_WorksheetCreated(object? sender, Events.WorksheetCreatedEventArgs e)
-        {
-            this.WorksheetCreated?.Invoke(this, e);
         }
 
         private void Workbook_WorksheetNameTextColorChanged(object? sender, Events.WorksheetEventArgs e)
@@ -539,8 +599,6 @@ namespace Calcita
                 {
                     this.sheetTab.UpdateTab(index, e.NewName, worksheet.NameBackColor, worksheet.NameTextColor);
                 }
-
-                this.WorksheetNameChanged?.Invoke(this, e);
             }
         }
 
@@ -577,17 +635,15 @@ namespace Calcita
                 }
 
                 this.sheetTab.SelectedIndex = index;
-                this.currentWorksheet = this.workbook.worksheets[this.sheetTab.SelectedIndex];
+                CurrentWorksheet = this.Workbook.Worksheets[this.sheetTab.SelectedIndex];
             }
             else
             {
                 this.sheetTab.SelectedIndex = -1;
-                this.currentWorksheet = null;
+                CurrentWorksheet = null;
             }
 
             this.adapter.Invalidate();
-
-            this.WorksheetRemoved?.Invoke(this, e);
         }
 
         private void Workbook_WorksheetInserted(object? sender, Events.WorksheetInsertedEventArgs e)
@@ -607,8 +663,6 @@ namespace Calcita
                 {
                     this.adapter.ControlInstance.CurrentWorksheet = sheet;
                 }
-
-                this.WorksheetInserted?.Invoke(this, e);
             }
         }
 
@@ -1072,6 +1126,7 @@ namespace Calcita
             private void OnPreviewKeyDown(object sender, KeyEventArgs e)
             {
                 var sheet = this.Owner.Worksheet;
+                if(sheet == null) return;
 
                 // in single line text
                 if (!TextWrap && Text.IndexOf('\n') == -1)
@@ -1106,6 +1161,7 @@ namespace Calcita
             protected override void OnKeyDown(KeyEventArgs e)
             {
                 var sheet = this.Owner.Worksheet;
+                if (sheet == null) return;
 
                 if (sheet.currentEditingCell != null && IsVisible)
                 {

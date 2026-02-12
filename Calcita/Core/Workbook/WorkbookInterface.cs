@@ -265,21 +265,25 @@ namespace Calcita
 		/// <param name="sheet">Worksheet where the exception happened</param>
 		/// <param name="ex">Exception to describe the details of error information</param>
 		void NotifyExceptionHappen(Worksheet sheet, Exception ex);
-		#endregion // Internal Exceptions
-	}
+        #endregion // Internal Exceptions
 
-	//internal interface IScreenWorkbook : IWorkbook
-	//{
-	//	#region Control Relative
-	//	/// <summary>
-	//	/// Retrieve the control instance from this workbook. (Memory workbook doesn't have instance)
-	//	/// </summary>
-	//	ControlType ControlInstance { get; }
+        WorkbookSettings GetSettings();
+        bool HasSettings(WorkbookSettings settings);
+        void SetSettings(WorkbookSettings settings, bool enable);
+    }
 
-	//	/// <summary>
-	//	/// Get or set the control appearance style for entire workbook.
-	//	/// </summary>
-	//	ControlAppearanceStyle ControlStyle { get; set; }
-	//	#endregion // Control Relative
-	//}
+    //internal interface IScreenWorkbook : IWorkbook
+    //{
+    //	#region Control Relative
+    //	/// <summary>
+    //	/// Retrieve the control instance from this workbook. (Memory workbook doesn't have instance)
+    //	/// </summary>
+    //	ControlType ControlInstance { get; }
+
+    //	/// <summary>
+    //	/// Get or set the control appearance style for entire workbook.
+    //	/// </summary>
+    //	ControlAppearanceStyle ControlStyle { get; set; }
+    //	#endregion // Control Relative
+    //}
 }

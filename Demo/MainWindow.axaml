@@ -16,38 +16,26 @@
                 <MenuItem Header="_Exit" Click="File_Exit_Click" />
             </MenuItem>
             <MenuItem Header="_View">
-                <MenuItem x:Name="viewSheetTabVisible"  Header="Sheet Tab" Click="View_SheetTab_Click">
-                    <MenuItem.Icon>
-                        <CheckBox x:Name="viewSheetTabVisibleCheckBox" BorderThickness="0" ></CheckBox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="viewSheetTabNewButtonVisible" Header="Sheet Tab New Button" Click="View_SheetTabNewButton_Click">
-                    <MenuItem.Icon>
-                        <CheckBox x:Name="viewSheetTabNewButtonVisibleCheckBox" BorderThickness="0" ></CheckBox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="viewGuideLineVisible"  Header="Grid Line" Click="View_GuideLine_Click">
-                    <MenuItem.Icon>
-                        <CheckBox x:Name="viewGuideLineVisibleCheckBox" BorderThickness="0" ></CheckBox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem x:Name="viewHorizontalScrollbarVisible" Header="Horizontal Scrollbar" Click="View_HorizontalScrollbar_Click">
-                    <MenuItem.Icon>
-                        <CheckBox x:Name="viewHorizontalScrollbarVisibleCheckBox" BorderThickness="0" ></CheckBox>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem x:Name="viewSheetTabVisible"  Header="Sheet Tab"
+                          ToggleType="CheckBox"
+                          Click="View_SheetTab_Click"/>
+                <MenuItem x:Name="viewSheetTabNewButtonVisible" Header="Sheet Tab New Button"
+                          ToggleType="CheckBox"
+                           Click="View_SheetTabNewButton_Click"/>
+                <MenuItem x:Name="viewGuideLineVisible"  Header="Grid Line"
+                          ToggleType="CheckBox"
+                          Click="View_GuideLine_Click"/>
+                <MenuItem x:Name="viewHorizontalScrollbarVisible" Header="Horizontal Scrollbar"
+                          ToggleType="CheckBox"
+                          Click="View_HorizontalScrollbar_Click"/>
                     
-                <MenuItem x:Name="viewVerticalScrollbarVisible"  Header="Vertical Scrollbar" Click="View_VerticalScrollbar_Click">
-                    <MenuItem.Icon>
-                        <CheckBox x:Name="viewVerticalScrollbarVisibleCheckBox" BorderThickness="0" ></CheckBox>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem x:Name="viewVerticalScrollbarVisible"  Header="Vertical Scrollbar"
+                          ToggleType="CheckBox"
+                          Click="View_VerticalScrollbar_Click"/>
                     
-                <MenuItem x:Name="viewPageBreaksVisible"  Header="Print Page Breaks" Click="View_PageBreaks_Click">
-                    <MenuItem.Icon>
-                        <CheckBox x:Name="viewPageBreaksVisibleCheckBox" BorderThickness="0" ></CheckBox>
-                    </MenuItem.Icon>
-                </MenuItem>
+                <MenuItem x:Name="viewPageBreaksVisible"  Header="Print Page Breaks"
+                          ToggleType="CheckBox"
+                          Click="View_PageBreaks_Click"/>
                 </MenuItem>
             <MenuItem Header="_Sheet">
                 <MenuItem x:Name="freezeToCell" Header="Freeze To Cell" Click="freezeToCell_Click"/>

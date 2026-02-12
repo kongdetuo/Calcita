@@ -32,12 +32,7 @@ using Avalonia;
 
 namespace Calcita
 {
-
-#if WINFORM || WPF || AVALONIA
     partial class CalcitaControl
-#elif ANDROID || iOS
-    partial class ReoGridView
-#endif // ANDROID || iOS
     {
         internal IRenderer Renderer
         {
@@ -56,7 +51,10 @@ namespace Calcita
             {
                 x.OnWorkbookChanged(e);
             });
-
+            CurrentWorksheetProperty.Changed.AddClassHandler<CalcitaControl>((x, e) =>
+            {
+                x.OnCurrentWorksheetChanged(e);
+            });
         }
 
         private void InitControl()
@@ -108,85 +106,6 @@ namespace Calcita
             // create workbook
             this.Workbook = new Workbook();
 
-            #region Workbook Event Attach
-            this.workbook.WorksheetCreated += (s, e) =>
-            {
-                this.WorksheetCreated?.Invoke(this, e);
-            };
-
-            this.workbook.WorksheetInserted += (s, e) =>
-            {
-                this.WorksheetInserted?.Invoke(this, e);
-            };
-
-            this.workbook.WorksheetRemoved += (s, e) =>
-            {
-                this.ClearActionHistoryForWorksheet(e.Worksheet);
-
-                if (this.workbook.worksheets.Count > 0)
-                {
-                    int index = this.sheetTab.SelectedIndex;
-
-                    if (index >= this.workbook.worksheets.Count)
-                    {
-                        index = this.workbook.worksheets.Count - 1;
-                    }
-
-                    this.sheetTab.SelectedIndex = index;
-                    this.currentWorksheet = this.workbook.worksheets[this.sheetTab.SelectedIndex];
-                }
-                else
-                {
-                    this.sheetTab.SelectedIndex = -1;
-                    this.currentWorksheet = null;
-                }
-
-                this.WorksheetRemoved?.Invoke(this, e);
-            };
-
-            this.workbook.WorksheetNameChanged += (s, e) =>
-            {
-                this.WorksheetNameChanged?.Invoke(this, e);
-            };
-
-            this.workbook.SettingsChanged += (s, e) =>
-            {
-                if (this.workbook.HasSettings(WorkbookSettings.View_ShowSheetTabControl))
-                {
-                    ShowSheetTabControl();
-                }
-                else
-                {
-                    HideSheetTabControl();
-                }
-
-                if (this.workbook.HasSettings(WorkbookSettings.View_ShowHorScroll))
-                {
-                    ShowHorScrollBar();
-                }
-                else
-                {
-                    HideHorScrollBar();
-                }
-
-                if (this.workbook.HasSettings(WorkbookSettings.View_ShowVerScroll))
-                {
-                    ShowVerScrollBar();
-                }
-                else
-                {
-                    HideVerScrollBar();
-                }
-
-                this.SettingsChanged?.Invoke(this, null);
-            };
-
-            this.workbook.ExceptionHappened += Workbook_ErrorHappened;
-
-
-
-            #endregion // Workbook Event Attach
-
 #if EX_SCRIPT
             this.workbook.SRMInitialized += (s, e) =>
                 {
@@ -198,19 +117,15 @@ namespace Calcita
 #endif // EX_SCRIPT
 
             // create and set default worksheet
-            this.workbook.AddWorksheet(this.workbook.CreateWorksheet());
-
-            //RefreshWorksheetTabs();
-            this.CurrentWorksheet = this.workbook.worksheets[0];
+            this.Workbook.AddWorksheet(this.Workbook.CreateWorksheet());
 
             this.sheetTab.SelectedIndexChanged += (s, e) =>
             {
-                if (this.sheetTab.SelectedIndex >= 0 && this.sheetTab.SelectedIndex < this.workbook.worksheets.Count)
+                if (this.sheetTab.SelectedIndex >= 0 && this.sheetTab.SelectedIndex < this.Workbook.Worksheets.Count)
                 {
-                    this.CurrentWorksheet = this.workbook.worksheets[this.sheetTab.SelectedIndex];
+                    this.CurrentWorksheet = this.Workbook.Worksheets[this.sheetTab.SelectedIndex];
                 }
             };
-
 
 
             this.actionManager.BeforePerformAction += (s, e) =>
@@ -259,28 +174,8 @@ namespace Calcita
 
         #region Workbook & Worksheet
 
-        private Workbook workbook;
-
         #region Save & Load
-        /// <summary>
-        /// Save workbook into file
-        /// </summary>
-        /// <param name="path">Full file path to save workbook</param>
-        /// <param name="fileFormat">Specified file format used to save workbook</param>
-        public void Save(string path)
-        {
-            this.Save(path, IO.FileFormat._Auto);
-        }
 
-        /// <summary>
-        /// Save workbook into file
-        /// </summary>
-        /// <param name="path">Full file path to save workbook</param>
-        /// <param name="fileFormat">Specified file format used to save workbook</param>
-        public void Save(string path, IO.FileFormat fileFormat)
-        {
-            this.Save(path, fileFormat, Encoding.Default);
-        }
 
         /// <summary>
         /// Save workbook into file
@@ -290,17 +185,7 @@ namespace Calcita
         /// <param name="encoding">Encoding used to read plain-text from resource. (Optional)</param>
         public void Save(string path, IO.FileFormat fileFormat, Encoding encoding)
         {
-            this.workbook.Save(path, fileFormat, encoding);
-        }
-
-        /// <summary>
-        /// Save workbook into stream with specified format
-        /// </summary>
-        /// <param name="stream">Stream to output data of workbook</param>
-        /// <param name="fileFormat">Specified file format used to save workbook</param>
-        public void Save(Stream stream, Calcita.IO.FileFormat fileFormat)
-        {
-            this.workbook.Save(stream, fileFormat, Encoding.Default);
+            this.Workbook.Save(path, fileFormat, encoding);
         }
 
         /// <summary>
@@ -311,26 +196,7 @@ namespace Calcita
         /// <param name="encoding">Encoding used to read plain-text from resource. (Optional)</param>
         public void Save(Stream stream, Calcita.IO.FileFormat fileFormat, Encoding encoding)
         {
-            this.workbook.Save(stream, fileFormat, encoding);
-        }
-
-        /// <summary>
-        /// Load workbook from file by specified path.
-        /// </summary>
-        /// <param name="path">Path to open file and read data.</param>
-        public void Load(string path)
-        {
-            this.Load(path, IO.FileFormat._Auto, Encoding.Default);
-        }
-
-        /// <summary>
-        /// Load workbook from file by specified path.
-        /// </summary>
-        /// <param name="path">Path to open file and read data.</param>
-        /// <param name="fileFormat">Flag used to determine what format should be used to read data from file.</param>
-        public void Load(string path, IO.FileFormat fileFormat)
-        {
-            this.Load(path, fileFormat, Encoding.Default);
+            this.Workbook.Save(stream, fileFormat, encoding);
         }
 
         /// <summary>
@@ -341,17 +207,7 @@ namespace Calcita
         /// <param name="encoding">Encoding used to read plain-text from resource. (Optional)</param>
         public void Load(string path, IO.FileFormat fileFormat, Encoding encoding)
         {
-            this.workbook.Load(path, fileFormat, encoding);
-        }
-
-        /// <summary>
-        /// Load workbook from stream with specified format.
-        /// </summary>
-        /// <param name="stream">Stream to read data of workbook.</param>
-        /// <param name="fileFormat">Flag used to determine what format should be used to read data from file.</param>
-        public void Load(Stream stream, Calcita.IO.FileFormat fileFormat)
-        {
-            this.Load(stream, fileFormat, Encoding.Default);
+            this.Workbook.Load(path, fileFormat, encoding);
         }
 
         /// <summary>
@@ -362,11 +218,11 @@ namespace Calcita
         /// <param name="encoding">Encoding used to read plain-text data from specified stream.</param>
         public void Load(Stream stream, Calcita.IO.FileFormat fileFormat, Encoding encoding)
         {
-            this.workbook.Load(stream, fileFormat, encoding);
+            this.Workbook.Load(stream, fileFormat, encoding);
 
-            if (this.workbook.worksheets.Count > 0)
+            if (this.Workbook.Worksheets.Count > 0)
             {
-                this.CurrentWorksheet = this.workbook.worksheets[0];
+                this.CurrentWorksheet = this.Workbook.Worksheets[0];
             }
         }
         #endregion // Save & Load
@@ -383,210 +239,6 @@ namespace Calcita
 
         #region Worksheet Management
 
-        private Worksheet currentWorksheet;
-
-        /// <summary>
-        /// Get or set the current worksheet
-        /// </summary>
-        public Worksheet CurrentWorksheet
-        {
-            get
-            {
-                return this.currentWorksheet;
-            }
-            set
-            {
-                if (value == null) throw new ArgumentNullException("cannot set current worksheet to null");
-
-                if (this.currentWorksheet != value)
-                {
-                    if (this.currentWorksheet != null && this.currentWorksheet.IsEditing)
-                    {
-                        this.currentWorksheet.EndEdit(EndEditReason.NormalFinish);
-                    }
-                    this.currentWorksheet?.ControlAdapter = null;
-
-                    this.currentWorksheet = value;
-                    this.currentWorksheet?.ControlAdapter = this.adapter;
-
-
-                    // update bounds for viewport of worksheet
-                    this.currentWorksheet.UpdateViewportControllBounds();
-
-                    // update bounds for viewport of worksheet
-                    if (this.currentWorksheet.ViewportController is IScrollableViewportController scrollableViewportController)
-                    {
-                        scrollableViewportController.SynchronizeScrollBar();
-                    }
-
-                    this.CurrentWorksheetChanged?.Invoke(this, null);
-
-                    this.sheetTab.SelectedIndex = GetWorksheetIndex(this.currentWorksheet);
-                    this.sheetTab.ScrollToItem(this.sheetTab.SelectedIndex);
-
-                    this.SheetCanvas.Worksheet = value;
-                    this.adapter.Invalidate();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Create new instance of worksheet with default available name. (e.g. Sheet1, Sheet2 ...)
-        /// </summary>
-        /// <returns>Instance of worksheet to be created.</returns>
-        /// <remarks>This method creates a new worksheet, but doesn't add it into the collection of worksheet.
-        /// Worksheet will only be available until adding into a workbook, by using these methods:
-        /// <code>InsertWorksheet</code>, <code>Worksheets.Add</code> or <code>Worksheets.Insert</code>
-        /// </remarks>
-        public Worksheet CreateWorksheet()
-        {
-            return this.CreateWorksheet(null);
-        }
-
-        /// <summary>
-        /// Create new instance of worksheet.
-        /// </summary>
-        /// <param name="name">name of new worksheet to be created. 
-        /// If name is null, ReoGrid will find an available name automatically. e.g. 'Sheet1', 'Sheet2'...</param>
-        /// <returns>instance of worksheet to be created</returns>
-        /// <remarks>This method creates a new worksheet, but doesn't add it into the collection of worksheet.
-        /// Worksheet will only be available until adding into a workbook, by using these methods:
-        /// <code>InsertWorksheet</code>, <code>Worksheets.Add</code> or <code>Worksheets.Insert</code>
-        /// </remarks>
-        public Worksheet CreateWorksheet(string name)
-        {
-            return this.workbook.CreateWorksheet(name);
-        }
-
-        /// <summary>
-        /// Add specified worksheet into this workbook
-        /// </summary>
-        /// <param name="sheet">worksheet to be added</param>
-        public void AddWorksheet(Worksheet sheet)
-        {
-            this.workbook.AddWorksheet(sheet);
-        }
-
-        /// <summary>
-        /// Create and append a new instance of worksheet into workbook.
-        /// </summary>
-        /// <param name="name">Optional name for new worksheet.</param>
-        /// <returns>Instance of created new worksheet.</returns>
-        public Worksheet NewWorksheet(string name = null)
-        {
-            var worksheet = this.CreateWorksheet(name);
-
-            this.AddWorksheet(worksheet);
-
-            return worksheet;
-        }
-
-        /// <summary>
-        /// Insert specified worksheet into this workbook.
-        /// </summary>
-        /// <param name="index">position of zero-based number of worksheet used to insert specified worksheet.</param>
-        /// <param name="sheet">worksheet to be inserted.</param>
-        public void InsertWorksheet(int index, Worksheet sheet)
-        {
-            this.workbook.InsertWorksheet(index, sheet);
-        }
-
-        /// <summary>
-        /// Remove worksheet from this workbook by specified index.
-        /// </summary>
-        /// <param name="index">zero-based number of worksheet to be removed.</param>
-        /// <returns>true if specified worksheet can be found and removed successfully.</returns>
-        public bool RemoveWorksheet(int index)
-        {
-            return this.workbook.RemoveWorksheet(index);
-        }
-
-        /// <summary>
-        /// Remove worksheet from this workbook.
-        /// </summary>
-        /// <param name="sheet">worksheet to be removed.</param>
-        /// <returns>true if specified worksheet can be found and removed successfully.</returns>
-        public bool RemoveWorksheet(Worksheet sheet)
-        {
-            return this.workbook.RemoveWorksheet(sheet);
-        }
-
-        /// <summary>
-        /// Create a cloned worksheet and put into specified position.
-        /// </summary>
-        /// <param name="index">Index of source worksheet to be copied</param>
-        /// <param name="newIndex">Target index used to insert the copied worksheet</param>
-        /// <param name="newName">Name for new worksheet, set as null to use a default worksheet name e.g. Sheet1, Sheet2...</param>
-        /// <returns>New instance of copid worksheet</returns>
-        public Worksheet CopyWorksheet(int index, int newIndex, string newName = null)
-        {
-            return this.workbook.CopyWorksheet(index, newIndex, newName);
-        }
-
-        /// <summary>
-        /// Create a cloned worksheet and put into specified position.
-        /// </summary>
-        /// <param name="sheet">Source worksheet to be copied, the worksheet must be already added into this workbook</param>
-        /// <param name="newIndex">Target index used to insert the copied worksheet</param>
-        /// <param name="newName">Name for new worksheet, set as null to use a default worksheet name e.g. Sheet1, Sheet2...</param>
-        /// <returns>New instance of copid worksheet</returns>
-        public Worksheet CopyWorksheet(Worksheet sheet, int newIndex, string newName = null)
-        {
-            return this.workbook.CopyWorksheet(sheet, newIndex, newName);
-        }
-
-        /// <summary>
-        /// Move worksheet from a position to another position.
-        /// </summary>
-        /// <param name="index">Worksheet in this position to be moved</param>
-        /// <param name="newIndex">Target position moved to</param>
-        /// <returns>Instance of moved worksheet</returns>
-        public Worksheet MoveWorksheet(int index, int newIndex)
-        {
-            return this.workbook.MoveWorksheet(index, newIndex);
-        }
-
-        /// <summary>
-        /// Create a cloned worksheet and put into specified position.
-        /// </summary>
-        /// <param name="sheet">Instance of worksheet to be moved, the worksheet must be already added into this workbook.</param>
-        /// <param name="newIndex">Zero-based target position moved to.</param>
-        /// <returns>Instance of moved worksheet.</returns>
-        public Worksheet MoveWorksheet(Worksheet sheet, int newIndex)
-        {
-            return this.workbook.MoveWorksheet(sheet, newIndex);
-        }
-
-        /// <summary>
-        /// Get index of specified worksheet from the collection in this workbook
-        /// </summary>
-        /// <param name="sheet">Worksheet to get.</param>
-        /// <returns>zero-based number of worksheet in this workbook's collection</returns>
-        public int GetWorksheetIndex(Worksheet sheet)
-        {
-            return this.workbook.GetWorksheetIndex(sheet);
-        }
-
-        /// <summary>
-        /// Get the index of specified worksheet by name from workbook.
-        /// </summary>
-        /// <param name="sheet">Name of worksheet to get.</param>
-        /// <returns>Zero-based number of worksheet in worksheet collection of workbook. Returns -1 if not found.</returns>
-        public int GetWorksheetIndex(string name)
-        {
-            return this.workbook.GetWorksheetIndex(name);
-        }
-
-        /// <summary>
-        /// Find worksheet by specified name.
-        /// </summary>
-        /// <param name="name">Name to find worksheet.</param>
-        /// <returns>Instance of worksheet that is found by specified name; otherwise return null.</returns>
-        public Worksheet GetWorksheetByName(string name)
-        {
-            return this.workbook.GetWorksheetByName(name);
-        }
-
         /// <summary>
         /// Get the collection of worksheet.
         /// </summary>
@@ -594,46 +246,8 @@ namespace Calcita
         //	typeof(System.Drawing.Design.UITypeEditor))]
         public WorksheetCollection Worksheets
         {
-            get { return this.workbook.Worksheets; }
+            get { return this.Workbook.Worksheets; }
         }
-
-        /// <summary>
-        /// Event raised when current worksheet is changed.
-        /// </summary>
-        public event EventHandler CurrentWorksheetChanged;
-
-        /// <summary>
-        /// Event raised when worksheet is created.
-        /// </summary>
-        public event EventHandler<WorksheetCreatedEventArgs> WorksheetCreated;
-
-        /// <summary>
-        /// Event raised when worksheet is inserted into this workbook.
-        /// </summary>
-        public event EventHandler<WorksheetInsertedEventArgs> WorksheetInserted;
-
-        /// <summary>
-        /// Event raised when worksheet is removed from this workbook.
-        /// </summary>
-        public event EventHandler<WorksheetRemovedEventArgs> WorksheetRemoved;
-
-
-        public event EventHandler<WorksheetMovedEventArgs> WorksheetMoved;
-
-        /// <summary>
-        /// Event raised when the name of worksheet managed by this workbook is changed.
-        /// </summary>
-        public event EventHandler<WorksheetNameChangingEventArgs> WorksheetNameChanged;
-
-        /// <summary>
-        /// Event raised when background color of worksheet name is changed.
-        /// </summary>
-        public event EventHandler<WorksheetEventArgs> WorksheetNameBackColorChanged;
-
-        /// <summary>
-        /// Event raised when text color of worksheet name is changed.
-        /// </summary>
-        public event EventHandler<WorksheetEventArgs> WorksheetNameTextColorChanged;
 
         #endregion // Worksheet Management
 
@@ -646,11 +260,11 @@ namespace Calcita
         {
             get
             {
-                return this.workbook.Readonly;
+                return this.Workbook.Readonly;
             }
             set
             {
-                this.workbook.Readonly = value;
+                this.Workbook.Readonly = value;
             }
         }
 
@@ -659,21 +273,21 @@ namespace Calcita
         /// </summary>
         public void Reset()
         {
-            this.workbook.Reset();
+            this.Workbook.Reset();
 
-            this.CurrentWorksheet = this.workbook.worksheets[0];
+            this.CurrentWorksheet = this.Workbook.Worksheets[0];
         }
 
-        /// <summary>
-        /// Check whether or not current workbook is empty (all worksheets don't have any cells)
-        /// </summary>
-        public bool IsWorkbookEmpty
-        {
-            get
-            {
-                return this.workbook.IsEmpty;
-            }
-        }
+        ///// <summary>
+        ///// Check whether or not current workbook is empty (all worksheets don't have any cells)
+        ///// </summary>
+        //public bool IsWorkbookEmpty
+        //{
+        //    get
+        //    {
+        //        return this.Workbook.IsEmpty;
+        //    }
+        //}
 
         #endregion // Workbook & Worksheet
 
@@ -685,7 +299,7 @@ namespace Calcita
 
         public void DoAction(BaseWorksheetAction action)
         {
-            this.DoAction(this.currentWorksheet, action);
+            this.DoAction(this.CurrentWorksheet, action);
         }
 
         /// <summary>Do specified action. 
@@ -750,7 +364,7 @@ namespace Calcita
         /// <seealso cref="WorksheetActionGroup"/>
         /// <param name="sheet">worksheet of the target container to perform specified action</param>
         /// <param name="action">action to be performed</param>
-        public void DoAction(Worksheet sheet, BaseWorksheetAction action)
+        public void DoAction(Worksheet? sheet, BaseWorksheetAction action)
         {
             action.Worksheet = sheet;
 
@@ -761,7 +375,7 @@ namespace Calcita
                 this.lastReusableAction = reusableAction;
             }
 
-            if (this.currentWorksheet != sheet)
+            if (this.CurrentWorksheet != sheet)
             {
                 sheet.RequestInvalidate();
                 this.CurrentWorksheet = sheet;
@@ -777,11 +391,11 @@ namespace Calcita
         /// </summary>
         public void Undo()
         {
-            if (this.currentWorksheet != null)
+            if (this.CurrentWorksheet != null)
             {
-                if (this.currentWorksheet.IsEditing)
+                if (this.CurrentWorksheet.IsEditing)
                 {
-                    this.currentWorksheet.EndEdit(EndEditReason.NormalFinish);
+                    this.CurrentWorksheet.EndEdit(EndEditReason.NormalFinish);
                 }
             }
 
@@ -821,11 +435,11 @@ namespace Calcita
         /// </summary>
         public void Redo()
         {
-            if (this.currentWorksheet != null)
+            if (this.CurrentWorksheet != null)
             {
-                if (this.currentWorksheet.IsEditing)
+                if (this.CurrentWorksheet.IsEditing)
                 {
-                    this.currentWorksheet.EndEdit(EndEditReason.NormalFinish);
+                    this.CurrentWorksheet.EndEdit(EndEditReason.NormalFinish);
                 }
             }
 
@@ -847,7 +461,7 @@ namespace Calcita
                         }
                     }
 
-                    if (sheet != null && this.currentWorksheet != sheet)
+                    if (sheet != null && this.CurrentWorksheet != sheet)
                     {
                         sheet.RequestInvalidate();
                         this.CurrentWorksheet = sheet;
@@ -864,7 +478,7 @@ namespace Calcita
         /// <param name="range">The new range to be applied for the last action.</param>
         public void RepeatLastAction(RangePosition range)
         {
-            this.RepeatLastAction(this.currentWorksheet, range);
+            this.RepeatLastAction(this.CurrentWorksheet, range);
         }
 
         /// <summary>
@@ -874,11 +488,11 @@ namespace Calcita
         /// <param name="range">The new range to be applied for the last action.</param>
         public void RepeatLastAction(Worksheet worksheet, RangePosition range)
         {
-            if (this.currentWorksheet != null)
+            if (this.CurrentWorksheet != null)
             {
-                if (this.currentWorksheet.IsEditing)
+                if (this.CurrentWorksheet.IsEditing)
                 {
-                    this.currentWorksheet.EndEdit(EndEditReason.NormalFinish);
+                    this.CurrentWorksheet.EndEdit(EndEditReason.NormalFinish);
                 }
             }
 
@@ -898,7 +512,7 @@ namespace Calcita
                     // fix #282, https://github.com/unvell/ReoGrid/issues/282
                     //this.ActionPerformed?.Invoke(this, new WorkbookActionEventArgs(newAction));
 
-                    this.currentWorksheet.RequestInvalidate();
+                    this.CurrentWorksheet.RequestInvalidate();
                 }
             }
         }
@@ -1017,26 +631,7 @@ namespace Calcita
         /// <param name="value">True to enable the settings, false to disable the settings</param>
         public void SetSettings(WorkbookSettings settings, bool value)
         {
-            this.workbook.SetSettings(settings, value);
-        }
-
-        /// <summary>
-        /// Get current settings of workbook
-        /// </summary>
-        /// <returns>Workbook settings set</returns>
-        public WorkbookSettings GetSettings()
-        {
-            return this.workbook.GetSettings();
-        }
-
-        /// <summary>
-        /// Determine whether or not the specified workbook settings has been set
-        /// </summary>
-        /// <param name="settings">Settings to be checked</param>
-        /// <returns>True if specified settings has been set</returns>
-        public bool HasSettings(WorkbookSettings settings)
-        {
-            return this.workbook.HasSettings(settings);
+            this.Workbook.SetSettings(settings, value);
         }
 
         /// <summary>
@@ -1045,7 +640,7 @@ namespace Calcita
         /// <param name="settings">Settings to be enabled.</param>
         public void EnableSettings(WorkbookSettings settings)
         {
-            this.workbook.SetSettings(settings, true);
+            this.Workbook.SetSettings(settings, true);
         }
 
         /// <summary>
@@ -1054,7 +649,7 @@ namespace Calcita
         /// <param name="settings">Settings to be disabled.</param>
         public void DisableSettings(WorkbookSettings settings)
         {
-            this.workbook.SetSettings(settings, false);
+            this.Workbook.SetSettings(settings, false);
         }
 
         /// <summary>
@@ -1065,14 +660,14 @@ namespace Calcita
 
         #region Script
 
-        /// <summary>
-        /// Get or set script content
-        /// </summary>
-        public string Script
-        {
-            get { return this.workbook.Script; }
-            set { this.workbook.Script = value; }
-        }
+        ///// <summary>
+        ///// Get or set script content
+        ///// </summary>
+        //public string Script
+        //{
+        //    get { return this.Workbook.Script; }
+        //    set { this.Workbook.Script = value; }
+        //}
 
 #if EX_SCRIPT
         // TODO: srm should have only one instance 
@@ -1112,11 +707,6 @@ namespace Calcita
         /// </summary>
         public event EventHandler<ExceptionHappenEventArgs> ExceptionHappened;
 
-        void Workbook_ErrorHappened(object sender, ExceptionHappenEventArgs e)
-        {
-            this.ExceptionHappened?.Invoke(this, e);
-        }
-
         /// <summary>
         /// Notify that there are exceptions happen on any worksheet. 
         /// The event ExceptionHappened of workbook will be invoked.
@@ -1125,9 +715,9 @@ namespace Calcita
         /// <param name="ex">Exception to describe the details of error information.</param>
         public void NotifyExceptionHappen(Worksheet sheet, Exception ex)
         {
-            if (this.workbook != null)
+            if (this.Workbook != null)
             {
-                this.workbook.NotifyExceptionHappen(sheet, ex);
+                this.Workbook.NotifyExceptionHappen(sheet, ex);
             }
         }
         #endregion // Internal Exceptions
@@ -1224,7 +814,7 @@ namespace Calcita
         {
             this.internalCurrentCursor = pickerCursor;
 
-            this.currentWorksheet.PickRange((sheet, range) =>
+            this.CurrentWorksheet.PickRange((sheet, range) =>
             {
                 bool ret = onPicked(sheet, range);
                 return ret;
@@ -1236,7 +826,7 @@ namespace Calcita
         /// </summary>
         public void StartPickRangeAndCopyStyle()
         {
-            this.currentWorksheet.StartPickRangeAndCopyStyle();
+            this.CurrentWorksheet.StartPickRangeAndCopyStyle();
         }
 
         /// <summary>
@@ -1244,7 +834,7 @@ namespace Calcita
         /// </summary>
         public void EndPickRange()
         {
-            this.currentWorksheet.EndPickRange();
+            this.CurrentWorksheet.EndPickRange();
 
             this.internalCurrentCursor = (this.customCellsSelectionCursor ?? this.builtInCellsSelectionCursor);
         }
@@ -1306,10 +896,10 @@ namespace Calcita
         protected override void OnPointerExited(Avalonia.Input.PointerEventArgs args)
         {
 
-            if (this.currentWorksheet != null)
+            if (this.CurrentWorksheet != null)
             {
                 this.adapter.ChangeCursor(CursorStyle.PlatformDefault);
-                this.currentWorksheet.HoverPos = CellPosition.Empty;
+                this.CurrentWorksheet.HoverPos = CellPosition.Empty;
             }
         }
 
@@ -1331,16 +921,16 @@ namespace Calcita
         /// </summary>
         public bool SheetTabVisible
         {
-            get { return (this.HasSettings(WorkbookSettings.View_ShowSheetTabControl)); }
+            get { return (this.Workbook?.HasSettings(WorkbookSettings.View_ShowSheetTabControl) == true); }
             set
             {
                 if (value)
                 {
-                    this.EnableSettings(WorkbookSettings.View_ShowSheetTabControl);
+                    this.Workbook?.SetSettings(WorkbookSettings.View_ShowSheetTabControl, true);
                 }
                 else
                 {
-                    this.DisableSettings(WorkbookSettings.View_ShowSheetTabControl);
+                    this.Workbook?.SetSettings(WorkbookSettings.View_ShowSheetTabControl, false);
                 }
             }
         }
@@ -1373,7 +963,7 @@ namespace Calcita
         /// <param name="y">Scroll value on vertical direction.</param>
         public void ScrollCurrentWorksheet(RGFloat x, RGFloat y)
         {
-            if (this.currentWorksheet?.ViewportController is IScrollableViewportController svc)
+            if (this.CurrentWorksheet?.ViewportController is IScrollableViewportController svc)
             {
                 svc.ScrollViews(ScrollDirection.Both, x, y);
 
@@ -1414,7 +1004,7 @@ namespace Calcita
                 if (this.showScrollEndSpacing != value)
                 {
                     this.showScrollEndSpacing = value;
-                    this.currentWorksheet.UpdateViewportController();
+                    this.CurrentWorksheet.UpdateViewportController();
                 }
             }
         }

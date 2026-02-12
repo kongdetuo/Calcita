@@ -33,7 +33,7 @@ using Calcita.Print;
 
 namespace Calcita
 {
-    sealed partial class Workbook : IWorkbook
+    public sealed partial class Workbook : IWorkbook
 	{
 		internal List<Worksheet> worksheets = [];
 
@@ -262,7 +262,14 @@ namespace Calcita
 			return sheet;
 		}
 
-		public void AddWorksheet(Worksheet sheet)
+        public Worksheet AddWorksheet(string? sheetName)
+        {
+            var sheet = CreateWorksheet(sheetName);
+            this.InsertWorksheet(this.worksheets.Count, sheet);
+            return sheet;
+        }
+
+        public void AddWorksheet(Worksheet sheet)
 		{
 			this.InsertWorksheet(this.worksheets.Count, sheet);
 		}
