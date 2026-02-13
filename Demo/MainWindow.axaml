@@ -48,7 +48,7 @@
 
         <Border x:Name="border" Background="LightBlue" BorderBrush="Black" Padding="8">
 	
-            <rg:CalcitaControl x:Name="grid" >
+            <rg:CalcitaControl x:Name="grid" Workbook="{Binding Workbook}">
                 <rg:CalcitaControl.CellsContextFlyout>
 					<MenuFlyout>
 						<MenuItem Header="Cell Context Menu Flyout Item"/>
@@ -67,11 +67,6 @@
                     </MenuFlyout>
                 </rg:CalcitaControl.ColumnHeaderContextFlyout>
 
-                <rg:CalcitaControl.LeadHeaderContextFlyout>
-					<MenuFlyout>
-						<MenuItem Header="Lead Header Context Menu Flyout Item"/>
-                    </MenuFlyout>
-                </rg:CalcitaControl.LeadHeaderContextFlyout>
             </rg:CalcitaControl>
 
         </Border>
