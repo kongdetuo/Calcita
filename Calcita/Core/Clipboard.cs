@@ -22,6 +22,12 @@ using Calcita.Events;
 using Calcita.Actions;
 using Calcita.Main;
 using Calcita.Interaction;
+using Avalonia.Input.Platform;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+
+
 
 #if WINFORM
 using DataObject = System.Windows.Forms.DataObject;
@@ -183,6 +189,8 @@ namespace Calcita
 
         #region Copy
 
+        Avalonia.Input.DataFormat<byte[]> format1=>field??= Avalonia.Input.DataFormat.CreateBytesPlatformFormat("123123123");
+
         /// <summary>
         /// Copy data and put into Clipboard.
         /// </summary>
@@ -190,11 +198,11 @@ namespace Calcita
         {
             if (IsEditing)
             {
-                this.controlAdapter.EditControlCopy();
+                this.ControlAdapter?.EditControlCopy();
             }
-            else
+            else if(this.ControlAdapter != null)
             {
-                this.controlAdapter.ChangeCursor(CursorStyle.Busy);
+                this.ControlAdapter.ChangeCursor(CursorStyle.Busy);
 
                 try
                 {
@@ -231,17 +239,13 @@ namespace Calcita
                     Clipboard.SetDataObject(data);
 #elif AVALONIA
                     var grid = GetPartialGrid(currentCopingRange, PartialGridCopyFlag.All, ExPartialGridCopyFlag.None, true);
-                    
-                    var data = new DataObject();
-                    data.Set(ClipBoardDataFormatIdentify, grid);
 
                     //string text = StringifyRange(currentCopingRange);
                     //if (!string.IsNullOrEmpty(text))
                     //    data.Set(ClipBoardDataFormatIdentify, text);
 
-                    var adapter = this.controlAdapter as CalcitaControl.ReoGridAvaloniaControlAdapter;
-                    var Clipboard = TopLevel.GetTopLevel(adapter.ControlInstance as Control)?.Clipboard;
-                    Clipboard.SetDataObjectAsync(data).Wait();
+                    var clipboard = TopLevel.GetTopLevel(ControlAdapter.ControlInstance as Control)?.Clipboard;
+                    clipboard!.SetDataAsync(new PartialGridTransfer(grid)).Wait();
 
 #endif // WINFORM || WPF
 
@@ -257,7 +261,7 @@ namespace Calcita
                 }
                 finally
                 {
-                    this.controlAdapter.ChangeCursor(CursorStyle.PlatformDefault);
+                    this.ControlAdapter.ChangeCursor(CursorStyle.PlatformDefault);
                 }
 
             }
@@ -266,6 +270,8 @@ namespace Calcita
         }
 
         #endregion // Copy
+
+
 
         #region Paste
 
@@ -287,9 +293,9 @@ namespace Calcita
         {
             if (IsEditing)
             {
-                this.controlAdapter.EditControlPaste();
+                this.ControlAdapter?.EditControlPaste();
             }
-            else
+            else if(this.ControlAdapter != null)
             {
                 // Paste method will always perform action to do paste
 
@@ -303,10 +309,10 @@ namespace Calcita
 
                 try
                 {
-                    this.controlAdapter.ChangeCursor(CursorStyle.Busy);
+                    this.ControlAdapter.ChangeCursor(CursorStyle.Busy);
 
-                    PartialGrid partialGrid = null;
-                    string clipboardText = null;
+                    PartialGrid? partialGrid = null;
+                    string? clipboardText = null;
 
 #if WINFORM || WPF
                     DataObject data = Clipboard.GetDataObject() as DataObject;
@@ -320,10 +326,12 @@ namespace Calcita
                         }
                     }
 #elif AVALONIA
-                    var adapter = this.controlAdapter as CalcitaControl.ReoGridAvaloniaControlAdapter;
-                    var clipboard = TopLevel.GetTopLevel(adapter.ControlInstance as Control)?.Clipboard;
-                    partialGrid = clipboard.GetDataAsync(ClipBoardDataFormatIdentify).Result as PartialGrid;
+                    var clipboard = TopLevel.GetTopLevel(ControlAdapter.ControlInstance as Control)?.Clipboard;
+                    //partialGrid = clipboard.GetDataAsync(ClipBoardDataFormatIdentify).Result as PartialGrid;
                     //clipboardText = clipboard.GetDataAsync(ClipBoardDataFormatIdentify).Result as String;
+
+                    var transfer = clipboard?.TryGetInProcessDataAsync().Result! as PartialGridTransfer;
+                    partialGrid = transfer?.Grid;
 #elif ANDROID
 
 #endif // WINFORM || WPF
@@ -681,6 +689,17 @@ namespace Calcita
         public event EventHandler<RangeEventArgs> AfterCut;
 
         #endregion // Events
+    }
+
+    class PartialGridTransfer(PartialGrid grid) : IAsyncDataTransfer
+    {
+        public PartialGrid Grid { get; } = grid;
+        IReadOnlyList<Avalonia.Input.DataFormat> IAsyncDataTransfer.Formats { get; } = [];
+        IReadOnlyList<IAsyncDataTransferItem> IAsyncDataTransfer.Items { get; } = [];
+
+        void IDisposable.Dispose()
+        {
+        }
     }
 }
 
