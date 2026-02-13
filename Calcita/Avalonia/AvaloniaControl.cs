@@ -357,6 +357,12 @@ namespace Calcita
                 {
                     scrollableViewportController.SynchronizeScrollBar();
                 }
+
+                this.SelectedIndex = this.Workbook?.GetWorksheetIndex(newSheet) ?? -1;
+            }
+            else
+            {
+                this.SelectedIndex = -1;
             }
             this.adapter?.Invalidate();
         }
