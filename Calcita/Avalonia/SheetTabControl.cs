@@ -26,7 +26,7 @@ using System;
 using Calcita.Main;
 using Avalonia.Controls.Metadata;
 
-namespace Calcita.AvaloniaPlatform
+namespace Calcita.Controls
 {
     [TemplatePart(Name = "PART_ScrollLeftButton", Type = typeof(RepeatButton))]
     [TemplatePart(Name = "PART_ScrollRightButton", Type = typeof(RepeatButton))]

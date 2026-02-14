@@ -1,7 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:ca="using:Calcita.AvaloniaPlatform"
-                    xmlns:c="using:Calcita"
+                    xmlns:c="using:Calcita.Controls"
                     >
   <!-- Add Resources Here -->
     <ControlTheme x:Key="{x:Type c:CalcitaControl}"
@@ -22,7 +21,7 @@
 
                     <Grid Grid.Row="1"
                           ColumnDefinitions="* auto 400">
-						<ca:SheetTabControl x:Name="PART_SheetTabControl"
+						<c:SheetTabControl x:Name="PART_SheetTabControl"
                                             IsVisible="{TemplateBinding SheetTabVisible}"/>
 
                         <GridSplitter Name="PART_GridSplitter" Height="24"
@@ -55,7 +54,7 @@
 			<Setter Property="IsVisible" Value="False"/>
         </Style>
 
-        <Style Selector="^[HorizontalScrollBarVisible=false] /template/ ca|SheetTabControl#PART_SheetTabControl">
+        <Style Selector="^[HorizontalScrollBarVisible=false] /template/ c|SheetTabControl#PART_SheetTabControl">
             <Setter Property="Grid.ColumnSpan" Value="3"/>
         </Style>
 

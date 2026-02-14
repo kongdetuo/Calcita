@@ -26,8 +26,9 @@ using System;
 using System.Linq;
 using Calcita.Graphics;
 using Calcita.Interaction;
+using Calcita.AvaloniaPlatform;
 
-namespace Calcita.AvaloniaPlatform
+namespace Calcita.Controls
 {
     [TemplatePart("Part_SortAZItem", typeof(RadioButton))]
     [TemplatePart("Part_SortZAItem", typeof(RadioButton))]

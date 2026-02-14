@@ -568,7 +568,7 @@ namespace Calcita
                 if (!HasSettings(WorksheetSettings.Edit_Readonly))
                 {
 #if AVALONIA
-                    var adapter = this.controlAdapter as CalcitaControl.ReoGridAvaloniaControlAdapter;
+                    var adapter = this.ControlAdapter;
                     var clipboard = TopLevel.GetTopLevel(adapter.ControlInstance as Control)?.Clipboard;
                     var partialGrid = clipboard.GetDataAsync(ClipBoardDataFormatIdentify).Result as PartialGrid;
 #else

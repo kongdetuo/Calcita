@@ -31,7 +31,7 @@ using Calcita.Rendering;
 using Avalonia;
 using System.Runtime.CompilerServices;
 
-namespace Calcita
+namespace Calcita.Controls
 {
     partial class CalcitaControl
     {

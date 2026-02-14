@@ -8,7 +8,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Calcita.CellTypes;
-using Calcita.Chart;
+using Calcita.Controls;
 using Calcita.Drawing.Shapes;
 
 namespace Calcita.Demo

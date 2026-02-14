@@ -31,9 +31,9 @@ using Calcita.Rendering;
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using static Calcita.CalcitaControl;
+using static Calcita.Controls.CalcitaControl;
 
-namespace Calcita
+namespace Calcita.Controls
 {
     public class SheetCanvas : Decorator, ICompViewAdapter
     {

@@ -1,8 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-					xmlns:ca="clr-namespace:Calcita.AvaloniaPlatform">
-	<ControlTheme x:Key="{x:Type ca:SheetTabControl}"
-				  TargetType="ca:SheetTabControl">
+					xmlns:c="using:Calcita.Controls">
+	<ControlTheme x:Key="{x:Type c:SheetTabControl}"
+				  TargetType="c:SheetTabControl">
 		<Setter Property="Cursor" Value="Arrow" />
 		<Setter Property="Template">
 			<ControlTemplate>
@@ -76,8 +76,8 @@
 
 	
 	</ControlTheme>
-	<ControlTheme x:Key="{x:Type ca:SheetTabItem}"
-				  TargetType="ca:SheetTabItem">
+	<ControlTheme x:Key="{x:Type c:SheetTabItem}"
+				  TargetType="c:SheetTabItem">
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Margin" Value="0" />
 		<Setter Property="Padding" Value="4,0"/>

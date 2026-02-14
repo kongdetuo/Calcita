@@ -336,7 +336,7 @@ namespace Calcita.Data
             }
 
 
-            public Calcita.AvaloniaPlatform.ColumnFilterContextMenu ContextMenu { get; set; }
+            public Calcita.Controls.ColumnFilterContextMenu ContextMenu { get; set; }
 
 
             internal readonly List<string> selectedTextItems = new List<string>();
@@ -566,7 +566,7 @@ namespace Calcita.Data
 
             if (this.columnFilterUIFlag == AutoColumnFilterUI.DropdownButtonAndPanel)
             {
-                Calcita.AvaloniaPlatform.ColumnFilterContextMenu.ShowFilterPanel(headerBody, point);
+                Calcita.Controls.ColumnFilterContextMenu.ShowFilterPanel(headerBody, point);
                 return true;
             }
 
