@@ -31,7 +31,11 @@ namespace Calcita.Demo.ViewModel
 
             // add demo sheet 3: cell types
             AddDemoSheet3();
+            
+            // add demo sheet 4: Hatch Style
+            AddDemoSheet4();
         }
+
 
         public Workbook Workbook { get; set => this.RaiseAndSetIfChanged(ref field, value); }
 
@@ -270,6 +274,49 @@ namespace Calcita.Demo.ViewModel
             sheet[19, 0] = text;
         }
         #endregion // Demo Sheet 3 : Built-in Cell Types
+
+
+        private void AddDemoSheet4()
+        {
+            var worksheet = Workbook.AddWorksheet("Hatch Style");
+
+            // set default sheet style
+            worksheet.SetRangeStyles(RangePosition.EntireRange, new WorksheetRangeStyle
+            {
+                Flag = PlainStyleFlag.FontName | PlainStyleFlag.VerticalAlign,
+                FontName = "Arial",
+                VAlign = ReoGridVerAlign.Middle,
+            });
+
+            worksheet[1,1] = "Hatch Style Sample";
+
+            // 生成两列，第一列是样式名称，第二列是对应的样式预览
+
+            var hatchStyles = Enum.GetValues(typeof(HatchStyles)).Cast<HatchStyles>();
+
+            var row = 2;
+            foreach (var style in hatchStyles)
+            {
+                worksheet[row, 1] = style.ToString();
+
+                worksheet[row, 2] = "1";
+                worksheet.SetRangeStyles(row, 2, 10, 1, new WorksheetRangeStyle
+                {
+                    Flag = PlainStyleFlag.FillPatternStyle | PlainStyleFlag.FillPatternColor,
+                    FillPatternStyle = style,
+                    FillPatternColor = Colors.Black,
+                    BackColor = Colors.Red,
+                });
+
+                
+
+                // 设置行高以适应样式预览
+                worksheet.SetRowsHeight(row, 1, 80);
+
+                row++;
+            }
+
+        }
 
     }
 }

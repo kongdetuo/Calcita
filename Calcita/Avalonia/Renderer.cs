@@ -50,7 +50,7 @@ namespace Calcita.Rendering
             get { return this.resourceManager; }
         }
 
-        private PlatformGraphics g = null;
+        protected PlatformGraphics g = null;
 
         public AvaloniaGraphics()
         {
@@ -186,12 +186,37 @@ namespace Calcita.Rendering
 
         public void FillRectangle(HatchStyles style, SolidColor hatchColor, SolidColor bgColor, Rectangle rect)
         {
-            // TODO
+            // fill background
+            if (bgColor.A > 0)
+            {
+                var b = this.resourceManager.GetBrush(bgColor);
+                if (b != null) g.DrawRectangle(b, null, (Rect)rect);
+            }
+
+            if (hatchColor.A == 0) return;
+
+            double spacing = 6.0;
+
+            // use cached ImageBrush for hatch pattern
+            var hatchBrush = this.resourceManager.GetHatchImageBrush(style, hatchColor, bgColor, spacing);
+            if (hatchBrush != null)
+            {
+                // Draw rectangle filled with image brush (tiled)
+                g.DrawRectangle(hatchBrush, null, rect);
+            }
+            else
+            {
+                // fallback to simple lines
+                var pen = this.resourceManager.GetPen(hatchColor);
+                using var state = g.PushClip(rect);
+                for (double y = rect.Y; y <= rect.Y + rect.Height; y += spacing)
+                    g.DrawLine(pen, new (rect.X, y), new (rect.X + rect.Width, y));
+            }
         }
 
         public void FillRectangle(HatchStyles style, SolidColor hatchColor, SolidColor bgColor, double x, double y, double width, double height)
         {
-            // TODO
+            FillRectangle(style, hatchColor, bgColor, new Rectangle((int)x, (int)y, (int)width, (int)height));
         }
 
         public void FillRectangle(Rectangle rect, IColor color)
@@ -690,29 +715,125 @@ namespace Calcita.Rendering
 
         }
 
-        private Pen capLinePen = null;
+        private Pen? capLinePen = null;
+
+        // Record cap information (Start/End style, size and color)
+        private LineCap lineCap;
 
         public void BeginCappedLine(LineCapStyles startCap, Graphics.Size startSize, LineCapStyles endCap, Graphics.Size endSize,
             SolidColor color, double width)
         {
-            capLinePen = new Pen(new SolidColorBrush(color), width);
-            //capLinePen.StartLineCap = PlatformUtility.ToWPFLineCap(startCap);
-            //capLinePen.EndLineCap = PlatformUtility.ToWPFLineCap(endCap);
-        }
+            // store cap info for later drawing
+            this.lineCap = new LineCap
+            {
+                StartStyle = startCap,
+                EndStyle = endCap,
+                StartSize = startSize,
+                EndSize = endSize,
+                StartColor = color,
+                EndColor = color,
+            };
 
-        private LineCap lineCap;
+            // main line pen; caps will be drawn manually
+            capLinePen = new Pen(new SolidColorBrush(color), width);
+        }
 
         public void DrawCappedLine(double x1, double y1, double x2, double y2)
         {
-            if (this.capLinePen != null)
+            if (this.capLinePen == null)
             {
-                base.DrawLine(this.capLinePen, x1, y1, x2, y2);
+                return;
             }
+
+            // draw main line
+            var p1 = new Point(x1, y1);
+            var p2 = new Point(x2, y2);
+            this.DrawLine(capLinePen, p1, p2);
+
+            // compute direction
+            double dx = x2 - x1;
+            double dy = y2 - y1;
+            double len = Math.Sqrt(dx * dx + dy * dy);
+
+            if (len <= 1e-9)
+            {
+                // degenerate: draw caps at point
+                DrawCap(lineCap.StartStyle, p1, 0, -1, lineCap.StartSize, lineCap.StartColor);
+                DrawCap(lineCap.EndStyle, p1, 0, 1, lineCap.EndSize, lineCap.EndColor);
+                return;
+            }
+
+            double ux = dx / len;
+            double uy = dy / len;
+
+            // draw start cap (pointing opposite to line direction)
+            DrawCap(lineCap.StartStyle, p1, -ux, -uy, lineCap.StartSize, lineCap.StartColor);
+
+            // draw end cap (pointing along line direction)
+            DrawCap(lineCap.EndStyle, p2, ux, uy, lineCap.EndSize, lineCap.EndColor);
         }
 
         public void EndCappedLine()
         {
             this.capLinePen = null;
+            // keep lineCap if needed; clear if desired: lineCap = default;
+        }
+
+        // Helper: draw a cap at point 'at'. dirX/dirY is a unit vector pointing outward from the line end.
+        private void DrawCap(LineCapStyles style, Point at, double dirX, double dirY, Graphics.Size size, SolidColor color)
+        {
+            if (style == LineCapStyles.None) return;
+
+            // convert to Avalonia point
+            var center = new Avalonia.Point(at.X, at.Y);
+
+            // cap length (along direction) and cap width (perpendicular)
+            double capLength = Math.Max(0, size.Width);
+            double capWidth = Math.Max(0, size.Height);
+            if (capWidth <= 0) capWidth = capLength; // fallback
+
+            var brush = new SolidColorBrush(color);
+
+            switch (style)
+            {
+                case LineCapStyles.Arrow:
+                    {
+                        // triangle with tip at center
+                        double ux = dirX, uy = dirY;
+                        double baseX = center.X - ux * capLength;
+                        double baseY = center.Y - uy * capLength;
+                        // perpendicular
+                        double px = -uy;
+                        double py = ux;
+                        double half = capWidth * 0.5;
+
+                        var tip = center;
+                        var p2 = new Avalonia.Point(baseX + px * half, baseY + py * half);
+                        var p3 = new Avalonia.Point(baseX - px * half, baseY - py * half);
+
+                        var geo = new PathGeometry();
+                        var fig = new PathFigure() { StartPoint = tip, IsClosed = true };
+                        fig.Segments!.Add(new LineSegment() { Point = p2 });
+                        fig.Segments.Add(new LineSegment() { Point = p3 });
+                        geo.Figures!.Add(fig);
+
+                        g.DrawGeometry(brush, null, geo);
+                    }
+                    break;
+
+                case LineCapStyles.Ellipse:
+                case LineCapStyles.Round:
+                    {
+                        double rx = capWidth * 0.5;
+                        double ry = capWidth * 0.5;
+                        var ellipse = new EllipseGeometry(new Rect(center.X - rx, center.Y - ry, rx * 2, ry * 2));
+                        g.DrawGeometry(brush, null, ellipse);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         private Pen cachePen = null;

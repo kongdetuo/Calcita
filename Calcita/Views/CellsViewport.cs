@@ -929,7 +929,7 @@ namespace Calcita.Views
                 style = cell.InnerStyle;
             }
 
-            if (style.BackColor.A > 0)
+            if (style.BackColor.A > 0 || style.FillPatternColor.A > 0)
             {
                 var startPos = new CellPosition(row, col);
 
