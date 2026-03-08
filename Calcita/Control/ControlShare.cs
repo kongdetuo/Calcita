@@ -848,8 +848,6 @@ namespace Calcita.Controls
         {
             this.controlStyle?.CurrentControl = this;
 
-            sheetTab?.Background = new Avalonia.Media.SolidColorBrush(this.controlStyle[ControlAppearanceColors.SheetTabBackground]);
-
             this.adapter?.Invalidate();
         }
 

@@ -2,10 +2,22 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:c="using:Calcita.Controls"
                     >
-  <!-- Add Resources Here -->
+    <ControlTheme x:Key="CalcitaGridSplitter" TargetType="GridSplitter">
+		<Setter Property="Background" Value="{DynamicResource CalcitaControlMidBrush}" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="GridSplitter">
+                <Border Background="{TemplateBinding Background}"
+                        UseLayoutRounding="False">
+                    <Border Margin="2,4" Background="{DynamicResource CalcitaControlLowBrush}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
     <ControlTheme x:Key="{x:Type c:CalcitaControl}"
                   TargetType="c:CalcitaControl">
-        <Setter Property="Background" Value="{DynamicResource ThemeControlMidBrush}" />
+
+        <Setter Property="Background" Value="{DynamicResource CalcitaControlMidBrush}" />
 
         <Setter Property="Template">
 			<ControlTemplate TargetType="c:CalcitaControl">
@@ -16,7 +28,8 @@
                     <c:SheetCanvas x:Name="PART_SheetCanvas"/>
 
 					<ScrollBar Name="PART_VerticalScrollBar"
-                               Grid.Column="1" 
+                               Grid.Column="1"
+                               Theme="{DynamicResource CalcitaScrollBarTheme}"
                                Orientation="Vertical"/>
 
                     <Grid Grid.Row="1"
@@ -26,10 +39,12 @@
 
                         <GridSplitter Name="PART_GridSplitter" Height="24"
                                       Grid.Column="1"
+                                      Theme="{StaticResource CalcitaGridSplitter}"
                                       ResizeBehavior="PreviousAndNext" Width="5"/>
 
                         <ScrollBar Name="PART_HorizontalScrollBar" 
                                    Orientation="Horizontal"
+                                   Theme="{DynamicResource CalcitaScrollBarTheme}"
                                    IsVisible="{TemplateBinding HorizontalScrollBarVisible}"/>
                     </Grid>
 

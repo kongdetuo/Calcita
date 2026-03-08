@@ -75,10 +75,10 @@ namespace Calcita
 		OutlineButtonBorder = 93,
 		OutlineButtonText = 94,
 
-		SheetTabBorder = 201,
-		SheetTabBackground = 202,
-		SheetTabText = 203,
-		SheetTabSelected = 204,
+		//SheetTabBorder = 201,
+		//SheetTabBackground = 202,
+		//SheetTabText = 203,
+		//SheetTabSelected = 204,
 
 #pragma warning restore 1591
 	}
@@ -160,81 +160,9 @@ namespace Calcita
 		/// <summary>
 		/// Construct empty control appearance
 		/// </summary>
-		[Obsolete("use ControlAppearanceStyle.CreateDefaultControlStyle() to create instance")]
-		public ControlAppearanceStyle()
+		private ControlAppearanceStyle()
 		{
 			this.SelectionBorderWidth = 3f;
-		}
-
-		/// <summary>
-		/// Construct control appearance with two theme colors
-		/// </summary>
-		/// <param name="mainTheme">Main theme color</param>
-		/// <param name="salientTheme">Salient theme color</param>
-		/// <param name="useSystemHighlight">Whether use highlight colors of system default</param>
-		public ControlAppearanceStyle(SolidColor mainTheme, SolidColor salientTheme, bool useSystemHighlight)
-		{
-			SolidColor lightMainTheme = ColorUtility.LightColor(mainTheme);
-			SolidColor lightLightMainTheme = ColorUtility.LightLightColor(mainTheme);
-			SolidColor lightLightLightMainTheme = ColorUtility.LightLightLightColor(mainTheme);
-			SolidColor darkMainTheme = ColorUtility.DarkColor(mainTheme);
-			SolidColor darkDarkMainTheme = ColorUtility.DarkDarkColor(mainTheme);
-			SolidColor lightSalientTheme = ColorUtility.LightColor(salientTheme);
-			SolidColor lightLightSalientTheme = ColorUtility.LightLightColor(salientTheme);
-			SolidColor lightLightLightSalientTheme = ColorUtility.LightLightLightColor(salientTheme);
-			SolidColor darkSalientTheme = ColorUtility.DarkColor(salientTheme);
-			SolidColor darkDarkSalientTheme = ColorUtility.DarkDarkColor(salientTheme);
-
-			var backgroundColor = ColorUtility.ChangeColorBrightness(mainTheme, 0.5f);
-
-			SolidColor leadHead = mainTheme;
-			colors[ControlAppearanceColors.LeadHeadNormal] = leadHead;
-			colors[ControlAppearanceColors.LeadHeadSelected] = darkMainTheme;
-			colors[ControlAppearanceColors.LeadHeadIndicatorStart] = lightLightLightSalientTheme;
-			colors[ControlAppearanceColors.LeadHeadIndicatorEnd] = lightLightSalientTheme;
-
-			colors[ControlAppearanceColors.ColHeadSplitter] = mainTheme;
-			colors[ControlAppearanceColors.ColHeadNormalStart] = lightLightLightMainTheme;
-			colors[ControlAppearanceColors.ColHeadNormalEnd] = mainTheme;
-			colors[ControlAppearanceColors.ColHeadSelectedStart] = lightLightLightSalientTheme;
-			colors[ControlAppearanceColors.ColHeadSelectedEnd] = salientTheme;
-			colors[ControlAppearanceColors.ColHeadFullSelectedStart] = lightLightLightSalientTheme;
-			colors[ControlAppearanceColors.ColHeadFullSelectedEnd] = lightLightSalientTheme;
-			colors[ControlAppearanceColors.ColHeadText] = darkDarkMainTheme;
-
-			colors[ControlAppearanceColors.RowHeadSplitter] = mainTheme;
-			colors[ControlAppearanceColors.RowHeadNormal] = lightLightMainTheme;
-			colors[ControlAppearanceColors.RowHeadHover] = ColorUtility.DarkColor(leadHead);
-			colors[ControlAppearanceColors.RowHeadSelected] = lightSalientTheme;
-			colors[ControlAppearanceColors.RowHeadFullSelected] = lightLightSalientTheme;
-			colors[ControlAppearanceColors.RowHeadText] = darkDarkMainTheme;
-
-			if (useSystemHighlight)
-			{
-				colors[ControlAppearanceColors.SelectionFill] = new SolidColor(30, StaticResources.SystemColor_Highlight);
-				colors[ControlAppearanceColors.SelectionBorder] = new SolidColor(180, StaticResources.SystemColor_Highlight);
-			}
-			else
-			{
-				colors[ControlAppearanceColors.SelectionFill] = ColorUtility.FromAlphaColor(30, darkSalientTheme);
-				colors[ControlAppearanceColors.SelectionBorder] = ColorUtility.FromAlphaColor(180, lightSalientTheme);
-			}
-
-			colors[ControlAppearanceColors.GridBackground] = backgroundColor;
-			colors[ControlAppearanceColors.GridLine] = ColorUtility.ChangeColorBrightness(mainTheme, 0.4f);
-			colors[ControlAppearanceColors.GridText] = StaticResources.SystemColor_WindowText;
-
-			colors[ControlAppearanceColors.OutlineButtonBorder] = mainTheme;
-			colors[ControlAppearanceColors.OutlinePanelBackground] = lightLightMainTheme;
-			colors[ControlAppearanceColors.OutlinePanelBorder] = mainTheme;
-			colors[ControlAppearanceColors.OutlineButtonText] = darkSalientTheme;
-
-			colors[ControlAppearanceColors.SheetTabBackground] = lightLightMainTheme;
-			colors[ControlAppearanceColors.SheetTabText] = StaticResources.SystemColor_WindowText;
-			colors[ControlAppearanceColors.SheetTabBorder] = mainTheme;
-			colors[ControlAppearanceColors.SheetTabSelected] = backgroundColor;
-
-			this.SelectionBorderWidth = 3;
 		}
 
 		internal SolidColor GetColHeadStartColor(bool isHover, bool isSelected, bool isFullSelected, bool isInvalid)
@@ -316,10 +244,10 @@ namespace Calcita
 						{ControlAppearanceColors.OutlinePanelBackground, StaticResources.SystemColor_Control},
 						{ControlAppearanceColors.OutlinePanelBorder, SolidColor.Silver},
 						{ControlAppearanceColors.OutlineButtonText, StaticResources.SystemColor_WindowText},
-						{ControlAppearanceColors.SheetTabText, StaticResources.SystemColor_WindowText },
-						{ControlAppearanceColors.SheetTabBorder, StaticResources.SystemColor_Highlight },
-						{ControlAppearanceColors.SheetTabBackground, SolidColor.White },
-						{ControlAppearanceColors.SheetTabSelected, StaticResources.SystemColor_Window },
+						//{ControlAppearanceColors.SheetTabText, StaticResources.SystemColor_WindowText },
+						//{ControlAppearanceColors.SheetTabBorder, StaticResources.SystemColor_Highlight },
+						//{ControlAppearanceColors.SheetTabBackground, SolidColor.White },
+						//{ControlAppearanceColors.SheetTabSelected, StaticResources.SystemColor_Window },
 				},
 
 				SelectionBorderWidth = 3,
