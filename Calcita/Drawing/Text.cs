@@ -1249,7 +1249,7 @@ namespace Calcita.Drawing.Text
     {
 
         public Typeface Typeface { get; set; }
-        public IGlyphTypeface GlyphTypeface { get; set; }
+        public GlyphTypeface GlyphTypeface { get; set; }
 
         public RGFloat Ascent { get; set; }
         //public RGFloat Height { get; set; }

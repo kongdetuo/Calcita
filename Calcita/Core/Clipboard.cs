@@ -570,7 +570,8 @@ namespace Calcita
 #if AVALONIA
                     var adapter = this.ControlAdapter;
                     var clipboard = TopLevel.GetTopLevel(adapter.ControlInstance as Control)?.Clipboard;
-                    var partialGrid = clipboard.GetDataAsync(ClipBoardDataFormatIdentify).Result as PartialGrid;
+                    var transfer = clipboard!.TryGetInProcessDataAsync().Result as PartialGridTransfer;
+                    var partialGrid = transfer?.Grid;
 #else
 					DataObject data = Clipboard.GetDataObject() as DataObject;
 					PartialGrid partialGrid = data.GetData(ClipBoardDataFormatIdentify) as PartialGrid;

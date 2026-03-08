@@ -170,39 +170,41 @@ namespace Calcita.Rendering
 						FontWeight.Bold : FontWeight.Normal,
 						FontStretch.Normal);
 
-			IGlyphTypeface glyphTypeface;
+            var formatted = new FormattedText(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface.Value, fontSize, null);
+            return new Size(formatted.Width, formatted.Height);
+			//GlyphTypeface glyphTypeface;
 
-            double width = 0;
-			double height = 0;
-			if (FontManager.Current.TryGetGlyphTypeface(typeface??Typeface.Default, out glyphTypeface))
-			{
-				//fontInfo.Ascent = typeface.FontFamily.Baseline;
-				//fontInfo.LineHeight = typeface.CapsHeight;
+   //         double width = 0;
+			//double height = 0;
+			//if (FontManager.Current.TryGetGlyphTypeface(typeface??Typeface.Default, out glyphTypeface))
+			//{
+			//	//fontInfo.Ascent = typeface.FontFamily.Baseline;
+			//	//fontInfo.LineHeight = typeface.CapsHeight;
 
-				var size = fontSize * 1.33d;
+			//	var size = fontSize * 1.33d;
 
-				var glyphIndexs = text.Select(ch => glyphTypeface.GetGlyph(ch)).ToArray() ;
+			//	var glyphIndexs = text.Select(ch => glyphTypeface.try(ch)).ToArray() ;
 
-                GlyphRun run = new GlyphRun(glyphTypeface, size,text.AsMemory(), glyphIndexs);
-				width = run.Bounds.Size.Width;
-				height = run.Bounds.Size.Height * 1.33d;
+   //             GlyphRun run = new GlyphRun(glyphTypeface, size,text.AsMemory(), glyphIndexs);
+			//	width = run.Bounds.Size.Width;
+			//	height = run.Bounds.Size.Height * 1.33d;
 
-				//run.Bounds.Size;
-				//this.GlyphIndexes.Capacity = text.Length;
+			//	//run.Bounds.Size;
+			//	//this.GlyphIndexes.Capacity = text.Length;
 
-				//for (int n = 0; n < text.Length; n++)
-				//{
-				//	ushort glyphIndex = glyphTypeface.GetGlyphs(text[n]);
-				//	//GlyphIndexes.Add(glyphIndex);
+			//	//for (int n = 0; n < text.Length; n++)
+			//	//{
+			//	//	ushort glyphIndex = glyphTypeface.GetGlyphs(text[n]);
+			//	//	//GlyphIndexes.Add(glyphIndex);
 
-				//	double width = glyphTypeface.GetGlyphAdvance(glyphIndex) * size;
-				//	//this.TextSizes.Add(width);
+			//	//	double width = glyphTypeface.GetGlyphAdvance(glyphIndex) * size;
+			//	//	//this.TextSizes.Add(width);
 
-				//	totalWidth += width;
-				//}
-			}
+			//	//	totalWidth += width;
+			//	//}
+			//}
 
-			return new Graphics.Size(width, height);
+			//return new Graphics.Size(width, height);
 		}
 
 		public static FontStyle ToAvaloniaFontStyle(Calcita.Drawing.Text.FontStyles textStyle)
