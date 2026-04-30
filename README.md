@@ -10,6 +10,12 @@ Calcita is a fork and independent development of the open-source .NET spreadshee
 
 Calcita aims to provide a lightweight, modernized .NET spreadsheet component based on ReoGrid. Early versions keep much of the original functionality and snapshots, while future commits will introduce Calcita-specific features and refactors.
 
+This is a hobby / side project.  
+I maintain it in my free time, so updates may not be very frequent.
+
+**However, contributions are very welcome!**  
+Feel free to submit issues or pull requests. I'll review them as soon as I can.
+
 # Documentation
 
 The original ReoGrid documentation is available at:
