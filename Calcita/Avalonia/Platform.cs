@@ -15,24 +15,20 @@
  * Copyright (c) 2012-2025 UNVELL Inc. All rights reserved.
  * 
  ****************************************************************************/
-#if AVALONIA
+
 
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using System;
-#if !AVALONIA
-using System.Drawing;
-#endif
 using System.Globalization;
-using System.Linq;
 using Calcita.Common;
 using Calcita.Drawing.Text;
 using Calcita.Graphics;
 using Calcita.Interaction;
 using FontFamily = Avalonia.Media.FontFamily;
 using FontStyle = Avalonia.Media.FontStyle;
-using Pen = Avalonia.Media.Pen;
+using Avalonia.VisualTree;
 
 namespace Calcita
 {
@@ -58,7 +54,7 @@ namespace Calcita.Rendering
         {
             if(key == KeyCode.ControlKey)
             {
-                var ctrlOrCmd = TopLevel.GetTopLevel(target)!.PlatformSettings!.HotkeyConfiguration.CommandModifiers;
+                var ctrlOrCmd = VisualExtensions.GetPlatformSettings(target)?.HotkeyConfiguration.CommandModifiers;
                 return inputKeyModifiers.HasFlag(ctrlOrCmd);
             }
             if (key == KeyCode.ShiftKey)
@@ -283,9 +279,3 @@ namespace Calcita.Rendering
 	}
 	#endregion // StaticResources
 }
-
-#endif
-
-
-
-
