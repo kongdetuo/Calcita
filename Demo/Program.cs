@@ -23,6 +23,6 @@ namespace Calcita.Demo
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace()
-                .UseReactiveUI();
+                .UseReactiveUI(rxBuilder => { });
     }
 }
