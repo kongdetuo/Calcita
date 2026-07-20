@@ -34,6 +34,8 @@ internal class InputTextBox : TextBox
     internal Avalonia.Size CellSize { get; set; }
     internal ReoGridVerAlign VAlign { get; set; }
 
+    protected override Type StyleKeyOverride => typeof(InputTextBox);
+
     static InputTextBox()
     {
         TextProperty.Changed
@@ -47,52 +49,13 @@ internal class InputTextBox : TextBox
         AddHandler(TextInputEvent, OnPreviewTextInput, RoutingStrategies.Tunnel);
 
         this.AcceptsReturn = true;
-        this.Template = new FuncControlTemplate<InputTextBox>((t, ns) =>
-        {
-            var t1 = new TextPresenter()
-            {
-                Name = "PART_TextPresenter",
-                Margin = new Thickness(2),
-                [!TextPresenter.BackgroundProperty] = t[!TextBox.BackgroundProperty],
-                [!TextPresenter.WidthProperty] = t[!TextBox.WidthProperty],
-                [!TextPresenter.TextProperty] = t[!TextBox.TextProperty],
-                [!TextPresenter.CaretIndexProperty] = t[!TextBox.CaretIndexProperty],
-                [!TextPresenter.SelectionStartProperty] = t[!TextBox.SelectionStartProperty],
-                [!TextPresenter.SelectionEndProperty] = t[!TextBox.SelectionEndProperty],
-                [!TextPresenter.TextAlignmentProperty] = t[!TextBox.TextAlignmentProperty],
-                [!TextPresenter.TextWrappingProperty] = t[!TextBox.TextWrappingProperty],
-                [!TextPresenter.LineHeightProperty] = t[!TextBox.LineHeightProperty],
-                [!TextPresenter.LetterSpacingProperty] = t[!TextBox.LetterSpacingProperty],
-                [!TextPresenter.PasswordCharProperty] = t[!TextBox.PasswordCharProperty],
-                [!TextPresenter.RevealPasswordProperty] = t[!TextBox.RevealPasswordProperty],
-                [!TextPresenter.SelectionBrushProperty] = t[!TextBox.SelectionBrushProperty],
-                [!TextPresenter.SelectionForegroundBrushProperty] = t[!TextBox.SelectionForegroundBrushProperty],
-                [!TextPresenter.CaretBrushProperty] = t[!TextBox.CaretBrushProperty],
-                [!TextPresenter.HorizontalAlignmentProperty] = t[!TextBox.HorizontalAlignmentProperty],
-                [!TextPresenter.VerticalAlignmentProperty] = t[!TextBox.HorizontalContentAlignmentProperty],
-            };
-            var s = new ScrollViewer()
-            {
-                Name = "PART_ScrollViewer",
-                [!ScrollViewer.HorizontalScrollBarVisibilityProperty] = t[!ScrollViewer.HorizontalScrollBarVisibilityProperty],
-                [!ScrollViewer.VerticalScrollBarVisibilityProperty] = t[!ScrollViewer.VerticalScrollBarVisibilityProperty],
-                [!ScrollViewer.IsScrollChainingEnabledProperty] = t[!ScrollViewer.IsScrollChainingEnabledProperty],
-                [!ScrollViewer.AllowAutoHideProperty] = t[!ScrollViewer.AllowAutoHideProperty],
-                [!ScrollViewer.BringIntoViewOnFocusChangeProperty] = t[!ScrollViewer.BringIntoViewOnFocusChangeProperty],
-                Content = t1
-            };
-            ns.Register(s.Name, s);
-            ns.Register(t1.Name, t1);
-            return s;
-        });
-
     }
 
-    protected override void OnLostFocus(RoutedEventArgs e)
+    protected override void OnLostFocus(FocusChangedEventArgs e)
     {
         var sheet = this.Owner.Worksheet;
 
-        if (sheet.currentEditingCell != null && IsVisible)
+        if (sheet?.currentEditingCell != null && IsVisible)
         {
             sheet.EndEdit(Text);
             IsVisible = false;

@@ -89,12 +89,14 @@
     <AvaloniaXaml Remove="Avalonia\Base.axaml" />
     <AvaloniaXaml Remove="Avalonia\ControlTheme.axaml" />
     <AvaloniaXaml Remove="Avalonia\TemplatedControl1.axaml" />
+    <AvaloniaXaml Remove="Avalonia\Theme\InputTextBox.axaml" />
     <AvaloniaXaml Remove="Avalonia\UserControl1.axaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Avalonia\TemplatedControl1.axaml.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Avalonia\Theme\InputTextBox.axaml" />
     <AvaloniaResource Include="Avalonia\Theme\Base.axaml" />
   </ItemGroup>
   <ItemGroup>

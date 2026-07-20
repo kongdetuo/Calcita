@@ -1,11 +1,5 @@
 <Styles xmlns="https://github.com/avaloniaui"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<Design.PreviewWith>
-		<Border Padding="20">
-			<!-- Add Controls for Previewer Here -->
-		</Border>
-	</Design.PreviewWith>
-
 	<Styles.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -15,6 +9,7 @@
 				<MergeResourceInclude Source="/Avalonia/Theme/ScrollBar.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/SheetTabControl.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/CalcitaControl.axaml" />
+				<MergeResourceInclude Source="/Avalonia/Theme/InputTextBox.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Styles.Resources>
