@@ -15,73 +15,119 @@
  * Copyright (c) 2012-2025 UNVELL Inc. All rights reserved.
  * 
  ****************************************************************************/
-#if AVALONIA
 
-
+using Avalonia;
+using Avalonia.Automation;
+using Avalonia.Automation.Peers;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Mixins;
 using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Templates;
-using System;
-using System.Linq;
-using Calcita.Graphics;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Calcita.Interaction;
-using Calcita.AvaloniaPlatform;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Calcita.Controls
 {
-    [TemplatePart("Part_SortAZItem", typeof(RadioButton))]
-    [TemplatePart("Part_SortZAItem", typeof(RadioButton))]
-    [TemplatePart("Part_OkButton", typeof(Button))]
-    [TemplatePart("Part_CancelButton", typeof(Button))]
-    [TemplatePart("Part_SelectAll", typeof(CheckBox))]
-    [TemplatePart("Part_Popup", typeof(Popup))]
-    public class ColumnFilterContextMenu : SelectingItemsControl
+    [TemplatePart("PART_SortAZItem", typeof(RadioButton))]
+    [TemplatePart("PART_SortZAItem", typeof(RadioButton))]
+    [TemplatePart("PART_OkButton", typeof(Button))]
+    [TemplatePart("PART_CancelButton", typeof(Button))]
+    [TemplatePart("PART_SelectAll", typeof(CheckBox))]
+    [TemplatePart("PART_ScrollViewer", typeof(ScrollViewer))]
+    public class FilterBox : SelectingItemsControl
     {
-        RadioButton SortAZItem;
-        RadioButton SortZAItem;
+        protected override Type StyleKeyOverride => typeof(FilterBox);
 
-        Button OkButton;
+        static FilterBox()
+        {
+            SelectionChangedEvent.AddClassHandler<FilterBox>((x, e) => x.OnSelectionChanged());
+        }
+        
+        private void OnSelectionChanged()
+        {
+            if(SelectAllButton is null || this.SelectedItems is null)
+            {
+                return;
+            }
+            if (this.SelectedItems.Count == 0)
+            {
+                SelectAllButton.IsChecked = false;
+            }
+            else if(this.SelectedItems.Count == (this.ItemsSource as List<String>)?.Count)
+            {
+                SelectAllButton.IsChecked = true;
+            }
+            else
+            {
+                SelectAllButton.IsChecked = null;
+            }
+        }
 
-        Button CancelButton;
-        CheckBox SelectAllButton;
+        // todo add styled properties
 
-        Popup Popup;
-
-        public Calcita.Data.AutoColumnFilter.AutoColumnFilterBody HeaderBody { get; set; }
+        ToggleButton? SortAZItem;
+        ToggleButton? SortZAItem;
+        Button? OkButton;
+        Button? CancelButton;
+        CheckBox? SelectAllButton;
+  
+        Calcita.Data.AutoColumnFilter.AutoColumnFilterBody HeaderBody { get; set; } = null!;
 
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
+            this.SortAZItem?.Click -= SortAZItem_Click;
+            this.SortZAItem?.Click -= SortZAItem_Click;
+            this.OkButton?.Click -= OkButton_Click;
+            this.CancelButton?.Click -= CancelButton_Click;
+            this.SelectAllButton?.Click -= SelectAll_CheckedChanged;
+
             base.OnApplyTemplate(e);
 
-            this.SortAZItem = e.NameScope.Find<RadioButton>("Part_SortAZItem");
-            this.SortAZItem = e.NameScope.Find<RadioButton>("Part_SortZAItem");
-            this.OkButton = e.NameScope.Find<Button>("Part_OkButton");
-            this.CancelButton = e.NameScope.Find<Button>("Part_CancelButton");
-            this.SelectAllButton = e.NameScope.Find<CheckBox>("Part_SelectAll");
-            this.Popup = e.NameScope.Find<Popup>("Part_Popup");
+            this.SortAZItem = e.NameScope.Find<ToggleButton>("PART_SortAZItem");
+            this.SortZAItem = e.NameScope.Find<ToggleButton>("PART_SortZAItem");
+            this.OkButton = e.NameScope.Find<Button>("PART_OkButton");
+            this.CancelButton = e.NameScope.Find<Button>("PART_CancelButton");
+            this.SelectAllButton = e.NameScope.Find<CheckBox>("PART_SelectAll");
 
-            this.SortAZItem.Click += SortAZItem_Click;
-            this.SortZAItem.Click += SortZAItem_Click;
-            this.OkButton.Click += OkButton_Click;
-            this.CancelButton.Click += CancelButton_Click;
+            this.SortAZItem?.Click += SortAZItem_Click;
+            this.SortZAItem?.Click += SortZAItem_Click;
+            this.OkButton?.Click += OkButton_Click;
+            this.CancelButton?.Click += CancelButton_Click;
+            this.SelectAllButton?.IsCheckedChanged += SelectAll_CheckedChanged;
         }
 
-        private void CancelButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void SelectAll_CheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            this.Popup.Close();
+            if(this.SelectAllButton?.IsChecked == true)
+            {
+                SelectAll();
+            }else if(this.SelectAllButton?.IsChecked == false)
+            {
+                this.SelectedItems?.Clear();
+            }
         }
 
-        private void OkButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void CancelButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+            this.HeaderBody.ContextFlyout!.Hide();
+        }
+
+        private void OkButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var items = this.SelectedItems.OfType<string>().ToList();
+
             HeaderBody.IsSelectAll = false;
             HeaderBody.selectedTextItems.Clear();
-            HeaderBody.SelectedTextItems.AddRange(this.Selection.SelectedItems.OfType<string>());
+            HeaderBody.SelectedTextItems.AddRange(this.SelectedItems.OfType<string>());
             HeaderBody.autoFilter.Apply();
-            this.Popup.Close();
+            this.HeaderBody.ContextFlyout!.Hide();
         }
 
-        private void SortZAItem_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void SortZAItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             var worksheet = HeaderBody.ColumnHeader.Worksheet;
             try
@@ -94,7 +140,7 @@ namespace Calcita.Controls
             }
         }
 
-        private void SortAZItem_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void SortAZItem_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             var headerBody = this.HeaderBody;
             var worksheet = headerBody.ColumnHeader.Worksheet;
@@ -109,7 +155,39 @@ namespace Calcita.Controls
             }
         }
 
-        internal static void ShowFilterPanel(Calcita.Data.AutoColumnFilter.AutoColumnFilterBody headerBody, Point point)
+        void SelectAll()
+        {
+            this.Selection.SingleSelect = false;
+            this.Selection.SelectAll();
+        }
+
+        void SetSelectedItems(List<string> selectedTextItems)
+        {
+            var set = selectedTextItems.ToHashSet();
+            foreach (var item in selectedTextItems)
+            {
+                this.SelectedItems.Add(item);
+            }
+        }
+
+        void SetItems(List<string> items)
+        {
+            this.ItemsSource = items;
+        }
+
+        private void Cb_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            if (Items.OfType<CheckBox>().All(p => p.IsChecked == true))
+            {
+                this.SelectAllButton?.IsChecked = true;
+            }
+            else
+            {
+                this.SelectAllButton?.IsChecked = false;
+            }
+        }
+
+        internal static void ShowFilterPanel(Calcita.Data.AutoColumnFilter.AutoColumnFilterBody headerBody, Graphics.Point point)
         {
             if (headerBody.ColumnHeader == null || headerBody.ColumnHeader.Worksheet == null) return;
 
@@ -121,56 +199,22 @@ namespace Calcita.Controls
 
             RGRect buttonRect = headerBody.GetColumnFilterButtonRect(headerRect.Size);
 
-            if (headerBody.ContextMenu == null)
+            if (headerBody.ContextFlyout == null)
             {
-                var filterPanel = new ColumnFilterContextMenu()
+                var filterPanel = new FilterBox()
                 {
                     HeaderBody = headerBody,
                 };
 
-                filterPanel.Template = new FuncControlTemplate<ColumnFilterContextMenu>((p, ns) =>
+                headerBody.ContextFlyout = new Flyout()
                 {
-                    var popup = new Popup();
-                    var az = new RadioButton();
-                    var za = new RadioButton();
-                    var okbtn = new Button();
-                    var canclbtn = new Button();
-                    var selectCb = new CheckBox();
-
-                    popup = new Popup()
-                    {
-                        Child =
-                        new DockPanel() { }.SetChilds(
-                            new DockPanel().SetChilds(
-                                az = new RadioButton()
-                                {
-                                    Content = "A-Z"
-                                },
-                                za = new RadioButton()
-                                {
-                                    Content = "Z-A"
-                                }),
-                            new DockPanel() { }.SetChilds(),
-                            new ListBox()
-                        ),
-                       
-                    };
-
-                    ns.Register("Part_Popup", popup);
-                    ns.Register("Part_SortAZItem", az);
-                    ns.Register("Part_SortZAItem", za);
-                    ns.Register("Part_OkButton", okbtn);
-                    ns.Register("Part_CancelButton", canclbtn);
-                    ns.Register("Part_SelectAll", selectCb);
-                    return popup;
-                });
-
-                headerBody.ContextMenu = filterPanel;
+                    Content = filterPanel,
+                };
             }
 
-            if (headerBody.ContextMenu != null)
+            if (headerBody.ContextFlyout != null)
             {
-                if (headerBody.ContextMenu is ColumnFilterContextMenu filterPanel)
+                if (headerBody.ContextFlyout is Flyout { Content: FilterBox filterPanel } flyout)
                 {
                     if (headerBody.DataDirty)
                     {
@@ -181,19 +225,16 @@ namespace Calcita.Controls
                             headerBody.ColumnHeader.Worksheet.ControlAdapter.ChangeCursor(CursorStyle.Busy);
 
                             var items = headerBody.GetDistinctItems();
-                            items.Insert(0, LanguageResource.Filter_SelectAll);
                             filterPanel.ItemsSource = items;
+                            filterPanel.SetItems(items);
 
                             if (headerBody.IsSelectAll == true)
                             {
-                                filterPanel.Selection.SelectAll();
+                                filterPanel.SelectAll();
                             }
                             else
                             {
-								foreach (var item in headerBody.selectedTextItems)
-								{
-                                    filterPanel.SelectedItems.Add(item);
-                                }
+                                filterPanel.SetSelectedItems(headerBody.selectedTextItems);
                             }
                         }
                         finally
@@ -204,23 +245,80 @@ namespace Calcita.Controls
                         headerBody.DataDirty = false;
                         headerBody.IsSelectAll = true;
                     }
+                    flyout.SetValue(Flyout.ShowModeProperty, FlyoutShowMode.Standard);
+                    flyout.SetValue(Flyout.PlacementProperty, PlacementMode.Pointer);
+                    flyout.ShowAt(worksheet.ControlAdapter.ControlInstance as Control);
                 }
-
-                var pp = new Graphics.Point(headerRect.Right - 240, buttonRect.Bottom + 1);
-
-                pp = worksheet.ControlAdapter.PointToScreen(pp);
-
-                var rect = new RGRect(pp, pp);
-
-                headerBody.ContextMenu.Popup.Placement = PlacementMode.AnchorAndGravity;
-                headerBody.ContextMenu.Popup.PlacementRect = rect;
-                headerBody.ContextMenu.Popup.PlacementAnchor = Avalonia.Controls.Primitives.PopupPositioning.PopupAnchor.Left;
-                headerBody.ContextMenu.Popup.Open();
             }
         }
+
+        protected override Control CreateContainerForItemOverride(object? item, int index, object? recycleKey)
+        {
+            return new FilterBoxItem();
+        }
+
+        protected override bool NeedsContainerOverride(object? item, int index, out object? recycleKey)
+        {
+            return NeedsContainer<FilterBoxItem>(item, out recycleKey);
+        }
+    }
+
+    /// <summary>
+    /// A selectable item in a <see cref="ListBox"/>.
+    /// </summary>
+    [PseudoClasses(":pressed", ":selected")]
+    public class FilterBoxItem : ContentControl, ISelectable
+    {
+        /// <summary>
+        /// Defines the <see cref="IsSelected"/> property.
+        /// </summary>
+        public static readonly StyledProperty<bool> IsSelectedProperty =
+            SelectingItemsControl.IsSelectedProperty.AddOwner<FilterBoxItem>();
+
+        /// <summary>
+        /// Initializes static members of the <see cref="FilterBoxItem"/> class.
+        /// </summary>
+        static FilterBoxItem()
+        {
+            SelectableMixin.Attach<FilterBoxItem>(IsSelectedProperty);
+            PressedMixin.Attach<FilterBoxItem>();
+            FocusableProperty.OverrideDefaultValue<FilterBoxItem>(true);
+            AutomationProperties.IsOffscreenBehaviorProperty.OverrideDefaultValue<FilterBoxItem>(IsOffscreenBehavior.FromClip);
+            PlatformFeedback.FeedbackTypeProperty.OverrideDefaultValue<FilterBoxItem>(FeedbackType.Auto);
+        }
+
+        /// <summary>
+        /// Gets or sets the selection state of the item.
+        /// </summary>
+        public bool IsSelected
+        {
+            get => GetValue(IsSelectedProperty);
+            set => SetValue(IsSelectedProperty, value);
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ListItemAutomationPeer(this);
+        }
+
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        {
+            base.OnPointerPressed(e);
+            UpdateSelectionFromEvent(e);
+        }
+
+        protected override void OnPointerReleased(PointerReleasedEventArgs e)
+        {
+            base.OnPointerReleased(e);
+            UpdateSelectionFromEvent(e);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            UpdateSelectionFromEvent(e);
+        }
+
+        protected bool UpdateSelectionFromEvent(RoutedEventArgs e) => SelectingItemsControl.ItemsControlFromItemContainer(this)?.UpdateSelectionFromEvent(this, e) ?? false;
     }
 }
-#endif
-
-
-

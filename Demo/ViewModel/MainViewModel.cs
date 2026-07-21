@@ -2,6 +2,7 @@
 using Avalonia.Media.Imaging;
 using Calcita.CellTypes;
 using Calcita.Chart;
+using Calcita.Data;
 using Calcita.Drawing.Shapes;
 using Calcita.Graphics;
 using Calcita.IO.OpenXML.Schema;
@@ -34,8 +35,10 @@ namespace Calcita.Demo.ViewModel
             
             // add demo sheet 4: Hatch Style
             AddDemoSheet4();
-        }
 
+            // add demo sheet 5: Row Filter
+            AddDemoSheet5();
+        }
 
         public Workbook Workbook { get; set => this.RaiseAndSetIfChanged(ref field, value); }
 
@@ -316,6 +319,45 @@ namespace Calcita.Demo.ViewModel
                 row++;
             }
 
+        }
+
+        private void AddDemoSheet5()
+        {
+            var worksheet = Workbook.AddWorksheet("Filter");
+
+            // Header row: the first row is treated as title/header row
+            worksheet[0, 0] = "Category";
+            worksheet[0, 1] = "Status";
+            worksheet[0, 2] = "Amount";
+
+            // Sample data rows
+            worksheet[1, 0] = "Fruit";
+            worksheet[1, 1] = "Pending";
+            worksheet[1, 2] = 120;
+
+            worksheet[2, 0] = "Fruit";
+            worksheet[2, 1] = "Done";
+            worksheet[2, 2] = 80;
+
+            worksheet[3, 0] = "Vegetable";
+            worksheet[3, 1] = "Pending";
+            worksheet[3, 2] = 60;
+
+            worksheet[4, 0] = "Vegetable";
+            worksheet[4, 1] = "Done";
+            worksheet[4, 2] = 95;
+
+            worksheet[5, 0] = "Meat";
+            worksheet[5, 1] = "Pending";
+            worksheet[5, 2] = 150;
+
+            worksheet[6, 0] = "Meat";
+            worksheet[6, 1] = "Done";
+            worksheet[6, 2] = 70;
+
+            // Create a built-in dropdown auto filter over the data columns.
+            // The first row is used as the header row, so titleRows = 1.
+            worksheet.CreateColumnFilter(0, 2, 1, AutoColumnFilterUI.DropdownButtonAndPanel);
         }
 
     }

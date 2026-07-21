@@ -21,6 +21,7 @@ using Calcita.Graphics;
 using Calcita.Rendering;
 using Calcita.Interaction;
 using System.Runtime.CompilerServices;
+using Avalonia.Controls.Primitives;
 
 namespace Calcita.Data
 {
@@ -336,7 +337,7 @@ namespace Calcita.Data
             }
 
 
-            public Calcita.Controls.ColumnFilterContextMenu ContextMenu { get; set; }
+            public FlyoutBase? ContextFlyout { get; set; }
 
 
             internal readonly List<string> selectedTextItems = new List<string>();
@@ -566,7 +567,7 @@ namespace Calcita.Data
 
             if (this.columnFilterUIFlag == AutoColumnFilterUI.DropdownButtonAndPanel)
             {
-                Calcita.Controls.ColumnFilterContextMenu.ShowFilterPanel(headerBody, point);
+                Calcita.Controls.FilterBox.ShowFilterPanel(headerBody, point);
                 return true;
             }
 
@@ -577,7 +578,7 @@ namespace Calcita.Data
         {
             try
             {
-                this.Worksheet.ControlAdapter.ChangeCursor(CursorStyle.Busy);
+                this.Worksheet.ControlAdapter?.ChangeCursor(CursorStyle.Busy);
 
                 for (int i = start; i <= end; i++)
                 {
@@ -587,7 +588,7 @@ namespace Calcita.Data
             }
             finally
             {
-                this.Worksheet.ControlAdapter.ChangeCursor(CursorStyle.PlatformDefault);
+                this.Worksheet.ControlAdapter?.ChangeCursor(CursorStyle.PlatformDefault);
             }
         }
 
