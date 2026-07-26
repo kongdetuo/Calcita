@@ -17,64 +17,70 @@
  ****************************************************************************/
 
 using Avalonia;
-using Avalonia.Automation;
-using Avalonia.Automation.Peers;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
-using Avalonia.Controls.Mixins;
 using Avalonia.Controls.Primitives;
-using Avalonia.Input;
-using Avalonia.Interactivity;
 using Calcita.Interaction;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Calcita.Controls
 {
-    [TemplatePart("PART_SortAZItem", typeof(RadioButton))]
-    [TemplatePart("PART_SortZAItem", typeof(RadioButton))]
+    // todo clear filter 
+    [TemplatePart("PART_SortAscending", typeof(RadioButton))]
+    [TemplatePart("PART_SortDescending", typeof(RadioButton))]
     [TemplatePart("PART_OkButton", typeof(Button))]
     [TemplatePart("PART_CancelButton", typeof(Button))]
-    [TemplatePart("PART_SelectAll", typeof(CheckBox))]
-    [TemplatePart("PART_ScrollViewer", typeof(ScrollViewer))]
-    public class FilterBox : SelectingItemsControl
+    public class FilterControl : TemplatedControl
     {
-        protected override Type StyleKeyOverride => typeof(FilterBox);
+        private bool selecting;
+        protected override Type StyleKeyOverride => typeof(FilterControl);
 
-        static FilterBox()
+        static FilterControl()
         {
-            SelectionChangedEvent.AddClassHandler<FilterBox>((x, e) => x.OnSelectionChanged());
+            TextSelectedAllProperty.Changed.AddClassHandler<FilterControl>((x, e) => x.OnTextSelectedAllChanged());
         }
-        
-        private void OnSelectionChanged()
+
+        private void OnTextSelectedAllChanged()
         {
-            if(SelectAllButton is null || this.SelectedItems is null)
-            {
+            if (TextSelectedAll == null)
                 return;
-            }
-            if (this.SelectedItems.Count == 0)
-            {
-                SelectAllButton.IsChecked = false;
-            }
-            else if(this.SelectedItems.Count == (this.ItemsSource as List<String>)?.Count)
-            {
-                SelectAllButton.IsChecked = true;
-            }
-            else
-            {
-                SelectAllButton.IsChecked = null;
-            }
+
+            selecting = true;
+
+            foreach (var item in TextFilterItems)
+                item.IsSelected = TextSelectedAll.Value;
+
+            selecting = false;
         }
 
-        // todo add styled properties
-
-        ToggleButton? SortAZItem;
-        ToggleButton? SortZAItem;
+        RadioButton? SortAZItem;
+        RadioButton? SortZAItem;
         Button? OkButton;
         Button? CancelButton;
-        CheckBox? SelectAllButton;
-  
+
+        Button? ClearButton;
+
+        /// <summary>
+        /// TextSelectedAllStyledProperty definition
+        /// </summary>
+        public static readonly StyledProperty<bool?> TextSelectedAllProperty =
+            AvaloniaProperty.Register<FilterControl, bool?>(nameof(TextSelectedAll));
+
+        /// <summary>
+        /// Gets or sets the TextSelectedAll property. This StyledProperty
+        /// indicates ....
+        /// </summary>
+        public bool? TextSelectedAll
+        {
+            get => this.GetValue(TextSelectedAllProperty);
+            set => SetValue(TextSelectedAllProperty, value);
+        }
+
+        public IEnumerable<TextFilterItem> TextFilterItems { get; private set; } = [];
+
         Calcita.Data.AutoColumnFilter.AutoColumnFilterBody HeaderBody { get; set; } = null!;
 
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -83,32 +89,21 @@ namespace Calcita.Controls
             this.SortZAItem?.Click -= SortZAItem_Click;
             this.OkButton?.Click -= OkButton_Click;
             this.CancelButton?.Click -= CancelButton_Click;
-            this.SelectAllButton?.Click -= SelectAll_CheckedChanged;
+            this.ClearButton?.Click -= ClearButton_Click;
 
             base.OnApplyTemplate(e);
 
-            this.SortAZItem = e.NameScope.Find<ToggleButton>("PART_SortAZItem");
-            this.SortZAItem = e.NameScope.Find<ToggleButton>("PART_SortZAItem");
+            this.SortAZItem = e.NameScope.Find<RadioButton>("PART_SortAscending");
+            this.SortZAItem = e.NameScope.Find<RadioButton>("PART_SortDescending");
             this.OkButton = e.NameScope.Find<Button>("PART_OkButton");
             this.CancelButton = e.NameScope.Find<Button>("PART_CancelButton");
-            this.SelectAllButton = e.NameScope.Find<CheckBox>("PART_SelectAll");
+            this.ClearButton = e.NameScope.Find<Button>("PART_ClearButton");
 
             this.SortAZItem?.Click += SortAZItem_Click;
             this.SortZAItem?.Click += SortZAItem_Click;
             this.OkButton?.Click += OkButton_Click;
             this.CancelButton?.Click += CancelButton_Click;
-            this.SelectAllButton?.IsCheckedChanged += SelectAll_CheckedChanged;
-        }
-
-        private void SelectAll_CheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if(this.SelectAllButton?.IsChecked == true)
-            {
-                SelectAll();
-            }else if(this.SelectAllButton?.IsChecked == false)
-            {
-                this.SelectedItems?.Clear();
-            }
+            this.ClearButton?.Click += ClearButton_Click;
         }
 
         private void CancelButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -118,11 +113,21 @@ namespace Calcita.Controls
 
         private void OkButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            var items = this.SelectedItems.OfType<string>().ToList();
+            var selectedItems = this.TextFilterItems
+                .Where(item=>item.IsSelected)
+                .Select(item=>item.Text);
 
             HeaderBody.IsSelectAll = false;
             HeaderBody.selectedTextItems.Clear();
-            HeaderBody.SelectedTextItems.AddRange(this.SelectedItems.OfType<string>());
+            HeaderBody.SelectedTextItems.AddRange(selectedItems);
+            HeaderBody.autoFilter.Apply();
+
+            this.HeaderBody.ContextFlyout!.Hide();
+        }
+
+        private void ClearButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            HeaderBody.IsSelectAll = true;
             HeaderBody.autoFilter.Apply();
             this.HeaderBody.ContextFlyout!.Hide();
         }
@@ -155,38 +160,6 @@ namespace Calcita.Controls
             }
         }
 
-        void SelectAll()
-        {
-            this.Selection.SingleSelect = false;
-            this.Selection.SelectAll();
-        }
-
-        void SetSelectedItems(List<string> selectedTextItems)
-        {
-            var set = selectedTextItems.ToHashSet();
-            foreach (var item in selectedTextItems)
-            {
-                this.SelectedItems.Add(item);
-            }
-        }
-
-        void SetItems(List<string> items)
-        {
-            this.ItemsSource = items;
-        }
-
-        private void Cb_IsCheckedChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        {
-            if (Items.OfType<CheckBox>().All(p => p.IsChecked == true))
-            {
-                this.SelectAllButton?.IsChecked = true;
-            }
-            else
-            {
-                this.SelectAllButton?.IsChecked = false;
-            }
-        }
-
         internal static void ShowFilterPanel(Calcita.Data.AutoColumnFilter.AutoColumnFilterBody headerBody, Graphics.Point point)
         {
             if (headerBody.ColumnHeader == null || headerBody.ColumnHeader.Worksheet == null) return;
@@ -201,7 +174,7 @@ namespace Calcita.Controls
 
             if (headerBody.ContextFlyout == null)
             {
-                var filterPanel = new FilterBox()
+                var filterPanel = new FilterControl()
                 {
                     HeaderBody = headerBody,
                 };
@@ -214,7 +187,7 @@ namespace Calcita.Controls
 
             if (headerBody.ContextFlyout != null)
             {
-                if (headerBody.ContextFlyout is Flyout { Content: FilterBox filterPanel } flyout)
+                if (headerBody.ContextFlyout is Flyout { Content: FilterControl filterPanel } flyout)
                 {
                     if (headerBody.DataDirty)
                     {
@@ -222,24 +195,12 @@ namespace Calcita.Controls
 
                         try
                         {
-                            headerBody.ColumnHeader.Worksheet.ControlAdapter.ChangeCursor(CursorStyle.Busy);
-
-                            var items = headerBody.GetDistinctItems();
-                            filterPanel.ItemsSource = items;
-                            filterPanel.SetItems(items);
-
-                            if (headerBody.IsSelectAll == true)
-                            {
-                                filterPanel.SelectAll();
-                            }
-                            else
-                            {
-                                filterPanel.SetSelectedItems(headerBody.selectedTextItems);
-                            }
+                            headerBody.ColumnHeader.Worksheet.ControlAdapter?.ChangeCursor(CursorStyle.Busy);
+                            filterPanel.UpdateData();
                         }
                         finally
                         {
-                            headerBody.ColumnHeader.Worksheet.ControlAdapter.ChangeCursor(CursorStyle.PlatformDefault);
+                            headerBody.ColumnHeader.Worksheet.ControlAdapter?.ChangeCursor(CursorStyle.PlatformDefault);
                         }
 
                         headerBody.DataDirty = false;
@@ -247,78 +208,71 @@ namespace Calcita.Controls
                     }
                     flyout.SetValue(Flyout.ShowModeProperty, FlyoutShowMode.Standard);
                     flyout.SetValue(Flyout.PlacementProperty, PlacementMode.Pointer);
-                    flyout.ShowAt(worksheet.ControlAdapter.ControlInstance as Control);
+                    flyout.ShowAt((Control)worksheet.ControlAdapter!.ControlInstance);
                 }
             }
         }
 
-        protected override Control CreateContainerForItemOverride(object? item, int index, object? recycleKey)
+        private void UpdateData()
         {
-            return new FilterBoxItem();
+            foreach (var item in TextFilterItems)
+                item.PropertyChanged -= Item_PropertyChanged;
+
+            var sourceItems = HeaderBody.GetDistinctItems();
+            bool isSelectedAll = HeaderBody.IsSelectAll == true;
+            var set = isSelectedAll ? HeaderBody.SelectedTextItems.ToHashSet() : [];
+            var items = sourceItems.Select(text => new TextFilterItem(text, isSelectedAll || set.Contains(text))).ToList();
+
+            TextFilterItems = items;
+
+            foreach (var item in TextFilterItems)
+                item.PropertyChanged += Item_PropertyChanged;
+
+            Item_PropertyChanged(null, null!);
         }
 
-        protected override bool NeedsContainerOverride(object? item, int index, out object? recycleKey)
+        private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            return NeedsContainer<FilterBoxItem>(item, out recycleKey);
+            if (selecting)
+                return;
+
+            if (TextFilterItems.All(p => p.IsSelected))
+                this.SetCurrentValue(TextSelectedAllProperty, true);
+            else if (TextFilterItems.All(p => !p.IsSelected))
+                this.SetCurrentValue(TextSelectedAllProperty, false);
+            else
+                this.SetCurrentValue(TextSelectedAllProperty, null);
         }
     }
 
-    /// <summary>
-    /// A selectable item in a <see cref="ListBox"/>.
-    /// </summary>
-    [PseudoClasses(":pressed", ":selected")]
-    public class FilterBoxItem : ContentControl, ISelectable
+
+
+    public abstract class FilterItem : INotifyPropertyChanged
     {
-        /// <summary>
-        /// Defines the <see cref="IsSelected"/> property.
-        /// </summary>
-        public static readonly StyledProperty<bool> IsSelectedProperty =
-            SelectingItemsControl.IsSelectedProperty.AddOwner<FilterBoxItem>();
-
-        /// <summary>
-        /// Initializes static members of the <see cref="FilterBoxItem"/> class.
-        /// </summary>
-        static FilterBoxItem()
-        {
-            SelectableMixin.Attach<FilterBoxItem>(IsSelectedProperty);
-            PressedMixin.Attach<FilterBoxItem>();
-            FocusableProperty.OverrideDefaultValue<FilterBoxItem>(true);
-            AutomationProperties.IsOffscreenBehaviorProperty.OverrideDefaultValue<FilterBoxItem>(IsOffscreenBehavior.FromClip);
-            PlatformFeedback.FeedbackTypeProperty.OverrideDefaultValue<FilterBoxItem>(FeedbackType.Auto);
-        }
-
-        /// <summary>
-        /// Gets or sets the selection state of the item.
-        /// </summary>
         public bool IsSelected
         {
-            get => GetValue(IsSelectedProperty);
-            set => SetValue(IsSelectedProperty, value);
+            get;
+            set
+            {
+                if (field != value)
+                {
+                    field = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+                }
+            }
         }
 
-        protected override AutomationPeer OnCreateAutomationPeer()
+        public event PropertyChangedEventHandler? PropertyChanged;
+    }
+
+    public class TextFilterItem : FilterItem
+    {
+        public TextFilterItem(string text, bool selected)
         {
-            return new ListItemAutomationPeer(this);
+            this.IsSelected = selected;
+            this.Text = text;
         }
 
-        protected override void OnPointerPressed(PointerPressedEventArgs e)
-        {
-            base.OnPointerPressed(e);
-            UpdateSelectionFromEvent(e);
-        }
-
-        protected override void OnPointerReleased(PointerReleasedEventArgs e)
-        {
-            base.OnPointerReleased(e);
-            UpdateSelectionFromEvent(e);
-        }
-
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            base.OnKeyDown(e);
-            UpdateSelectionFromEvent(e);
-        }
-
-        protected bool UpdateSelectionFromEvent(RoutedEventArgs e) => SelectingItemsControl.ItemsControlFromItemContainer(this)?.UpdateSelectionFromEvent(this, e) ?? false;
+        public string Text { get; private set; }
     }
 }

@@ -567,7 +567,7 @@ namespace Calcita.Data
 
             if (this.columnFilterUIFlag == AutoColumnFilterUI.DropdownButtonAndPanel)
             {
-                Calcita.Controls.FilterBox.ShowFilterPanel(headerBody, point);
+                Calcita.Controls.FilterControl.ShowFilterPanel(headerBody, point);
                 return true;
             }
 

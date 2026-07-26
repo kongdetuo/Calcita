@@ -1,0 +1,100 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:sys="using:System"
+					xmlns:calcita="using:Calcita.Controls">
+	<ControlTheme x:Key="CalcitaSortRadioButtonTheme"
+				  TargetType="RadioButton">
+		<Setter Property="BorderThickness" Value="{DynamicResource CalcitaBorderThickness}" />
+		<Setter Property="Foreground" Value="{DynamicResource CalcitaForegroundBrush}" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Padding" Value="4" />
+		<Setter Property="CornerRadius" Value="4"/>
+		<Setter Property="Template">
+			<ControlTemplate>
+				<ContentPresenter Name="PART_ContentPresenter"
+								  Padding="{TemplateBinding Padding}"
+								  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+								  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+								  Background="{TemplateBinding Background}"
+								  BorderBrush="{TemplateBinding BorderBrush}"
+								  BorderThickness="{TemplateBinding BorderThickness}"
+								  Content="{TemplateBinding Content}"
+								  ContentTemplate="{TemplateBinding ContentTemplate}"
+								  CornerRadius="{TemplateBinding CornerRadius}"
+								  TextElement.Foreground="{TemplateBinding Foreground}" />
+			</ControlTemplate>
+		</Setter>
+		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource CalcitaBorderLowBrush}" />
+		</Style>
+		<Style Selector="^:checked">
+			<Setter Property="Background" Value="{DynamicResource CalcitaHighlightBrush}" />
+		</Style>
+	</ControlTheme>
+
+
+	<ControlTheme x:Key="{x:Type calcita:FilterControl}"
+				  TargetType="calcita:FilterControl">
+		<Setter Property="Padding" Value="4" />
+		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+		<Setter Property="ScrollViewer.IsScrollChainingEnabled" Value="True" />
+		<Setter Property="MinWidth" Value="240"/>
+		<Setter Property="MinHeight" Value="320"/>
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Grid RowDefinitions="auto * auto ">
+					<DockPanel Grid.Row="0" LastChildFill="false" >
+						<RadioButton Name="PART_SortAscending" Theme="{DynamicResource CalcitaSortRadioButtonTheme}">Sort A to Z</RadioButton>
+						<Border BorderThickness ="1,0,0,0" 
+								BorderBrush="{DynamicResource CalcitaBorderMidBrush}" 
+								Margin="4"/>
+						<RadioButton Name="PART_SortDescending" Theme="{DynamicResource CalcitaSortRadioButtonTheme}">Sort Z to A</RadioButton>
+					</DockPanel>
+
+					<Border Grid.Row="1" Background="{DynamicResource CalcitaBackgroundBrush}"
+							CornerRadius="4" Margin="0,8">
+						<Border.Styles>
+							<Style Selector="CheckBox">
+								<Setter Property="Margin" Value="4,0"/>
+							</Style>
+						</Border.Styles>
+						
+						<DockPanel >
+							<CheckBox DockPanel.Dock="Top" Name="PART_SelectAll"
+									  Content="Select All"
+									  IsChecked="{Binding TextSelectedAll, RelativeSource={RelativeSource TemplatedParent}}"/>
+
+							<ScrollViewer Grid.Row="2" Name="PART_ScrollViewer"
+										  AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}"
+										  BringIntoViewOnFocusChange="{TemplateBinding (ScrollViewer.BringIntoViewOnFocusChange)}"
+										  Background="{TemplateBinding Background}"
+										  HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+										  IsScrollChainingEnabled="{TemplateBinding (ScrollViewer.IsScrollChainingEnabled)}"
+										  IsDeferredScrollingEnabled="{TemplateBinding (ScrollViewer.IsDeferredScrollingEnabled)}"
+										  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}"
+										  VerticalSnapPointsType="{TemplateBinding (ScrollViewer.VerticalSnapPointsType)}"
+										  HorizontalSnapPointsType="{TemplateBinding (ScrollViewer.HorizontalSnapPointsType)}">
+								<ItemsControl ItemsSource="{Binding TextFilterItems, RelativeSource={RelativeSource TemplatedParent}}">
+									<ItemsControl.DataTemplates>
+										<DataTemplate DataType="{x:Type calcita:TextFilterItem}">
+											<CheckBox Content="{Binding Text}" 
+													  IsChecked="{Binding IsSelected}"/>
+										</DataTemplate>
+									</ItemsControl.DataTemplates>
+								</ItemsControl>
+							</ScrollViewer>
+						</DockPanel>
+					</Border>
+
+
+					<Grid Grid.Row="3" ColumnDefinitions="auto * auto auto">
+						<Button Grid.Column="2" Name="PART_OkButton">OK</Button>
+						<Button Grid.Column="3" Name="PART_CancelButton">Cancel</Button>
+					</Grid>
+				</Grid>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+</ResourceDictionary>

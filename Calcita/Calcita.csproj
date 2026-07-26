@@ -89,7 +89,7 @@
     <AvaloniaXaml Remove="Avalonia\Base.axaml" />
     <AvaloniaXaml Remove="Avalonia\ControlTheme.axaml" />
     <AvaloniaXaml Remove="Avalonia\TemplatedControl1.axaml" />
-    <AvaloniaXaml Remove="Avalonia\Theme\FilterBox.axaml" />
+    <AvaloniaXaml Remove="Avalonia\Theme\FilterControl.axaml" />
     <AvaloniaXaml Remove="Avalonia\Theme\InputTextBox.axaml" />
     <AvaloniaXaml Remove="Avalonia\UserControl1.axaml" />
   </ItemGroup>
@@ -97,7 +97,7 @@
     <Compile Remove="Avalonia\TemplatedControl1.axaml.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Avalonia\Theme\FilterBox.axaml" />
+    <AvaloniaResource Include="Avalonia\Theme\FilterControl.axaml" />
     <AvaloniaResource Include="Avalonia\Theme\InputTextBox.axaml" />
     <AvaloniaResource Include="Avalonia\Theme\Base.axaml" />
   </ItemGroup>

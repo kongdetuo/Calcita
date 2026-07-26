@@ -10,7 +10,7 @@
 				<MergeResourceInclude Source="/Avalonia/Theme/SheetTabControl.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/CalcitaControl.axaml" />
 				<MergeResourceInclude Source="/Avalonia/Theme/InputTextBox.axaml" />
-				<MergeResourceInclude Source="/Avalonia/Theme/FilterBox.axaml" />
+				<MergeResourceInclude Source="/Avalonia/Theme/FilterControl.axaml" />
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Styles.Resources>
