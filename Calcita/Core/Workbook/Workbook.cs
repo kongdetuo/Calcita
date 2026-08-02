@@ -586,17 +586,18 @@ namespace Calcita
 
 		public int WorksheetCount { get { return this.worksheets.Count; } }
 
-		/// <summary>
-		/// Reset a workbook to initial status (clear all worksheets and create one default)
-		/// </summary>
-		public void Reset()
-		{
-			ClearWorksheets();
+        /// <summary>
+        /// create a workbook with one blank worksheet, and return the instance of workbook.
+        /// </summary>
+        /// <returns></returns>
+        public static Workbook CreateBlankWorkbook()
+        {
+            var wb = new Workbook();
+            wb.AddWorksheet(wb.CreateWorksheet());
+            return wb;
+        }
 
-			AddWorksheet(CreateWorksheet());
-		}
-
-		public bool IsEmpty
+        public bool IsEmpty
 		{
 			get
 			{

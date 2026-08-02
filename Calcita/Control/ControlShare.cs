@@ -187,59 +187,6 @@ namespace Calcita.Controls
 
         #region Workbook & Worksheet
 
-        #region Save & Load
-
-
-        /// <summary>
-        /// Save workbook into file
-        /// </summary>
-        /// <param name="path">Full file path to save workbook</param>
-        /// <param name="fileFormat">Specified file format used to save workbook</param>
-        /// <param name="encoding">Encoding used to read plain-text from resource. (Optional)</param>
-        public void Save(string path, IO.FileFormat fileFormat, Encoding encoding)
-        {
-            this.Workbook.Save(path, fileFormat, encoding);
-        }
-
-        /// <summary>
-        /// Save workbook into stream with specified format
-        /// </summary>
-        /// <param name="stream">Stream to output data of workbook</param>
-        /// <param name="fileFormat">Specified file format used to save workbook</param>
-        /// <param name="encoding">Encoding used to read plain-text from resource. (Optional)</param>
-        public void Save(Stream stream, Calcita.IO.FileFormat fileFormat, Encoding encoding)
-        {
-            this.Workbook.Save(stream, fileFormat, encoding);
-        }
-
-        /// <summary>
-        /// Load workbook from file with specified format
-        /// </summary>
-        /// <param name="path">Path to open file and read data.</param>
-        /// <param name="fileFormat">Flag used to determine what format should be used to read data from file.</param>
-        /// <param name="encoding">Encoding used to read plain-text from resource. (Optional)</param>
-        public void Load(string path, IO.FileFormat fileFormat, Encoding encoding)
-        {
-            this.Workbook.Load(path, fileFormat, encoding);
-        }
-
-        /// <summary>
-        /// Load workbook from stream with specified format.
-        /// </summary>
-        /// <param name="stream">Stream to read data of workbook.</param>
-        /// <param name="fileFormat">Flag used to determine what format should be used to read data from file.</param>
-        /// <param name="encoding">Encoding used to read plain-text data from specified stream.</param>
-        public void Load(Stream stream, Calcita.IO.FileFormat fileFormat, Encoding encoding)
-        {
-            this.Workbook.Load(stream, fileFormat, encoding);
-
-            if (this.Workbook.Worksheets.Count > 0)
-            {
-                this.CurrentWorksheet = this.Workbook.Worksheets[0];
-            }
-        }
-        #endregion // Save & Load
-
         /// <summary>
         /// Event raised when workbook loaded from stream or file.
         /// </summary>
@@ -271,15 +218,6 @@ namespace Calcita.Controls
             }
         }
 
-        /// <summary>
-        /// Reset control and workbook (remove all worksheets and put one new)
-        /// </summary>
-        public void Reset()
-        {
-            this.Workbook.Reset();
-
-            this.CurrentWorksheet = this.Workbook.Worksheets[0];
-        }
 
         ///// <summary>
         ///// Check whether or not current workbook is empty (all worksheets don't have any cells)

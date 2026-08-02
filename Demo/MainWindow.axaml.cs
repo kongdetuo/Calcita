@@ -1,15 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Reactive;
+﻿using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
-using Calcita.CellTypes;
 using Calcita.Controls;
-using Calcita.Drawing.Shapes;
+using Calcita.Demo.ViewModel;
 
 namespace Calcita.Demo
 {
@@ -25,11 +20,11 @@ namespace Calcita.Demo
             this.DataContext = new ViewModel.MainViewModel();
             // don't use Clear method in actual application,
             // instead, load template into the first worksheet directly.
-         
+
 
             // handles event to update menu check status.
             grid.PropertyChanged += (s, e) => UpdateMenuChecks();
-           
+
             grid.GetObservable(CalcitaControl.CurrentWorksheetProperty).Subscribe(new AnonymousObserver<Worksheet?>(ws => UpdateMenuChecks()));
 
         }
@@ -49,49 +44,56 @@ namespace Calcita.Demo
         #region Menu - File
         private void File_New_Click(object sender, RoutedEventArgs e)
         {
-            grid.Reset();
+            var vm = (MainViewModel)this.DataContext!;
+            vm.Workbook = Workbook.CreateBlankWorkbook();
         }
 
         private async void File_Open_Click(object sender, RoutedEventArgs e)
         {
             var storage = this.StorageProvider;
-            var options = new FilePickerOpenOptions(){AllowMultiple = false};
-            var res = await storage.OpenFilePickerAsync(options);
-          //  var dlg = new OpenFileDialog();
+            var options = new FilePickerOpenOptions()
+            {
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new ("Excel 2007 Document") { Patterns = ["*.xlsx"] },
+                ]
+            };
+            var file = await storage.OpenFilePickerAsync(options);
+            if(file.Count > 0)
+            {
+                var vm = (MainViewModel)this.DataContext!;
+                await using var stream = await file[0].OpenReadAsync();
 
-        //	dlg.DefaultExt = ".xlsx";
-        //	dlg.Filter = "Supported file format(*.xlsx;*.rgf;*.xml)|*.xlsx;*.rgf;*.xml|Excel 2007 Document(*.xlsx)|*.xlsx|ReoGrid Format(*.rgf;*.xml)|*.rgf;*.xml";
+                var workbook = new Workbook();
+                workbook.Load(stream, IO.FileFormat.Excel2007);
 
-            // Process open file dialog box results 
-            //if (dlg.ShowDialog() == true)
-            //{
-            //	// Open document 
-            //	try
-            //	{
-            //		grid.Load(dlg.FileName);
-            //	}
-            //	catch (Exception ex)
-            //	{
-            //		MessageBox.Show(this, "Loading error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //	}
-            //}
+                vm.Workbook = workbook;
+            }
         }
 
-        private void File_Save_Click(object sender, RoutedEventArgs e)
+        private async void File_Save_Click(object sender, RoutedEventArgs e)
         {
-            //Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            if (grid.Workbook is null)
+                return;
 
-            //dlg.DefaultExt = ".xlsx";
-            //dlg.Filter = "Excel 2007 Document|*.xlsx|ReoGrid Format|*.rgf";
+            var file = await this.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+            {
+                DefaultExtension = ".xlsx",
+                FileTypeChoices =
+                [
+                    new ("Excel 2007 Document") { Patterns = ["*.xlsx"] },
+                ]
+            });
 
-            //// Process open file dialog box results 
-            //if (dlg.ShowDialog() == true)
-            //{
-            //	// Open document 
-            //	grid.Save(dlg.FileName);
+            if (file is not null)
+            {
+                // 打开文件的写入流。
+                await using var stream = await file.OpenWriteAsync();
+                grid.Workbook.Save(stream, IO.FileFormat.Excel2007);
+            }
 
-            //	System.Diagnostics.Process.Start(dlg.FileName);
-            //}
+
         }
 
         private void File_Exit_Click(object sender, RoutedEventArgs e)
@@ -124,12 +126,12 @@ namespace Calcita.Demo
 
         private void View_GuideLine_Click(object sender, RoutedEventArgs e)
         {
-            grid.CurrentWorksheet.SetSettings(WorksheetSettings.View_ShowGridLine, (sender as MenuItem)?.IsChecked == true);
+            grid.CurrentWorksheet?.SetSettings(WorksheetSettings.View_ShowGridLine, (sender as MenuItem)?.IsChecked == true);
         }
 
         private void View_PageBreaks_Click(object sender, RoutedEventArgs e)
         {
-            grid.CurrentWorksheet.SetSettings(WorksheetSettings.View_ShowPageBreaks, (sender as MenuItem)?.IsChecked == true);
+            grid.CurrentWorksheet?.SetSettings(WorksheetSettings.View_ShowPageBreaks, (sender as MenuItem)?.IsChecked == true);
         }
         #endregion // Menu - View
 
@@ -137,12 +139,15 @@ namespace Calcita.Demo
 
         private void freezeToCell_Click(object sender, RoutedEventArgs e)
         {
-            grid.CurrentWorksheet.FreezeToCell(grid.CurrentWorksheet.FocusPos);
+            grid.CurrentWorksheet?.FreezeToCell(grid.CurrentWorksheet.FocusPos);
         }
 
         private void Sheet_Append_100_Rows_Click(object sender, RoutedEventArgs e)
         {
-            grid.DoAction(new Actions.InsertRowsAction(grid.CurrentWorksheet.Rows, 100));
+            if (grid.CurrentWorksheet != null)
+            {
+                grid.DoAction(new Actions.InsertRowsAction(grid.CurrentWorksheet.Rows, 100));
+            }
         }
 
         #endregion Menu - Sheet

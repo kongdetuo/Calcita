@@ -210,11 +210,6 @@ namespace Calcita
 		bool Readonly { get; set; }
 
 		/// <summary>
-		/// Reset this workbook (Clear all worksheets and put one new)
-		/// </summary>
-		void Reset();
-
-		/// <summary>
 		/// Event raised when worksheet is created.
 		/// </summary>
 		event EventHandler<WorksheetCreatedEventArgs> WorksheetCreated;

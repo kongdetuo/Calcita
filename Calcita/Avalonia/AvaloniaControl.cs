@@ -45,7 +45,7 @@ namespace Calcita.Controls
     /// Calcita Spreadsheet Control
     /// </summary>
     public partial class CalcitaControl : TemplatedControl, IVisualWorkbook,
-    IRangePickableControl, IContextMenuControl, IPersistenceWorkbook, IActionControl
+    IRangePickableControl, IContextMenuControl, IActionControl
     {
         internal const int ScrollBarSize = 18;
 
