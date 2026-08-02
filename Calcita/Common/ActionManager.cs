@@ -120,11 +120,11 @@ namespace Calcita.Common
 			return redoStack.Count() > 0;
 		}
 
-		public IAction Undo()
+		public IAction? Undo()
 		{
 			if (undoStack.Count() > 0)
 			{
-				IUndoableAction action = null;
+				IUndoableAction? action = null;
 
 				while (undoStack.Count > 0)
 				{
@@ -154,11 +154,11 @@ namespace Calcita.Common
 			return null;
 		}
 
-		public IAction Redo()
+		public IAction? Redo()
 		{
 			if (redoStack.Count > 0)
 			{
-				IUndoableAction action = null;
+				IUndoableAction? action = null;
 
 				while (redoStack.Count > 0)
 				{

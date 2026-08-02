@@ -295,6 +295,8 @@ namespace Calcita.Controls
             }
 
             this.sheets.Clear();
+            this.actionManager.Reset();
+            this.UpdateUndoRedoStatus();
             this.CurrentWorksheet = null;
 
             if (workbook != null)

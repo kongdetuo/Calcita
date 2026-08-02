@@ -296,13 +296,60 @@ namespace Calcita.Controls
 
         #region Actions
 
+
+        /// <summary>
+        /// CanUndoDirectProperty definition
+        /// </summary>
+        public static readonly DirectProperty<CalcitaControl, bool> CanUndoProperty =
+            AvaloniaProperty.RegisterDirect<CalcitaControl, bool>(nameof(CanUndo),
+                o => o.CanUndo);
+
+
+        private bool _CanUndo = default;
+        /// <summary>
+        /// Gets or sets the CanUndo property. This DirectProperty 
+        /// indicates ....
+        /// </summary>
+        public bool CanUndo
+        {
+            get => _CanUndo;
+            private set => SetAndRaise(CanUndoProperty, ref _CanUndo, value);
+        }
+
+
+        /// <summary>
+        /// CanRedoDirectProperty definition
+        /// </summary>
+        public static readonly DirectProperty<CalcitaControl, bool> CanRedoProperty =
+            AvaloniaProperty.RegisterDirect<CalcitaControl, bool>(nameof(CanRedo),
+                o => o.CanRedo,
+                (o, v) => o.CanRedo = v);
+
+        private bool _CanRedo = default;
+        /// <summary>
+        /// Gets or sets the CanRedo property. This DirectProperty 
+        /// indicates ....
+        /// </summary>
+        public bool CanRedo
+        {
+            get => _CanRedo;
+            set => SetAndRaise(CanRedoProperty, ref _CanRedo, value);
+        }
+
+        private void UpdateUndoRedoStatus()
+        {
+            this.CanUndo = this.actionManager.CanUndo();
+            this.CanRedo = this.actionManager.CanRedo();
+        }
+
         internal ActionManager actionManager = new ActionManager();
 
-        private WorksheetReusableAction lastReusableAction;
+        private WorksheetReusableAction? lastReusableAction;
 
         public void DoAction(BaseWorksheetAction action)
         {
             this.DoAction(this.CurrentWorksheet, action);
+            UpdateUndoRedoStatus();
         }
 
         /// <summary>Do specified action. 
@@ -369,6 +416,9 @@ namespace Calcita.Controls
         /// <param name="action">action to be performed</param>
         public void DoAction(Worksheet? sheet, BaseWorksheetAction action)
         {
+            if(sheet is null)
+                throw new ArgumentNullException(nameof(sheet), "Target worksheet cannot be null.");
+
             action.Worksheet = sheet;
 
             this.actionManager.DoAction(action);
@@ -383,6 +433,8 @@ namespace Calcita.Controls
                 sheet.RequestInvalidate();
                 this.CurrentWorksheet = sheet;
             }
+
+            UpdateUndoRedoStatus();
 
             // fix #282, https://github.com/unvell/ReoGrid/issues/282
             // comment out to avoid invoke ActionPerformed event, which is already invoked by actionManager above.
@@ -431,6 +483,7 @@ namespace Calcita.Controls
 
                 Undid?.Invoke(this, new WorkbookActionEventArgs(action));
             }
+            UpdateUndoRedoStatus();
         }
 
         /// <summary>
@@ -473,6 +526,7 @@ namespace Calcita.Controls
 
                 Redid?.Invoke(this, new WorkbookActionEventArgs(action));
             }
+            UpdateUndoRedoStatus();
         }
 
         /// <summary>
@@ -489,8 +543,11 @@ namespace Calcita.Controls
         /// </summary>
         /// <param name="worksheet">The target worksheet to perform the action.</param>
         /// <param name="range">The new range to be applied for the last action.</param>
-        public void RepeatLastAction(Worksheet worksheet, RangePosition range)
+        public void RepeatLastAction(Worksheet? worksheet, RangePosition range)
         {
+            if (worksheet is null)
+                return;
+
             if (this.CurrentWorksheet != null)
             {
                 if (this.CurrentWorksheet.IsEditing)
@@ -499,7 +556,7 @@ namespace Calcita.Controls
                 }
             }
 
-            if (this.CanRedo())
+            if (this.CanRedo)
             {
                 this.Redo();
             }
@@ -515,27 +572,10 @@ namespace Calcita.Controls
                     // fix #282, https://github.com/unvell/ReoGrid/issues/282
                     //this.ActionPerformed?.Invoke(this, new WorkbookActionEventArgs(newAction));
 
-                    this.CurrentWorksheet.RequestInvalidate();
+                    this.CurrentWorksheet?.RequestInvalidate();
+                    UpdateUndoRedoStatus();
                 }
             }
-        }
-
-        /// <summary>
-        /// Determine whether there is any actions can be undone.
-        /// </summary>
-        /// <returns>True if any actions can be undone</returns>
-        public bool CanUndo()
-        {
-            return this.actionManager.CanUndo();
-        }
-
-        /// <summary>
-        /// Determine whether there is any actions can be redid.
-        /// </summary>
-        /// <returns>True if any actions can be redid</returns>
-        public bool CanRedo()
-        {
-            return this.actionManager.CanRedo();
         }
 
         /// <summary>
@@ -546,6 +586,7 @@ namespace Calcita.Controls
             this.actionManager.Reset();
 
             this.lastReusableAction = null;
+            UpdateUndoRedoStatus();
         }
 
         /// <summary>
@@ -601,6 +642,7 @@ namespace Calcita.Controls
             {
                 this.lastReusableAction = null;
             }
+            UpdateUndoRedoStatus();
         }
 
         /// <summary>

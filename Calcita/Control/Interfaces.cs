@@ -79,9 +79,11 @@ namespace Calcita.Main
 		void Undo();
 		void Redo();
 		void RepeatLastAction(RangePosition range);
-		//bool CanUndo();
-		//bool CanRedo();
-		event EventHandler<WorkbookActionEventArgs> ActionPerformed;
+        bool CanUndo { get; }
+
+        bool CanRedo { get; }
+
+        event EventHandler<WorkbookActionEventArgs> ActionPerformed;
 		event EventHandler<WorkbookActionEventArgs> Undid;
 		event EventHandler<WorkbookActionEventArgs> Redid;
 		//event EventHandler Repeated;
