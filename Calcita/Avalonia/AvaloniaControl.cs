@@ -184,17 +184,17 @@ namespace Calcita.Controls
                 sheetTab?.Bind(SheetTabControl.SelectedIndexProperty, this[!SelectedIndexProperty]),
                 //bind(SheetCanvas, SheetCanvas.WorksheetProperty, () => this.GetObservable(CurrentWorksheetProperty)),
 
-                bind(horScrollbar, ScrollBar.ValueProperty, () => this.GetObservable(OffsetProperty, p => p.X)),
-                bind(horScrollbar, ScrollBar.MaximumProperty, () => this.GetObservable(ScrollBarMaximumProperty, p => p.X)),
-                bind(horScrollbar, ScrollBar.MinimumProperty, () => this.GetObservable(ScrollBarMinimumProperty, p => p.X)),
-                bind(horScrollbar, ScrollBar.LargeChangeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Width)),
-                bind(horScrollbar, ScrollBar.ViewportSizeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Width)),
+                bind(horScrollbar, ScrollBar.ValueProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.OffsetProperty, p => p.X)),
+                bind(horScrollbar, ScrollBar.MaximumProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.ScrollBarMaximumProperty, p => p.X)),
+                bind(horScrollbar, ScrollBar.MinimumProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.ScrollBarMinimumProperty, p => p.X)),
+                bind(horScrollbar, ScrollBar.LargeChangeProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.LargeChangeProperty, p => p.Width)),
+                bind(horScrollbar, ScrollBar.ViewportSizeProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.LargeChangeProperty, p => p.Width)),
 
-                bind(verScrollbar, ScrollBar.ValueProperty, () => this.GetObservable(OffsetProperty, p => p.Y)),
-                bind(verScrollbar, ScrollBar.MaximumProperty, () => this.GetObservable(ScrollBarMaximumProperty, p => p.Y)),
-                bind(verScrollbar, ScrollBar.MinimumProperty, () => this.GetObservable(ScrollBarMinimumProperty, p => p.Y)),
-                bind(verScrollbar, ScrollBar.LargeChangeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Height)),
-                bind(verScrollbar, ScrollBar.ViewportSizeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Height)),
+                bind(verScrollbar, ScrollBar.ValueProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.OffsetProperty, p => p.Y)),
+                bind(verScrollbar, ScrollBar.MaximumProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.ScrollBarMaximumProperty, p => p.Y)),
+                bind(verScrollbar, ScrollBar.MinimumProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.ScrollBarMinimumProperty, p => p.Y)),
+                bind(verScrollbar, ScrollBar.LargeChangeProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.LargeChangeProperty, p => p.Height)),
+                bind(verScrollbar, ScrollBar.ViewportSizeProperty, () => this.SheetCanvas.GetObservable(SheetCanvas.LargeChangeProperty, p => p.Height)),
 
                 bind(sheetTab, SheetTabControl.IsVisibleProperty, () => this.GetObservable(SheetTabVisibleProperty)),
                 //bind(sheetTab, SheetTabControl.SelectedIndexProperty, ()=> this.GetObservable(SelectedIndexProperty)),
@@ -924,50 +924,50 @@ namespace Calcita.Controls
 
             public double ScrollBarHorizontalMaximum
             {
-                get { return this.canvas.ScrollBarMaximum.X; }
-                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.ScrollBarMaximum = this.canvas.ScrollBarMaximum.WithX(value)); }
+                get { return this.canvas.SheetCanvas.ScrollBarMaximum.X; }
+                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.SheetCanvas.ScrollBarMaximum = this.canvas.SheetCanvas.ScrollBarMaximum.WithX(value)); }
             }
 
             public double ScrollBarHorizontalMinimum
             {
-                get { return this.canvas.ScrollBarMinimum.X; }
-                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.ScrollBarMinimum = this.canvas.ScrollBarMinimum.WithX(value)); }
+                get { return this.canvas.SheetCanvas.ScrollBarMinimum.X; }
+                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.SheetCanvas.ScrollBarMinimum = this.canvas.SheetCanvas.ScrollBarMinimum.WithX(value)); }
             }
 
             public double ScrollBarHorizontalValue
             {
-                get { return this.canvas.Offset.X; }
-                set { this.canvas.Offset = this.canvas.Offset.WithX(value); }
+                get { return this.canvas.SheetCanvas.Offset.X; }
+                set { this.canvas.SheetCanvas.Offset = this.canvas.SheetCanvas.Offset.WithX(value); }
             }
 
             public double ScrollBarHorizontalLargeChange
             {
-                get => this.canvas.LargeChange.Width;
-                set => this.canvas.LargeChange = this.canvas.LargeChange.WithWidth(value);
+                get => this.canvas.SheetCanvas.LargeChange.Width;
+                set => this.canvas.SheetCanvas.LargeChange = this.canvas.SheetCanvas.LargeChange.WithWidth(value);
             }
 
             public double ScrollBarVerticalMaximum
             {
-                get { return this.canvas.ScrollBarMaximum.Y; }
-                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.ScrollBarMaximum = this.canvas.ScrollBarMaximum.WithY(value)); }
+                get { return this.canvas.SheetCanvas.ScrollBarMaximum.Y; }
+                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.SheetCanvas.ScrollBarMaximum = this.canvas.SheetCanvas.ScrollBarMaximum.WithY(value)); }
             }
 
             public double ScrollBarVerticalMinimum
             {
-                get { return this.canvas.ScrollBarMaximum.Y; }
-                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.ScrollBarMinimum = this.canvas.ScrollBarMinimum.WithY(value)); }
+                get { return this.canvas.SheetCanvas.ScrollBarMinimum.Y; }
+                set { Dispatcher.UIThread.InvokeAsync(() => this.canvas.SheetCanvas.ScrollBarMinimum = this.canvas.SheetCanvas.ScrollBarMinimum.WithY(value)); }
             }
 
             public double ScrollBarVerticalValue
             {
-                get { return this.canvas.Offset.Y; }
-                set { this.canvas.Offset = this.canvas.Offset.WithY(value); }
+                get { return this.canvas.SheetCanvas.Offset.Y; }
+                set { this.canvas.SheetCanvas.Offset = this.canvas.SheetCanvas.Offset.WithY(value); }
             }
 
             public double ScrollBarVerticalLargeChange
             {
-                get => this.canvas.LargeChange.Height;
-                set => this.canvas.LargeChange = this.canvas.LargeChange.WithHeight(value);
+                get => this.canvas.SheetCanvas.LargeChange.Height;
+                set => this.canvas.SheetCanvas.LargeChange = this.canvas.SheetCanvas.LargeChange.WithHeight(value);
             }
 
             #endregion
@@ -1088,81 +1088,6 @@ namespace Calcita.Controls
         {
             get => this.GetValue(VerticalScrollBarVisibleProperty);
             set => SetValue(VerticalScrollBarVisibleProperty, value);
-        }
-
-        /// <summary>
-        /// Offset StyledProperty definition
-        /// </summary>
-        internal static readonly StyledProperty<Vector> OffsetProperty =
-            AvaloniaProperty.Register<CalcitaControl, Vector>(nameof(Offset));
-
-        /// <summary>
-        /// Gets or sets the Offset property. This StyledProperty
-        /// indicates ....
-        /// </summary>
-        internal Vector Offset
-        {
-            get => this.GetValue(OffsetProperty);
-            set => SetValue(OffsetProperty, value);
-        }
-
-        /// <summary>
-        /// LargeChange DirectProperty definition
-        /// </summary>
-        internal static readonly DirectProperty<CalcitaControl, Size> LargeChangeProperty =
-            AvaloniaProperty.RegisterDirect<CalcitaControl, Size>(nameof(LargeChange),
-                o => o.LargeChange,
-                (o, v) => o.LargeChange = v);
-
-        private Size _LargeChange = default;
-        /// <summary>
-        /// Gets or sets the LargeChange property. This DirectProperty 
-        /// indicates ....
-        /// </summary>
-        internal Size LargeChange
-        {
-            get => _LargeChange;
-            set => SetAndRaise(LargeChangeProperty, ref _LargeChange, value);
-        }
-
-        /// <summary>
-        /// ScrollBarMaximum DirectProperty definition
-        /// </summary>
-        internal static readonly DirectProperty<CalcitaControl, Vector> ScrollBarMaximumProperty =
-            AvaloniaProperty.RegisterDirect<CalcitaControl, Vector>(nameof(ScrollBarMaximum),
-                o => o.ScrollBarMaximum,
-                (o, v) => o.ScrollBarMaximum = v);
-
-        private Vector _ScrollBarMaximum = default;
-        /// <summary>
-        /// Gets or sets the ScrollBarMaximum property. This DirectProperty 
-        /// indicates ....
-        /// </summary>
-        public Vector ScrollBarMaximum
-        {
-            get => _ScrollBarMaximum;
-            set => SetAndRaise(ScrollBarMaximumProperty, ref _ScrollBarMaximum, value);
-        }
-
-        /// <summary>
-        /// ScrollBarMinimum DirectProperty definition
-        /// </summary>
-        public static readonly DirectProperty<CalcitaControl, Vector> ScrollBarMinimumProperty =
-            AvaloniaProperty.RegisterDirect<CalcitaControl, Vector>(nameof(ScrollBarMinimum),
-                o => o.ScrollBarMinimum,
-                (o, v) => o.ScrollBarMinimum = v);
-
-        private Vector _ScrollBarMinimum = default;
-
-
-        /// <summary>
-        /// Gets or sets the ScrollBarMinimum property. This DirectProperty 
-        /// indicates ....
-        /// </summary>
-        internal Vector ScrollBarMinimum
-        {
-            get => _ScrollBarMinimum;
-            set => SetAndRaise(ScrollBarMinimumProperty, ref _ScrollBarMinimum, value);
         }
 
         #endregion

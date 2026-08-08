@@ -78,6 +78,86 @@ namespace Calcita.Controls
             AvaloniaProperty.Register<SheetCanvas, double>(nameof(BaseScale), 0.0);
         #endregion
 
+        #region Viewport
+
+        /// <summary>
+        /// Offset DirectProperty definition
+        /// </summary>
+        internal static readonly DirectProperty<SheetCanvas, Vector> OffsetProperty =
+            AvaloniaProperty.RegisterDirect<SheetCanvas, Vector>(nameof(Offset),
+                o => o.Offset,
+                (o, v) => o.Offset = v);
+
+        private Vector _Offset = default;
+
+        /// <summary>
+        /// Gets or sets the scroll offset of the viewport.
+        /// </summary>
+        internal Vector Offset
+        {
+            get => _Offset;
+            set => SetAndRaise(OffsetProperty, ref _Offset, value);
+        }
+
+        /// <summary>
+        /// LargeChange DirectProperty definition
+        /// </summary>
+        internal static readonly DirectProperty<SheetCanvas, Avalonia.Size> LargeChangeProperty =
+            AvaloniaProperty.RegisterDirect<SheetCanvas, Avalonia.Size>(nameof(LargeChange),
+                o => o.LargeChange,
+                (o, v) => o.LargeChange = v);
+
+        private Avalonia.Size _LargeChange = default;
+
+        /// <summary>
+        /// Gets or sets the viewport size used as the scroll bar large change.
+        /// </summary>
+        internal Avalonia.Size LargeChange
+        {
+            get => _LargeChange;
+            set => SetAndRaise(LargeChangeProperty, ref _LargeChange, value);
+        }
+
+        /// <summary>
+        /// ScrollBarMaximum DirectProperty definition
+        /// </summary>
+        internal static readonly DirectProperty<SheetCanvas, Vector> ScrollBarMaximumProperty =
+            AvaloniaProperty.RegisterDirect<SheetCanvas, Vector>(nameof(ScrollBarMaximum),
+                o => o.ScrollBarMaximum,
+                (o, v) => o.ScrollBarMaximum = v);
+
+        private Vector _ScrollBarMaximum = default;
+
+        /// <summary>
+        /// Gets or sets the maximum value of the scroll bars.
+        /// </summary>
+        internal Vector ScrollBarMaximum
+        {
+            get => _ScrollBarMaximum;
+            set => SetAndRaise(ScrollBarMaximumProperty, ref _ScrollBarMaximum, value);
+        }
+
+        /// <summary>
+        /// ScrollBarMinimum DirectProperty definition
+        /// </summary>
+        internal static readonly DirectProperty<SheetCanvas, Vector> ScrollBarMinimumProperty =
+            AvaloniaProperty.RegisterDirect<SheetCanvas, Vector>(nameof(ScrollBarMinimum),
+                o => o.ScrollBarMinimum,
+                (o, v) => o.ScrollBarMinimum = v);
+
+        private Vector _ScrollBarMinimum = default;
+
+        /// <summary>
+        /// Gets or sets the minimum value of the scroll bars.
+        /// </summary>
+        internal Vector ScrollBarMinimum
+        {
+            get => _ScrollBarMinimum;
+            set => SetAndRaise(ScrollBarMinimumProperty, ref _ScrollBarMinimum, value);
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
