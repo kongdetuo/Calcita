@@ -52,18 +52,6 @@ namespace Calcita.Controls
             {
                 x.OnWorkbookChanged(e);
             });
-            SelectedIndexProperty.Changed.AddClassHandler<CalcitaControl>((x, e) =>
-            {
-                var index = e.GetNewValue<int>();
-                if(index >= 0 && x.Workbook?.Worksheets.Count > index) 
-                {
-                    x.CurrentWorksheet = x.Workbook?.Worksheets[x.SelectedIndex];
-                }
-                else
-                {
-                    x.CurrentWorksheet = null;
-                }
-            });
             CurrentWorksheetProperty.Changed.AddClassHandler<CalcitaControl>((x, e) =>
             {
                 x.OnCurrentWorksheetChanged(e);
@@ -131,15 +119,6 @@ namespace Calcita.Controls
 
             // create and set default worksheet
             this.Workbook.AddWorksheet(this.Workbook.CreateWorksheet());
-
-            this.sheetTab?.SelectedIndexChanged += (s, e) =>
-            {
-                if (this.sheetTab.SelectedIndex >= 0 && this.sheetTab.SelectedIndex < this.Workbook.Worksheets.Count)
-                {
-                    this.CurrentWorksheet = this.Workbook.Worksheets[this.sheetTab.SelectedIndex];
-                }
-            };
-
 
             this.actionManager.BeforePerformAction += (s, e) =>
                 {

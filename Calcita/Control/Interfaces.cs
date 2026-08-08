@@ -146,12 +146,7 @@ namespace Calcita.Main
 		void ShowContextMenuStrip(ViewTypes viewType, Point containerLocation);
 	}
 
-	internal interface IMultisheetAdapter
-	{
-		ISheetTabControl SheetTabControl { get; }
-	}
-
-	internal interface ICompViewAdapter : IMultisheetAdapter
+	internal interface ICompViewAdapter
 	{
 		IVisualWorkbook ControlInstance { get; }
 		IRenderer Renderer { get; }

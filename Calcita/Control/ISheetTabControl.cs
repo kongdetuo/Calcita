@@ -14,129 +14,25 @@
  * Copyright (c) 2012-2025 Jingwood <jingwood at unvell.com>
  * Copyright (c) 2012-2025 UNVELL Inc. All rights reserved.
  * 
- ****************************************************************************/using System;
-using System.ComponentModel;
-
-using Calcita.Interaction;
-
+ ****************************************************************************/
 namespace Calcita.Main
 {
 	/// <summary>
-	/// Mouse event arguments for sheet tab control.
-	/// </summary>
-	public class SheetTabMouseEventArgs : EventArgs
-	{
-		/// <summary>
-		/// Mouse button flags. (Left, Right or Middle)
-		/// </summary>
-		public MouseButtons MouseButtons { get; set; }
-
-		/// <summary>
-		/// Mouse location related to sheet tab control.
-		/// </summary>
-		public RGPoint Location { get; set; }
-
-		/// <summary>
-		/// Number of tab specified by this index to be moved.
-		/// </summary>
-		public int Index { get; set; }
-
-		/// <summary>
-		/// Get or set whether the user-code handled this event. 
-		/// Built-in operations will be cancelled if this property is set to true.
-		/// </summary>
-		public bool Handled { get; set; }
-	}
-
-	/// <summary>
-	/// Sheet moved event arguments.
-	/// </summary>
-	public class SheetTabMovedEventArgs : EventArgs
-	{
-		/// <summary>
-		/// Number of tab specified by this index to be moved.
-		/// </summary>
-		public int Index { get; set; }
-
-		/// <summary>
-		/// Number of tab as position moved to.
-		/// </summary>
-		public int TargetIndex { get; set; }
-	}
-
-	/// <summary>
-	/// Represents the border style of tab item.
-	/// </summary>
-	public enum SheetTabBorderStyle
-	{
-		/// <summary>
-		/// Sharp Rectangle
-		/// </summary>
-		RectShadow,
-
-		/// <summary>
-		/// Separated Rounded Rectangle
-		/// </summary>
-		SplitRouned,
-
-		/// <summary>
-		/// No Borders (Windows 8 Style)
-		/// </summary>
-		NoBorder,
-	}
-
-	/// <summary>
-	/// Position of tab control will be located.
-	/// </summary>
-	public enum SheetTabControlPosition
-	{
-		/// <summary>
-		/// Put at top to other controls.
-		/// </summary>
-		Top,
-
-		/// <summary>
-		/// Put at bottom to other controls.
-		/// </summary>
-		Bottom,
-	}
-
-	/// <summary>
-	/// Representes the sheet tab control interface.
+	/// Represents the sheet tab control.
+	/// The control displays the worksheets of a workbook as a set of tabs
+	/// and is responsible for managing them (switching, adding, renaming, ...).
 	/// </summary>
 	internal interface ISheetTabControl
 	{
 		/// <summary>
-		/// Get or set the current tab index.
+		/// Get or set the workbook whose worksheets are displayed as tabs.
 		/// </summary>
-		int SelectedIndex { get; set; }
+		IWorkbook Workbook { get; set; }
 
 		/// <summary>
-		/// Event raised when tab item is moved.
+		/// Get or set the currently selected worksheet.
 		/// </summary>
-		event EventHandler<SheetTabMovedEventArgs> TabMoved;
-
-		/// <summary>
-		/// Event raised when selected tab is changed.
-		/// </summary>
-		event EventHandler SelectedIndexChanged;
-
-		/// <summary>
-		/// Event raised when sheet list button is clicked.
-		/// </summary>
-		event EventHandler SheetListClick;
-
-		/// <summary>
-		/// Event raised when new sheet butotn is clicked.
-		/// </summary>
-		event EventHandler NewSheetClick;
-
-		///// <summary>
-		///// Move item to specified position.
-		///// </summary>
-		///// <param name="index">number of tab to be moved.</param>
-		///// <param name="targetIndex">position of moved to.</param>
-		//void MoveItem(int index, int targetIndex);
+		Worksheet CurrentWorksheet { get; set; }
 
 		/// <summary>
 		/// Determine whether or not allow to move tab by dragging mouse.
@@ -149,5 +45,3 @@ namespace Calcita.Main
 		bool NewButtonVisible { get; set; }
 	}
 }
-
-

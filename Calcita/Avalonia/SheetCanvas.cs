@@ -446,8 +446,6 @@ namespace Calcita.Controls
 
         bool ICompViewAdapter.IsVisible => this.IsVisible;
 
-        ISheetTabControl? IMultisheetAdapter.SheetTabControl => throw new System.NotImplementedException();
-
         void ICompViewAdapter.ChangeCursor(CursorStyle cursor)
         {
             throw new System.NotImplementedException();
