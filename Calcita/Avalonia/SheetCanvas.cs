@@ -21,6 +21,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Primitives.PopupPositioning;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Calcita.AvaloniaPlatform;
 using Calcita.Events;
@@ -166,6 +167,7 @@ namespace Calcita.Controls
             this.AddHandler(PointerReleasedEvent, MouseUpHandler, handledEventsToo: true);
             PointerMoved += OnMouseMove;
             PointerWheelChanged += OnMouseWheel;
+            this.AddHandler(TextInputEvent, OnTextInputStart, RoutingStrategies.Bubble);
         }
         #endregion
 
@@ -369,10 +371,16 @@ namespace Calcita.Controls
 
         private void OnTextInputStart(object sender, TextInputEventArgs args)
         {
-            if (!this.Worksheet.IsEditing)
+            if (this.Worksheet == null || this.Worksheet.IsEditing)
             {
-                this.Worksheet.StartEdit();
-                this.Worksheet.CellEditText = string.Empty;
+                return;
+            }
+
+            this.Worksheet.StartEdit();
+
+            if (!string.IsNullOrEmpty(args.Text))
+            {
+                this.Worksheet.CellEditText = args.Text;
             }
         }
 

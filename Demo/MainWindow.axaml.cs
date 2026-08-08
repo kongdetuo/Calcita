@@ -31,6 +31,7 @@ namespace Calcita.Demo
 
         private void UpdateMenuChecks()
         {
+            this.viewFormulaBarVisible.IsChecked = grid.FormulaBarVisible;
             this.viewSheetTabVisible.IsChecked = grid.HorizontalScrollBarVisible;// workbook.HasSettings(Calcita.WorkbookSettings.View_ShowHorScroll);
             this.viewVerticalScrollbarVisible.IsChecked = grid.VerticalScrollBarVisible;// workbook.HasSettings(Calcita.WorkbookSettings.View_ShowVerScroll);
             this.viewSheetTabVisible.IsChecked = grid.SheetTabVisible;
@@ -104,6 +105,11 @@ namespace Calcita.Demo
         #endregion // Menu - File
 
         #region Menu - View
+        private void View_FormulaBar_Click(object sender, RoutedEventArgs e)
+        {
+            grid.FormulaBarVisible = (sender as MenuItem)?.IsChecked == true;
+        }
+
         private void View_SheetTab_Click(object sender, RoutedEventArgs e)
         {
             grid.SheetTabVisible = (sender as MenuItem)?.IsChecked == true;

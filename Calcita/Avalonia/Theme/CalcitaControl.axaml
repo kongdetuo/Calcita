@@ -23,16 +23,24 @@
 			<ControlTemplate TargetType="c:CalcitaControl">
 
                 <Grid ColumnDefinitions="* auto" 
-                      RowDefinitions="* auto"
+                      RowDefinitions="auto * auto"
                       Background="{TemplateBinding Background}">
-                    <c:SheetCanvas x:Name="PART_SheetCanvas"/>
+
+                    <c:FormulaBar x:Name="PART_FormulaBar"
+                                  Grid.ColumnSpan="2"
+                                  IsVisible="{TemplateBinding FormulaBarVisible}"
+                                  Worksheet="{TemplateBinding CurrentWorksheet}"/>
+
+                    <c:SheetCanvas x:Name="PART_SheetCanvas" Grid.Row="1"/>
 
 					<ScrollBar Name="PART_VerticalScrollBar"
+                               Grid.Row="1"
                                Grid.Column="1"
                                Theme="{DynamicResource CalcitaScrollBarTheme}"
                                Orientation="Vertical"/>
 
-                    <Grid Grid.Row="1"
+                    <Grid Grid.Row="2"
+                          Grid.ColumnSpan="2"
                           ColumnDefinitions="* auto 400">
 						<c:SheetTabControl x:Name="PART_SheetTabControl"
                                             IsVisible="{TemplateBinding SheetTabVisible}"/>

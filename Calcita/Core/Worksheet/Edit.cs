@@ -18,12 +18,33 @@ using Calcita.Graphics;
 
 namespace Calcita
 {
+	/// <summary>
+	/// Edit source mode of a cell editing operation.
+	/// </summary>
+	public enum CellEditMode
+	{
+		/// <summary>
+		/// Editing is performed in the in-cell editor overlaid on the cell.
+		/// </summary>
+		InCell = 0,
+
+		/// <summary>
+		/// Editing is performed in an external editor such as the formula bar.
+		/// </summary>
+		FormulaBar = 1,
+	}
+
 	partial class Worksheet
 	{
 		#region StartEdit
 
 		internal Cell currentEditingCell;
 		private string backupData;
+
+		/// <summary>
+		/// Get the edit source mode of the current editing operation.
+		/// </summary>
+		public CellEditMode EditMode { get; private set; } = CellEditMode.InCell;
 
 		/// <summary>
 		/// Start to edit selected cell
@@ -41,6 +62,27 @@ namespace Calcita
 		public bool StartEdit(string newText)
 		{
 			return this.selStart.IsEmpty ? false : StartEdit(this.focusPos, newText);
+		}
+
+		/// <summary>
+		/// Start to edit selected cell in specified edit source mode.
+		/// </summary>
+		/// <param name="mode">Edit source mode, such as in-cell editor or formula bar.</param>
+		/// <returns>True if the editing operation has been started</returns>
+		public bool StartEdit(CellEditMode mode)
+		{
+			return this.selStart.IsEmpty ? false : StartEdit(this.focusPos, null, mode);
+		}
+
+		/// <summary>
+		/// Start to edit selected cell with specified initial text in specified edit source mode.
+		/// </summary>
+		/// <param name="newText">A text will be displayed in the edit field initially.</param>
+		/// <param name="mode">Edit source mode, such as in-cell editor or formula bar.</param>
+		/// <returns>True if the editing operation has been started</returns>
+		public bool StartEdit(string newText, CellEditMode mode)
+		{
+			return this.selStart.IsEmpty ? false : StartEdit(this.focusPos, newText, mode);
 		}
 
 		/// <summary>
@@ -65,6 +107,29 @@ namespace Calcita
 		}
 
 		/// <summary>
+		/// Start to edit specified cell in specified edit source mode.
+		/// </summary>
+		/// <param name="pos">Position of specified cell</param>
+		/// <param name="mode">Edit source mode, such as in-cell editor or formula bar.</param>
+		/// <returns>True if the editing operation has been started</returns>
+		public bool StartEdit(CellPosition pos, CellEditMode mode)
+		{
+			return StartEdit(pos.Row, pos.Col, null, mode);
+		}
+
+		/// <summary>
+		/// Start to edit specified cell with specified initial text in specified edit source mode.
+		/// </summary>
+		/// <param name="pos">Position of specified cell</param>
+		/// <param name="newText">A text will be displayed in the edit field initially.</param>
+		/// <param name="mode">Edit source mode, such as in-cell editor or formula bar.</param>
+		/// <returns>True if the editing operation has been started</returns>
+		public bool StartEdit(CellPosition pos, string newText, CellEditMode mode)
+		{
+			return StartEdit(pos.Row, pos.Col, newText, mode);
+		}
+
+		/// <summary>
 		/// Start to edit specified cell
 		/// </summary>
 		/// <param name="row">Index of row of specified cell</param>
@@ -72,21 +137,19 @@ namespace Calcita
 		/// <returns>True if the editing operation has been started</returns>
 		public bool StartEdit(int row, int col)
 		{
-			if (row < 0 || col < 0 || row >= this.rows.Count || col >= this.cols.Count) return false;
+			return StartEdit(row, col, null, CellEditMode.InCell);
+		}
 
-			// if cell is part of merged cell
-			if (!IsValidCell(row, col))
-			{
-				// find the merged cell
-				Cell cell = GetMergedCellOfRange(row, col);
-
-				// start edit on merged cell
-				return StartEdit(cell);
-			}
-			else
-			{
-				return StartEdit(CreateAndGetCell(row, col));
-			}
+		/// <summary>
+		/// Start to edit specified cell in specified edit source mode.
+		/// </summary>
+		/// <param name="row">Index of row of specified cell</param>
+		/// <param name="col">Index of column of specified cell</param>
+		/// <param name="mode">Edit source mode, such as in-cell editor or formula bar.</param>
+		/// <returns>True if the editing operation has been started</returns>
+		public bool StartEdit(int row, int col, CellEditMode mode)
+		{
+			return StartEdit(row, col, null, mode);
 		}
 
 		/// <summary>
@@ -98,6 +161,19 @@ namespace Calcita
 		/// <returns>True if worksheet entered edit-mode successfully; Otherwise return false.</returns>
 		public bool StartEdit(int row, int col, string newText)
 		{
+			return StartEdit(row, col, newText, CellEditMode.InCell);
+		}
+
+		/// <summary>
+		/// Start to edit specified cell in specified edit source mode.
+		/// </summary>
+		/// <param name="row">Index of row of specified cell.</param>
+		/// <param name="col">Index of column of specified cell.</param>
+		/// <param name="newText">A text displayed in the text field to be edited.</param>
+		/// <param name="mode">Edit source mode, such as in-cell editor or formula bar.</param>
+		/// <returns>True if worksheet entered edit-mode successfully; Otherwise return false.</returns>
+		public bool StartEdit(int row, int col, string newText, CellEditMode mode)
+		{
 			if (row < 0 || col < 0 || row >= this.cells.RowCapacity || col >= this.cells.ColCapacity) return false;
 
 			// if cell is part of merged cell
@@ -107,20 +183,30 @@ namespace Calcita
 				Cell cell = GetMergedCellOfRange(row, col);
 
 				// start edit on merged cell
-				return StartEdit(cell, newText);
+				return StartEdit(cell, newText, mode);
 			}
 			else
 			{
-				return StartEdit(CreateAndGetCell(row, col), newText);
+				return StartEdit(CreateAndGetCell(row, col), newText, mode);
 			}
 		}
 
 		internal bool StartEdit(Cell cell)
 		{
-			return this.StartEdit(cell, null);
+			return this.StartEdit(cell, null, CellEditMode.InCell);
+		}
+
+		internal bool StartEdit(Cell cell, CellEditMode mode)
+		{
+			return this.StartEdit(cell, null, mode);
 		}
 
 		internal bool StartEdit(Cell cell, string newText)
+		{
+			return this.StartEdit(cell, newText, CellEditMode.InCell);
+		}
+
+		internal bool StartEdit(Cell cell, string newText, CellEditMode mode)
 		{
 			// abort if either spreadsheet or cell is readonly
 			if (this.HasSettings(WorksheetSettings.Edit_Readonly)
@@ -142,25 +228,7 @@ namespace Calcita
 
 			if (newText == null)
 			{
-				if (!string.IsNullOrEmpty(cell.InnerFormula))
-				{
-					editText = "=" + cell.InnerFormula;
-				}
-				else if (cell.InnerData is string)
-				{
-					editText = (string)cell.InnerData;
-				}
-#if DRAWING
-				else if (cell.InnerData is Drawing.RichText)
-				{
-					editText = ((Drawing.RichText)cell.InnerData).ToString();
-				}
-#endif // DRAWING
-				else
-				{
-					editText = Convert.ToString(cell.InnerData);
-				}
-				
+				editText = cell.GetEditText();
 				this.backupData = editText;
 			}
 			else
@@ -217,6 +285,8 @@ namespace Calcita
 				EndEdit(this.controlAdapter.GetEditControlText());
 			}
 
+			this.EditMode = mode;
+
 			this.currentEditingCell = cell;
 
 			this.controlAdapter.SetEditControlText(editText);
@@ -224,6 +294,20 @@ namespace Calcita
 			if (cell.DataFormat == CellDataFormatFlag.Percent && editText.EndsWith("%"))
 			{
 				this.controlAdapter.SetEditControlCaretPos(editText.Length - 1);
+			}
+
+			if (CellEditStarted != null)
+			{
+				CellEditStarted(this, new CellEditStartedEventArgs(cell)
+				{
+					EditText = editText,
+					EditMode = mode,
+				});
+			}
+
+			if (mode != CellEditMode.InCell)
+			{
+				return true;
 			}
 
 			RGFloat x = 0;
@@ -467,6 +551,7 @@ namespace Calcita
 			this.controlAdapter.HideEditControl();
 			this.controlAdapter.Focus();
 			currentEditingCell = null;
+			this.EditMode = CellEditMode.InCell;
 
 			endEditProcessing = false;
 
@@ -486,6 +571,11 @@ namespace Calcita
 		/// Event raised after cell changed to edit mode
 		/// </summary>
 		public event EventHandler<CellAfterEditEventArgs> AfterCellEdit;
+
+		/// <summary>
+		/// Event raised after cell entered edit mode.
+		/// </summary>
+		public event EventHandler<CellEditStartedEventArgs> CellEditStarted;
 
 		/// <summary>
 		/// Event raised after input text changing
@@ -538,7 +628,7 @@ namespace Calcita
 		{
 			// TODO: move to control
 			get { return this.controlAdapter.GetEditControlText(); }
-			set { this.controlAdapter.SetEditControlText(value); }
+			set { this.controlAdapter.SetEditControlText(RaiseCellEditTextChanging(value)); }
 		}
 		#endregion // Editing Text
 	}

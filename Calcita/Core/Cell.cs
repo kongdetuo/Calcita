@@ -886,6 +886,20 @@ namespace Calcita
 		public bool IsReadOnly { get; set; }
 
 		/// <summary>
+		/// Get the editable text of this cell that is shown when an edit
+		/// session begins (in the in-cell editor or the formula bar).
+		/// </summary>
+		internal string GetEditText()
+		{
+			if (!string.IsNullOrEmpty(this.InnerFormula)) return "=" + this.InnerFormula;
+			if (this.InnerData is string s) return s;
+#if DRAWING
+			if (this.InnerData is Drawing.RichText richText) return richText.ToString();
+#endif // DRAWING
+			return Convert.ToString(this.InnerData) ?? string.Empty;
+		}
+
+		/// <summary>
 		/// Start edit this cell.
 		/// </summary>
 		public void StartEdit()

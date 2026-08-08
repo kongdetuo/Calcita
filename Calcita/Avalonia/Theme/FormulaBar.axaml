@@ -1,0 +1,98 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:c="using:Calcita.Controls">
+
+	<ControlTheme x:Key="CalcitaTextBoxTheme" TargetType="TextBox">
+		<Setter Property="Background" Value="{DynamicResource CalcitaBackgroundBrush}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource CalcitaBorderMidBrush}" />
+		<Setter Property="BorderThickness" Value="{DynamicResource CalcitaBorderThickness}" />
+		<Setter Property="Foreground" Value="{DynamicResource CalcitaForegroundBrush}" />
+		<Setter Property="CaretBrush" Value="{DynamicResource CalcitaForegroundBrush}" />
+		<Setter Property="SelectionBrush" Value="{DynamicResource CalcitaHighlightBrush}" />
+		<Setter Property="SelectionForegroundBrush" Value="{DynamicResource CalcitaHighlightForegroundBrush}" />
+		<Setter Property="Template">
+			<ControlTemplate TargetType="TextBox">
+				<Border Name="border"
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						CornerRadius="{TemplateBinding CornerRadius}">
+					<ScrollViewer Name="PART_ScrollViewer"
+								  AllowAutoHide="{TemplateBinding (ScrollViewer.AllowAutoHide)}"
+								  BringIntoViewOnFocusChange="{TemplateBinding (ScrollViewer.BringIntoViewOnFocusChange)}"
+								  HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+								  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+						<TextPresenter Name="PART_TextPresenter"
+									   CaretBlinkInterval="{TemplateBinding CaretBlinkInterval}"
+									   CaretBrush="{TemplateBinding CaretBrush}"
+									   CaretIndex="{TemplateBinding CaretIndex}"
+									   LineHeight="{TemplateBinding LineHeight}"
+									   SelectionBrush="{TemplateBinding SelectionBrush}"
+									   SelectionEnd="{TemplateBinding SelectionEnd}"
+									   SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+									   SelectionStart="{TemplateBinding SelectionStart}"
+									   Text="{TemplateBinding Text,Mode=TwoWay}"
+									   TextAlignment="{TemplateBinding TextAlignment}"
+									   TextWrapping="{TemplateBinding TextWrapping}" />
+					</ScrollViewer>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+		<Style Selector="^:pointerover /template/ Border#border">
+			<Setter Property="BorderBrush" Value="{DynamicResource CalcitaBorderHighBrush}" />
+		</Style>
+		<Style Selector="^:focus /template/ Border#border">
+			<Setter Property="BorderBrush" Value="{DynamicResource CalcitaBorderHighBrush}" />
+		</Style>
+	</ControlTheme>
+
+	<ControlTheme x:Key="{x:Type c:FormulaBar}" TargetType="c:FormulaBar">
+		<Setter Property="Background" Value="{DynamicResource CalcitaControlMidBrush}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource CalcitaBorderLowBrush}" />
+		<Setter Property="BorderThickness" Value="0,0,0,1" />
+		<Setter Property="MinHeight" Value="26" />
+		<Setter Property="Template">
+			<ControlTemplate TargetType="c:FormulaBar">
+				<Border Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						Padding="2">
+					<Grid ColumnDefinitions="80,*,24,24">
+						<Border Grid.Column="0"
+								Background="{DynamicResource CalcitaBackgroundBrush}"
+								BorderBrush="{DynamicResource CalcitaBorderMidBrush}"
+								BorderThickness="1"
+								Margin="0,0,2,0"
+								Padding="4,1">
+							<TextBlock x:Name="PART_NameBox"
+									   Foreground="{DynamicResource CalcitaForegroundLowBrush}"
+									   VerticalAlignment="Center"
+									   TextAlignment="Center" />
+						</Border>
+						<TextBox x:Name="PART_EditTextBox"
+								 Grid.Column="1"
+								 Theme="{StaticResource CalcitaTextBoxTheme}"
+								 Padding="4,1"
+								 VerticalContentAlignment="Center" />
+						<Button x:Name="PART_ConfirmButton"
+								Grid.Column="2"
+								Theme="{DynamicResource CalcitaButtonTheme}"
+								Margin="1,0"
+								Padding="2"
+								Focusable="False"
+								ToolTip.Tip="Commit (Enter)"
+								Content="&#x2713;" />
+						<Button x:Name="PART_CancelButton"
+								Grid.Column="3"
+								Theme="{DynamicResource CalcitaButtonTheme}"
+								Margin="1,0"
+								Padding="2"
+								Focusable="False"
+								ToolTip.Tip="Cancel (Esc)"
+								Content="&#x2715;" />
+					</Grid>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+</ResourceDictionary>

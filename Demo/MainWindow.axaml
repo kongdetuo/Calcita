@@ -17,10 +17,14 @@
                 <Separator />
                 <MenuItem Header="_Exit" Click="File_Exit_Click" />
             </MenuItem>
-            <MenuItem Header="_View">
-                <MenuItem x:Name="viewSheetTabVisible"  Header="Sheet Tab"
-                          ToggleType="CheckBox"
-                          Click="View_SheetTab_Click"/>
+                <MenuItem Header="_View">
+                    <MenuItem x:Name="viewFormulaBarVisible" Header="Formula Bar"
+                              ToggleType="CheckBox"
+                              IsChecked="True"
+                              Click="View_FormulaBar_Click"/>
+                    <MenuItem x:Name="viewSheetTabVisible"  Header="Sheet Tab"
+                              ToggleType="CheckBox"
+                              Click="View_SheetTab_Click"/>
                 <MenuItem x:Name="viewSheetTabNewButtonVisible" Header="Sheet Tab New Button"
                           ToggleType="CheckBox"
                            Click="View_SheetTabNewButton_Click"/>
@@ -50,7 +54,7 @@
 
         <Border x:Name="border" Background="LightBlue" BorderBrush="Black" Padding="8">
 	
-            <rg:CalcitaControl x:Name="grid" Workbook="{Binding Workbook}">
+            <rg:CalcitaControl x:Name="grid" Workbook="{Binding Workbook}" FormulaBarVisible="True">
                 <rg:CalcitaControl.CellsContextFlyout>
 					<MenuFlyout>
 						<MenuItem Header="Cell Context Menu Flyout Item"/>

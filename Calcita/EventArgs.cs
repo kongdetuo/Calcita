@@ -539,6 +539,28 @@ namespace Calcita.Events
 	}
 
 	/// <summary>
+	/// Event raised after a cell entered edit mode.
+	/// </summary>
+	public class CellEditStartedEventArgs : CellEventArgs
+	{
+		/// <summary>
+		/// Text displayed in the edit field when editing started.
+		/// </summary>
+		public string EditText { get; set; }
+
+		/// <summary>
+		/// Edit source mode of current editing operation.
+		/// </summary>
+		public CellEditMode EditMode { get; set; }
+
+		/// <summary>
+		/// Create instance for CellEditStartedEventArgs.
+		/// </summary>
+		/// <param name="cell">Cell entered edit mode.</param>
+		public CellEditStartedEventArgs(Cell cell) : base(cell) { }
+	}
+
+	/// <summary>
 	/// Cell edit text.
 	/// </summary>
 	public class CellEditTextChangingEventArgs : CellEventArgs

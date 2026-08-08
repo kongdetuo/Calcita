@@ -28,6 +28,7 @@ using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Calcita.AvaloniaPlatform;
+using Calcita.Events;
 using Calcita.Graphics;
 using Calcita.Interaction;
 using Calcita.Main;
@@ -44,6 +45,11 @@ namespace Calcita.Controls
     /// <summary>
     /// Calcita Spreadsheet Control
     /// </summary>
+    [Avalonia.Controls.Metadata.TemplatePart("PART_SheetCanvas", typeof(SheetCanvas), IsRequired = true)]
+    [Avalonia.Controls.Metadata.TemplatePart("PART_FormulaBar", typeof(FormulaBar))]
+    [Avalonia.Controls.Metadata.TemplatePart("PART_HorizontalScrollBar", typeof(Avalonia.Controls.Primitives.ScrollBar))]
+    [Avalonia.Controls.Metadata.TemplatePart("PART_VerticalScrollBar", typeof(Avalonia.Controls.Primitives.ScrollBar))]
+    [Avalonia.Controls.Metadata.TemplatePart("PART_SheetTabControl", typeof(SheetTabControl))]
     public partial class CalcitaControl : TemplatedControl, IVisualWorkbook,
     IRangePickableControl, IContextMenuControl, IActionControl
     {
@@ -56,6 +62,8 @@ namespace Calcita.Controls
         private ScrollBar verScrollbar;
 
         private SheetCanvas SheetCanvas;
+        private FormulaBar formulaBar;
+        private Action? formulaBarEditSessionEndedHandler;
 
         private readonly AvaloniaList<string> sheets = [];
 
@@ -136,6 +144,19 @@ namespace Calcita.Controls
             this.verScrollbar = e.NameScope.Find<ScrollBar>("PART_VerticalScrollBar");
             this.sheetTab = e.NameScope.Find<SheetTabControl>("PART_SheetTabControl");
 
+            if (this.formulaBar != null && this.formulaBarEditSessionEndedHandler != null)
+            {
+                this.formulaBar.EditSessionEnded -= this.formulaBarEditSessionEndedHandler;
+            }
+
+            this.formulaBar = e.NameScope.Find<FormulaBar>("PART_FormulaBar");
+
+            if (this.formulaBar != null)
+            {
+                this.formulaBarEditSessionEndedHandler = () => this.adapter?.Focus();
+                this.formulaBar.EditSessionEnded += this.formulaBarEditSessionEndedHandler;
+            }
+
             this.horScrollbar?.SmallChange = Worksheet.InitDefaultColumnWidth;
             this.verScrollbar?.SmallChange = Worksheet.InitDefaultRowHeight;
             this.SheetCanvas?.Owner = this;
@@ -187,8 +208,6 @@ namespace Calcita.Controls
                 return control?.Bind(property, observableFactory(), Avalonia.Data.BindingPriority.Template);
             }
         }
-
-
 
         private void SheetTab_TabMoved(object? sender, SheetTabMovedEventArgs e)
         {
@@ -267,6 +286,21 @@ namespace Calcita.Controls
             set => SetValue(SelectedIndexProperty, value);
         }
 
+        /// <summary>
+        /// FormulaBarVisible StyledProperty definition
+        /// </summary>
+        public static readonly StyledProperty<bool> FormulaBarVisibleProperty =
+            AvaloniaProperty.Register<CalcitaControl, bool>(nameof(FormulaBarVisible), false);
+
+        /// <summary>
+        /// Gets or sets whether the formula bar is visible at the top of the control.
+        /// </summary>
+        public bool FormulaBarVisible
+        {
+            get => this.GetValue(FormulaBarVisibleProperty);
+            set => SetValue(FormulaBarVisibleProperty, value);
+        }
+
         private void OnWorkbookChanged(AvaloniaPropertyChangedEventArgs e)
         {
             var old = e.GetOldValue<IWorkbook?>();
@@ -342,7 +376,6 @@ namespace Calcita.Controls
                     oldSheet.EndEdit(EndEditReason.NormalFinish);
                 }
                 oldSheet?.ControlAdapter = null;
-
             }
             var newSheet = e.GetNewValue<Worksheet?>();
             if (newSheet != null)
@@ -512,6 +545,9 @@ namespace Calcita.Controls
             private readonly CalcitaControl canvas;
             internal InputTextBox editTextbox => canvas.SheetCanvas.editTextbox;
 
+            private CellEditMode ActiveEditMode => this.canvas.CurrentWorksheet?.EditMode ?? CellEditMode.InCell;
+            private FormulaBar? FormulaBar => this.canvas.formulaBar;
+
             internal ReoGridAvaloniaControlAdapter(CalcitaControl canvas)
             {
                 this.canvas = canvas;
@@ -667,6 +703,8 @@ namespace Calcita.Controls
 
             public void ShowEditControl(Graphics.Rectangle bounds, Cell cell)
             {
+                if (ActiveEditMode == CellEditMode.FormulaBar) return;
+
                 var sheet = this.canvas.CurrentWorksheet;
 
                 Color textColor;
@@ -716,31 +754,67 @@ namespace Calcita.Controls
 
             public void SetEditControlText(string text)
             {
-                this.editTextbox.Text = text;
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    if (FormulaBar != null) FormulaBar.EditText = text;
+                }
+                else
+                {
+                    this.editTextbox.Text = text;
+                }
             }
 
             public string GetEditControlText()
             {
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    return FormulaBar?.EditText ?? string.Empty;
+                }
+
                 return this.editTextbox.Text;
             }
 
             public void EditControlSelectAll()
             {
-                this.editTextbox.SelectAll();
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    FormulaBar?.SelectAllEditBox();
+                }
+                else
+                {
+                    this.editTextbox.SelectAll();
+                }
             }
 
             public void SetEditControlCaretPos(int pos)
             {
-                this.editTextbox.SelectionStart = pos;
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    FormulaBar?.SetCaretPos(pos);
+                }
+                else
+                {
+                    this.editTextbox.SelectionStart = pos;
+                }
             }
 
             public int GetEditControlCaretPos()
             {
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    return FormulaBar?.GetCaretPos() ?? 0;
+                }
+
                 return this.editTextbox.SelectionStart;
             }
 
             public int GetEditControlCaretLine()
             {
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    return FormulaBar?.GetCaretPos() ?? 0;
+                }
+
                 return this.editTextbox.CaretIndex;
                 //this.editTextbox.TextLayout.GetLineIndexFromCharacterIndex(this.editTextbox.SelectionStart,false);
             }
@@ -787,22 +861,50 @@ namespace Calcita.Controls
 
             public void EditControlCopy()
             {
-                this.editTextbox.Copy();
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    FormulaBar?.EditTextBox?.Copy();
+                }
+                else
+                {
+                    this.editTextbox.Copy();
+                }
             }
 
             public void EditControlPaste()
             {
-                this.editTextbox.Paste();
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    FormulaBar?.EditTextBox?.Paste();
+                }
+                else
+                {
+                    this.editTextbox.Paste();
+                }
             }
 
             public void EditControlCut()
             {
-                this.editTextbox.Cut();
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    FormulaBar?.EditTextBox?.Cut();
+                }
+                else
+                {
+                    this.editTextbox.Cut();
+                }
             }
 
             public void EditControlUndo()
             {
-                this.editTextbox.Undo();
+                if (ActiveEditMode == CellEditMode.FormulaBar)
+                {
+                    FormulaBar?.EditTextBox?.Undo();
+                }
+                else
+                {
+                    this.editTextbox.Undo();
+                }
             }
             #endregion
 
