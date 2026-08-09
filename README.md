@@ -1,10 +1,39 @@
-
 # Calcita
 
 Calcita is a fork and independent development of the open-source .NET spreadsheet component ReoGrid. This repository contains the Calcita project which started from ReoGrid's codebase and will evolve separately.
 
 - Project: `Calcita` (derived from ReoGrid)
 - Original project: ReoGrid — https://reogrid.net
+
+## Usage
+
+1. Reference the package
+
+   ```powershell
+   dotnet add package Calcita.Avalonia
+   ```
+
+2. Add the style (required)
+
+   In `App.axaml`, add the Calcita styles after your theme:
+
+   ```xml
+   <Application.Styles>
+       <FluentTheme />
+       <StyleInclude Source="avares://Calcita/Avalonia/Theme/Styles.axaml"/>
+   </Application.Styles>
+   ```
+
+3. Put a `CalcitaControl` in your window and bind a `Calcita.Workbook` to it
+
+   ```xml
+   <Window xmlns="https://github.com/avaloniaui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:rg="clr-namespace:Calcita.Controls;assembly=Calcita"
+           ...>
+       <rg:CalcitaControl Workbook="{Binding Workbook}" FormulaBarVisible="True" />
+   </Window>
+   ```
 
 # About
 
@@ -24,31 +53,9 @@ https://reogrid.net/document
 
 Calcita-specific documentation will be added as the project matures.
 
-# Snapshots (from original ReoGrid)
+# Snapshots
 
-Read from Excel<br />
-![Snapshot - Read from Excel](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/02.png)
-
-Print Settings<br />
-![Snapshot - Print setting](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/01_2.png)
-
-Charts<br />
-![Snapshot - Charts](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/276.png)
-
-Cells Freeze<br />
-![Snapshot - Freeze](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/08.png)
-
-Cell Types and Controls<br />
-![Snapshot - Cell Types and Controls](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/62.png)
-
-Group and Outline<br />
-![Snapshot - Group and Outline](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/61.png)
-
-Custom Control Appearance<br />
-![Snapshot - Custom Control Appearance](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/21.png)
-
-Script and Macro Execution<br />
-![Snapshot - Script and Macro](https://raw.githubusercontent.com/unvell/ReoGrid/master/Snapshots/27.png)
+![Calcita Demo](Snapshots/01.png)
 
 # License & Attribution
 
@@ -61,4 +68,3 @@ Copyright (c) Jingwood & unvell.com 2012-2019.
 Calcita continues under the same MIT terms for code derived from ReoGrid. Any new code added in this repository by the Calcita authors will also be published under the MIT License unless otherwise stated.
 
 If you are using or redistributing this code, please respect the original authors' attribution and the licensing terms.
-

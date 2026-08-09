@@ -29,10 +29,10 @@
 		<Company>Calcita</Company>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/Calcita/Calcita</PackageProjectUrl>
-		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/Calcita/Calcita</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionPrefix>0.1.0</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<PackageId>Calcita.Avalonia</PackageId>
 		<Description>Calcita — a modernized fork of ReoGrid. Powerful and lightweight .NET spreadsheet component compatible with Excel formats. This package contains the Avalonia UI build of Calcita.</Description>
@@ -124,10 +124,7 @@
     <PackageReference Include="System.Security.Permissions" Version="10.0.10" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\NuGet\icon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Properties\DateTimeFormat.it.resx">
