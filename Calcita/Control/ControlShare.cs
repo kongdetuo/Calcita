@@ -826,19 +826,6 @@ namespace Calcita.Controls
 
         #endregion // Appearance
 
-
-
-
-        protected override void OnPointerExited(Avalonia.Input.PointerEventArgs args)
-        {
-
-            if (this.CurrentWorksheet != null)
-            {
-                this.adapter.ChangeCursor(CursorStyle.PlatformDefault);
-                this.CurrentWorksheet?.HoverPos = CellPosition.Empty;
-            }
-        }
-
 #if PRINT
         /// <summary>
         /// Create a print session to print all worksheets.

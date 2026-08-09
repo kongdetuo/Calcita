@@ -38,7 +38,6 @@ namespace Calcita.Controls
 {
     public class SheetCanvas : Decorator, ICompViewAdapter
     {
-        private Cursor? oldCursor = null;
         internal readonly AvaloniaRenderer renderer = new();
         private readonly Canvas canvas = new();
         internal readonly InputTextBox editTextbox;
@@ -323,6 +322,13 @@ namespace Calcita.Controls
         {
             this.Worksheet.OnMouseWheel(e.GetPosition(this), e.Delta * 120, e.KeyModifiers,
                 AvaloniaUtility.ConvertToUIMouseButtons(MouseButton.Middle));
+        }
+
+        protected override void OnPointerExited(Avalonia.Input.PointerEventArgs e)
+        {
+            base.OnPointerExited(e);
+
+            this.Worksheet?.HoverPos = CellPosition.Empty;
         }
 
         #region Mouse

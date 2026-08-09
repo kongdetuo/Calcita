@@ -586,13 +586,19 @@ namespace Calcita.Controls
                 }
             }
 
-            private Cursor oldCursor = null;
+            private Cursor? sheetCanvasCursor = null;
 
             public void ChangeCursor(CursorStyle cursor)
             {
-                oldCursor = this.canvas.Cursor;
+                var sheetCanvas = this.canvas.SheetCanvas;
+                if (sheetCanvas == null)
+                {
+                    return;
+                }
 
-                this.canvas.Cursor = cursor switch
+                sheetCanvasCursor = sheetCanvas.Cursor;
+
+                sheetCanvas.Cursor = cursor switch
                 {
                     CursorStyle.PlatformDefault => new Cursor(StandardCursorType.Arrow),
                     CursorStyle.Hand => new Cursor(StandardCursorType.Hand),
@@ -614,7 +620,13 @@ namespace Calcita.Controls
 
             public void RestoreCursor()
             {
-                this.canvas.Cursor = oldCursor;
+                var sheetCanvas = this.canvas.SheetCanvas;
+                if (sheetCanvas == null)
+                {
+                    return;
+                }
+
+                sheetCanvas.Cursor = sheetCanvasCursor;
             }
 
             public void ChangeSelectionCursor(CursorStyle cursor)
