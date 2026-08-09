@@ -63,27 +63,18 @@
     <Compile Remove="Android\**" />
     <Compile Remove="iOS\**" />
     <Compile Remove="Test\**" />
-    <Compile Remove="WinForm\**" />
-    <Compile Remove="WPF\**" />
     <Content Remove="Android\**" />
     <Content Remove="iOS\**" />
     <Content Remove="Test\**" />
-    <Content Remove="WinForm\**" />
     <EmbeddedResource Remove="Android\**" />
     <EmbeddedResource Remove="iOS\**" />
     <EmbeddedResource Remove="Test\**" />
-    <EmbeddedResource Remove="WinForm\**" />
-    <EmbeddedResource Remove="WPF\**" />
     <None Remove="Android\**" />
     <None Remove="iOS\**" />
     <None Remove="Test\**" />
-    <None Remove="WinForm\**" />
-    <None Remove="WPF\**" />
     <Page Remove="Android\**" />
     <Page Remove="iOS\**" />
     <Page Remove="Test\**" />
-    <Page Remove="WinForm\**" />
-    <Page Remove="WPF\**" />
   </ItemGroup>
   <ItemGroup>
     <AvaloniaXaml Remove="Avalonia\Base.axaml" />
