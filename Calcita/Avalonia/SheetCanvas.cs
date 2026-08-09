@@ -251,15 +251,25 @@ namespace Calcita.Controls
         #endregion
 
 
-        private void MouseUpHandler(object sender, PointerReleasedEventArgs e)
+        private void MouseUpHandler(object? sender, PointerReleasedEventArgs e)
         {
+            if (e.Source != this)
+            {
+                return;
+            }
+
             this.OnWorksheetMouseUp(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(e.InitialPressMouseButton));
 
             //if (mouseCaptured) ReleaseMouseCapture();
         }
 
-        private void MouseDownHandler(object sender, PointerPressedEventArgs e)
+        private void MouseDownHandler(object? sender, PointerPressedEventArgs e)
         {
+            if (e.Source != this)
+            {
+                return;
+            }
+
             Focus();
 
             var pos = e.GetPosition(this);
@@ -282,11 +292,12 @@ namespace Calcita.Controls
             //}
             double right = this.Bounds.Size.Width;
             double bottom = this.Bounds.Size.Height;
-            if (pos.X < right && pos.Y < bottom)
+            var sheet = this.Worksheet;
+            if (pos.X < right && pos.Y < bottom && sheet != null)
             {
                 if (e.ClickCount == 2)
                 {
-                    this.Worksheet.OnMouseDoubleClick(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(e));
+                    sheet.OnMouseDoubleClick(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(e));
                 }
                 else
                 {
@@ -296,7 +307,7 @@ namespace Calcita.Controls
             }
         }
 
-        private void CalcitaControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void CalcitaControl_SizeChanged(object? sender, SizeChangedEventArgs e)
         {
             Invalidate();
         }
@@ -310,16 +321,19 @@ namespace Calcita.Controls
 
         #region Mouse
 
-        bool mouseCaptured = false;
-
-        protected void OnMouseMove(object sender, PointerEventArgs e)
+        protected void OnMouseMove(object? sender, PointerEventArgs e)
         {
             var point = e.GetCurrentPoint(this);
             this.OnWorksheetMouseMove(e.GetPosition(this), AvaloniaUtility.ConvertToUIMouseButtons(point.Properties));
         }
 
-        protected void OnMouseWheel(object sender, PointerWheelEventArgs e)
+        protected void OnMouseWheel(object? sender, PointerWheelEventArgs e)
         {
+            if (this.Worksheet == null)
+            {
+                return;
+            }
+
             this.Worksheet.OnMouseWheel(e.GetPosition(this), e.Delta * 120, e.KeyModifiers,
                 AvaloniaUtility.ConvertToUIMouseButtons(MouseButton.Middle));
         }
@@ -372,7 +386,8 @@ namespace Calcita.Controls
         /// <param name="e"></param>
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (!this.Worksheet.IsEditing)
+            var sheet = this.Worksheet;
+            if (sheet != null && !sheet.IsEditing)
             {
                 var wfkeys = AvaloniaUtility.GetKeyCode(e.Key);
 
@@ -399,7 +414,7 @@ namespace Calcita.Controls
                     && wfkeys != KeyCode.Shift
                     && wfkeys != KeyCode.Alt)
                 {
-                    if (this.Worksheet.OnKeyDown(wfkeys))
+                    if (sheet.OnKeyDown(wfkeys))
                     {
                         e.Handled = true;
                     }
@@ -409,7 +424,8 @@ namespace Calcita.Controls
 
         protected override void OnKeyUp(KeyEventArgs e)
         {
-            if (!this.Worksheet.IsEditing)
+            var sheet = this.Worksheet;
+            if (sheet != null && !sheet.IsEditing)
             {
                 var wfkeys = AvaloniaUtility.GetKeyCode(e.Key);
 
@@ -436,7 +452,7 @@ namespace Calcita.Controls
                     && wfkeys != KeyCode.Shift
                     && wfkeys != KeyCode.Alt)
                 {
-                    if (this.Worksheet.OnKeyUp(wfkeys))
+                    if (sheet.OnKeyUp(wfkeys))
                     {
                         e.Handled = true;
                     }
@@ -455,7 +471,7 @@ namespace Calcita.Controls
             base.OnTextInput(e);
         }
 
-        private void OnTextInputStart(object sender, TextInputEventArgs args)
+        private void OnTextInputStart(object? sender, TextInputEventArgs args)
         {
             if (this.Worksheet == null || this.Worksheet.IsEditing)
             {
