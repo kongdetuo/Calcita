@@ -1,4 +1,4 @@
-﻿/*****************************************************
+/*****************************************************
  * 
  * ReoGrid - .NET Spreadsheet Control
  * 
@@ -24,6 +24,11 @@ using Calcita.Graphics;
 using Calcita.Rendering;
 using Calcita.Utility;
 
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
+
+
 namespace Calcita
 {
 	#region Appearance
@@ -31,27 +36,19 @@ namespace Calcita
 	/// <summary>
 	/// Key of control appearance item
 	/// </summary>
-	public enum ControlAppearanceColors : short
+	internal enum ControlAppearanceColors : short
 	{
 #pragma warning disable 1591
 		LeadHeadNormal = 1,
-		LeadHeadHover = 2,
 		LeadHeadSelected = 3,
 
-		LeadHeadIndicatorStart = 11,
-		LeadHeadIndicatorEnd = 12,
+		LeadHeadIndicator = 11,
 
-		ColHeadSplitter = 20,
-		ColHeadNormalStart = 21,
-		ColHeadNormalEnd = 22,
-		ColHeadHoverStart = 23,
-		ColHeadHoverEnd = 24,
-		ColHeadSelectedStart = 25,
-		ColHeadSelectedEnd = 26,
-		ColHeadFullSelectedStart = 27,
-		ColHeadFullSelectedEnd = 28,
-		ColHeadInvalidStart = 29,
-		ColHeadInvalidEnd = 30,
+		ColHeadNormal = 21,
+		ColHeadHover = 23,
+		ColHeadSelected = 25,
+		ColHeadFullSelected = 27,
+		ColHeadInvalid = 29,
 		ColHeadText = 36,
 
 		RowHeadSplitter = 40,
@@ -86,71 +83,41 @@ namespace Calcita
 	/// <summary>
 	/// ReoGrid Control Appearance Colors
 	/// </summary>
-	public class ControlAppearanceStyle
+	internal class ControlAppearanceStyle
 	{
-		internal CalcitaControl CurrentControl { get; set; }
+		private Dictionary<ControlAppearanceColors, IRGBrush> brushes = new Dictionary<ControlAppearanceColors, IRGBrush>(100);
 
-		private Dictionary<ControlAppearanceColors, SolidColor> colors = new Dictionary<ControlAppearanceColors, SolidColor>(100);
+		private Dictionary<(ControlAppearanceColors key, RGFloat weight), IRGPen> pens = new Dictionary<(ControlAppearanceColors, RGFloat), IRGPen>();
 
-		internal Dictionary<ControlAppearanceColors, SolidColor> Colors
-		{
-			get { return colors; }
-			set { colors = value; }
-		}
-
-		/// <summary>
-		/// Get color for appearance item
-		/// </summary>
-		/// <param name="colorKey">key to get the color item</param>
-		/// <param name="color">output color get by specified key</param>
-		/// <returns>true if color is found by specified key</returns>
-		public bool GetColor(ControlAppearanceColors colorKey, out SolidColor color)
-		{
-			return colors.TryGetValue(colorKey, out color);
-		}
-
-		/// <summary>
-		/// Set color for appearance item
-		/// </summary>
-		/// <param name="colorKey">Key of appearance item</param>
-		/// <param name="color">Color to be set</param>
-		public void SetColor(ControlAppearanceColors colorKey, SolidColor color)
-		{
-			colors[colorKey] = color;
-			this.CurrentControl?.ApplyControlStyle();
-		}
-
-		/// <summary>
-		/// Get or set color for appearance items
-		/// </summary>
-		/// <param name="colorKey"></param>
-		/// <returns></returns>
-		public SolidColor this[ControlAppearanceColors colorKey]
-		{
-			get
+		internal static readonly Dictionary<ControlAppearanceColors, string> ResourceKeys =
+			new Dictionary<ControlAppearanceColors, string>
 			{
-				SolidColor color;
-				if (this.colors.TryGetValue(colorKey, out color))
-					return color;
-				else
-					return SolidColor.Black;
-			}
-			set
-			{
-				SetColor(colorKey, value);
-			}
-		}
-
-		/// <summary>
-		/// Try get a color item from control appearance style set
-		/// </summary>
-		/// <param name="key">Key used to specify a item</param>
-		/// <param name="color">Output color struction</param>
-		/// <returns>True if key was found and color could be returned; otherwise return false</returns>
-		public bool TryGetColor(ControlAppearanceColors key, out SolidColor color)
-		{
-			return this.colors.TryGetValue(key, out color);
-		}
+				{ControlAppearanceColors.LeadHeadNormal, "CalcitaGridLeadHeaderBrush"},
+				{ControlAppearanceColors.LeadHeadSelected, "CalcitaGridLeadHeaderSelectedBrush"},
+				{ControlAppearanceColors.LeadHeadIndicator, "CalcitaGridLeadHeaderIndicatorBrush"},
+				{ControlAppearanceColors.ColHeadNormal, "CalcitaGridColHeaderBrush"},
+				{ControlAppearanceColors.ColHeadHover, "CalcitaGridColHeaderHoverBrush"},
+				{ControlAppearanceColors.ColHeadSelected, "CalcitaGridColHeaderSelectedBrush"},
+				{ControlAppearanceColors.ColHeadFullSelected, "CalcitaGridColHeaderFullSelectedBrush"},
+				{ControlAppearanceColors.ColHeadInvalid, "CalcitaGridColHeaderInvalidBrush"},
+				{ControlAppearanceColors.ColHeadText, "CalcitaGridColHeaderTextBrush"},
+				{ControlAppearanceColors.RowHeadSplitter, "CalcitaGridRowSplitterBrush"},
+				{ControlAppearanceColors.RowHeadNormal, "CalcitaGridRowHeaderBrush"},
+				{ControlAppearanceColors.RowHeadHover, "CalcitaGridRowHeaderHoverBrush"},
+				{ControlAppearanceColors.RowHeadSelected, "CalcitaGridRowHeaderSelectedBrush"},
+				{ControlAppearanceColors.RowHeadFullSelected, "CalcitaGridRowHeaderFullSelectedBrush"},
+				{ControlAppearanceColors.RowHeadInvalid, "CalcitaGridRowHeaderInvalidBrush"},
+				{ControlAppearanceColors.RowHeadText, "CalcitaGridRowHeaderTextBrush"},
+				{ControlAppearanceColors.SelectionBorder, "CalcitaGridSelectionBorderBrush"},
+				{ControlAppearanceColors.SelectionFill, "CalcitaGridSelectionFillBrush"},
+				{ControlAppearanceColors.GridBackground, "CalcitaGridBackgroundBrush"},
+				{ControlAppearanceColors.GridText, "CalcitaGridTextBrush"},
+				{ControlAppearanceColors.GridLine, "CalcitaGridLineBrush"},
+				{ControlAppearanceColors.OutlinePanelBorder, "CalcitaCtrlOutlinePanelBorderBrush"},
+				{ControlAppearanceColors.OutlinePanelBackground, "CalcitaCtrlOutlinePanelBackgroundBrush"},
+				{ControlAppearanceColors.OutlineButtonBorder, "CalcitaCtrlOutlineButtonBorderBrush"},
+				{ControlAppearanceColors.OutlineButtonText, "CalcitaCtrlOutlineButtonTextBrush"},
+			};
 
 		/// <summary>
 		/// Get or set selection border weight
@@ -165,44 +132,104 @@ namespace Calcita
 			this.SelectionBorderWidth = 3f;
 		}
 
-		internal SolidColor GetColHeadStartColor(bool isHover, bool isSelected, bool isFullSelected, bool isInvalid)
+		internal IRGBrush GetColHeadBrush(bool isHover, bool isSelected, bool isFullSelected, bool isInvalid)
 		{
 			if (isFullSelected)
-				return colors[ControlAppearanceColors.ColHeadFullSelectedStart];
+				return GetBrush(ControlAppearanceColors.ColHeadFullSelected);
 			else if (isSelected)
-				return colors[ControlAppearanceColors.ColHeadSelectedStart];
+				return GetBrush(ControlAppearanceColors.ColHeadSelected);
 			else if (isHover)
-				return colors[ControlAppearanceColors.ColHeadHoverStart];
+				return GetBrush(ControlAppearanceColors.ColHeadHover);
 			else if (isInvalid)
-				return colors[ControlAppearanceColors.ColHeadInvalidStart];
+				return GetBrush(ControlAppearanceColors.ColHeadInvalid);
 			else
-				return colors[ControlAppearanceColors.ColHeadNormalStart];
+				return GetBrush(ControlAppearanceColors.ColHeadNormal);
 		}
-		internal SolidColor GetColHeadEndColor(bool isHover, bool isSelected, bool isFullSelected, bool isInvalid)
+		internal IRGBrush GetRowHeadBrush(bool isHover, bool isSelected, bool isFullSelected, bool isInvalid)
 		{
 			if (isFullSelected)
-				return colors[ControlAppearanceColors.ColHeadFullSelectedEnd];
+				return GetBrush(ControlAppearanceColors.RowHeadFullSelected);
 			else if (isSelected)
-				return colors[ControlAppearanceColors.ColHeadSelectedEnd];
+				return GetBrush(ControlAppearanceColors.RowHeadSelected);
 			else if (isHover)
-				return colors[ControlAppearanceColors.ColHeadHoverEnd];
+				return GetBrush(ControlAppearanceColors.RowHeadHover);
 			else if (isInvalid)
-				return colors[ControlAppearanceColors.ColHeadInvalidEnd];
+				return GetBrush(ControlAppearanceColors.RowHeadInvalid);
 			else
-				return colors[ControlAppearanceColors.ColHeadNormalEnd];
+				return GetBrush(ControlAppearanceColors.RowHeadNormal);
 		}
-		internal SolidColor GetRowHeadEndColor(bool isHover, bool isSelected, bool isFullSelected, bool isInvalid)
+
+/// <summary>
+		/// Rebuild the appearance brushes from the theme resources reachable from
+		/// the given host. Slots without a matching resource fall back to their
+		/// default style brush. Called on every theme or resource change; the
+		/// resulting repaint is coalesced to the next frame, so no change
+		/// detection is needed here.
+		/// </summary>
+		internal void RefreshFromHost(StyledElement host)
 		{
-			if (isFullSelected)
-				return colors[ControlAppearanceColors.RowHeadFullSelected];
-			else if (isSelected)
-				return colors[ControlAppearanceColors.RowHeadSelected];
-			else if (isHover)
-				return colors[ControlAppearanceColors.RowHeadHover];
-			else if (isInvalid)
-				return colors[ControlAppearanceColors.RowHeadInvalid];
-			else
-				return colors[ControlAppearanceColors.RowHeadNormal];
+			if (host == null) return;
+
+			var theme = host.ActualThemeVariant;
+			var defaults = CreateDefaultControlStyle();
+			var newBrushes = new Dictionary<ControlAppearanceColors, IRGBrush>(defaults.brushes);
+
+			foreach (var slot in (ControlAppearanceColors[])Enum.GetValues(typeof(ControlAppearanceColors)))
+			{
+				if (ResourceKeys.TryGetValue(slot, out var key) &&
+					host.TryFindResource(key, theme, out var value))
+				{
+					if (value is IRGBrush brush)
+					{
+						newBrushes[slot] = brush.ToImmutable();
+					}
+				}
+			}
+
+			this.brushes = newBrushes;
+			this.pens.Clear();
+		}
+
+		/// <summary>
+		/// Get the brush resource attached to the given appearance slot. Brushes are
+		/// taken directly from the host theme (they may be gradients or solids), so
+		/// consumers should pass them to <see cref="IGraphics"/> without resolving a
+		/// color first.
+		/// </summary>
+		internal IRGBrush GetBrush(ControlAppearanceColors key)
+		{
+			this.brushes.TryGetValue(key, out var brush);
+			return brush;
+		}
+
+		/// <summary>
+		/// Get a single-pixel solid pen made from the brush of the given appearance
+		/// slot. The brush is resolved from the host theme like <see cref="GetBrush"/>.
+		/// </summary>
+		internal IRGPen GetPen(ControlAppearanceColors key)
+		{
+			return GetPen(key, 1);
+		}
+
+		/// <summary>
+		/// Get a solid pen with the given weight made from the brush of the given
+		/// appearance slot. The brush is resolved from the host theme like
+		/// <see cref="GetBrush"/>. Pens are cached by slot and weight until the
+		/// theme resources are refreshed.
+		/// </summary>
+		internal IRGPen GetPen(ControlAppearanceColors key, RGFloat weight)
+		{
+			if (this.pens.TryGetValue((key, weight), out var pen))
+			{
+				return pen;
+			}
+
+			var brush = GetBrush(key);
+			if (brush == null) return null;
+
+			pen = new RGPen(brush, weight).ToImmutable();
+			this.pens[(key, weight)] = pen;
+			return pen;
 		}
 
 		/// <summary>
@@ -213,41 +240,31 @@ namespace Calcita
 		{
 			return new ControlAppearanceStyle
 			{
-				colors = new Dictionary<ControlAppearanceColors, SolidColor>
+				brushes = new Dictionary<ControlAppearanceColors, IRGBrush>
 					{
-						{ControlAppearanceColors.LeadHeadNormal, SolidColor.Lavender},
-						{ControlAppearanceColors.LeadHeadSelected, SolidColor.Lavender},
-						{ControlAppearanceColors.LeadHeadIndicatorStart, SolidColor.Gainsboro},
-						{ControlAppearanceColors.LeadHeadIndicatorEnd, SolidColor.Silver},
-						{ControlAppearanceColors.ColHeadSplitter, SolidColor.LightSteelBlue},
-						{ControlAppearanceColors.ColHeadNormalStart, SolidColor.White},
-						{ControlAppearanceColors.ColHeadNormalEnd, SolidColor.Lavender},
-						{ControlAppearanceColors.ColHeadHoverStart, SolidColor.LightGoldenrodYellow},
-						{ControlAppearanceColors.ColHeadHoverEnd, SolidColor.Goldenrod},
-						{ControlAppearanceColors.ColHeadSelectedStart, SolidColor.LightGoldenrodYellow},
-						{ControlAppearanceColors.ColHeadSelectedEnd, SolidColor.Goldenrod},
-						{ControlAppearanceColors.ColHeadFullSelectedStart, SolidColor.WhiteSmoke},
-						{ControlAppearanceColors.ColHeadFullSelectedEnd, SolidColor.LemonChiffon},
-						{ControlAppearanceColors.ColHeadText, SolidColor.DarkBlue},
-						{ControlAppearanceColors.RowHeadSplitter, SolidColor.LightSteelBlue},
-						{ControlAppearanceColors.RowHeadNormal, SolidColor.AliceBlue},
-						{ControlAppearanceColors.RowHeadHover, SolidColor.LightSteelBlue},
-						{ControlAppearanceColors.RowHeadSelected, SolidColor.PaleGoldenrod},
-						{ControlAppearanceColors.RowHeadFullSelected, SolidColor.LemonChiffon},
-						{ControlAppearanceColors.RowHeadText, SolidColor.DarkBlue},
-						{ControlAppearanceColors.GridText, SolidColor.Black},
-						{ControlAppearanceColors.GridBackground, SolidColor.White},
-						{ControlAppearanceColors.GridLine, SolidColor.FromArgb(255, 208, 215, 229)},
-						{ControlAppearanceColors.SelectionBorder, ColorUtility.FromAlphaColor(180, StaticResources.SystemColor_Highlight)},
-						{ControlAppearanceColors.SelectionFill, ColorUtility.FromAlphaColor(30, StaticResources.SystemColor_Highlight)},
-						{ControlAppearanceColors.OutlineButtonBorder, SolidColor.Black},
-						{ControlAppearanceColors.OutlinePanelBackground, StaticResources.SystemColor_Control},
-						{ControlAppearanceColors.OutlinePanelBorder, SolidColor.Silver},
-						{ControlAppearanceColors.OutlineButtonText, StaticResources.SystemColor_WindowText},
-						//{ControlAppearanceColors.SheetTabText, StaticResources.SystemColor_WindowText },
-						//{ControlAppearanceColors.SheetTabBorder, StaticResources.SystemColor_Highlight },
-						//{ControlAppearanceColors.SheetTabBackground, SolidColor.White },
-						//{ControlAppearanceColors.SheetTabSelected, StaticResources.SystemColor_Window },
+						{ControlAppearanceColors.LeadHeadNormal, new SolidColorBrush((Avalonia.Media.Color)SolidColor.Lavender).ToImmutable()},
+						{ControlAppearanceColors.LeadHeadSelected, new SolidColorBrush((Avalonia.Media.Color)SolidColor.Lavender).ToImmutable()},
+						{ControlAppearanceColors.LeadHeadIndicator, new SolidColorBrush((Avalonia.Media.Color)SolidColor.Gainsboro).ToImmutable()},
+						{ControlAppearanceColors.ColHeadNormal, new SolidColorBrush((Avalonia.Media.Color)SolidColor.White).ToImmutable()},
+						{ControlAppearanceColors.ColHeadHover, new SolidColorBrush((Avalonia.Media.Color)SolidColor.LightGoldenrodYellow).ToImmutable()},
+						{ControlAppearanceColors.ColHeadSelected, new SolidColorBrush((Avalonia.Media.Color)SolidColor.LightGoldenrodYellow).ToImmutable()},
+						{ControlAppearanceColors.ColHeadFullSelected, new SolidColorBrush((Avalonia.Media.Color)SolidColor.WhiteSmoke).ToImmutable()},
+						{ControlAppearanceColors.ColHeadText, new SolidColorBrush((Avalonia.Media.Color)SolidColor.DarkBlue).ToImmutable()},
+						{ControlAppearanceColors.RowHeadSplitter, new SolidColorBrush((Avalonia.Media.Color)SolidColor.LightSteelBlue).ToImmutable()},
+						{ControlAppearanceColors.RowHeadNormal, new SolidColorBrush((Avalonia.Media.Color)SolidColor.AliceBlue).ToImmutable()},
+						{ControlAppearanceColors.RowHeadHover, new SolidColorBrush((Avalonia.Media.Color)SolidColor.LightSteelBlue).ToImmutable()},
+						{ControlAppearanceColors.RowHeadSelected, new SolidColorBrush((Avalonia.Media.Color)SolidColor.PaleGoldenrod).ToImmutable()},
+						{ControlAppearanceColors.RowHeadFullSelected, new SolidColorBrush((Avalonia.Media.Color)SolidColor.LemonChiffon).ToImmutable()},
+						{ControlAppearanceColors.RowHeadText, new SolidColorBrush((Avalonia.Media.Color)SolidColor.DarkBlue).ToImmutable()},
+						{ControlAppearanceColors.GridText, new SolidColorBrush((Avalonia.Media.Color)SolidColor.Black).ToImmutable()},
+						{ControlAppearanceColors.GridBackground, new SolidColorBrush((Avalonia.Media.Color)SolidColor.White).ToImmutable()},
+						{ControlAppearanceColors.GridLine, new SolidColorBrush((Avalonia.Media.Color)SolidColor.FromArgb(255, 208, 215, 229)).ToImmutable()},
+						{ControlAppearanceColors.SelectionBorder, new SolidColorBrush((Avalonia.Media.Color)ColorUtility.FromAlphaColor(180, StaticResources.SystemColor_Highlight)).ToImmutable()},
+						{ControlAppearanceColors.SelectionFill, new SolidColorBrush((Avalonia.Media.Color)ColorUtility.FromAlphaColor(30, StaticResources.SystemColor_Highlight)).ToImmutable()},
+						{ControlAppearanceColors.OutlineButtonBorder, new SolidColorBrush((Avalonia.Media.Color)SolidColor.Black).ToImmutable()},
+						{ControlAppearanceColors.OutlinePanelBackground, new SolidColorBrush((Avalonia.Media.Color)StaticResources.SystemColor_Control).ToImmutable()},
+						{ControlAppearanceColors.OutlinePanelBorder, new SolidColorBrush((Avalonia.Media.Color)SolidColor.Silver).ToImmutable()},
+						{ControlAppearanceColors.OutlineButtonText, new SolidColorBrush((Avalonia.Media.Color)StaticResources.SystemColor_WindowText).ToImmutable()},
 				},
 
 				SelectionBorderWidth = 3,

@@ -38,6 +38,103 @@
 
 			<SolidColorBrush x:Key="CalcitaTabSelectedBackgroundBrush" Color="{StaticResource CalcitaBackgroundColor}" />
 
+			<Color x:Key="CalcitaGridBackgroundColor">#FFFFFFFF</Color>
+			<Color x:Key="CalcitaGridTextColor">#FF000000</Color>
+			<Color x:Key="CalcitaGridLineColor">#FFD0D7E5</Color>
+			<Color x:Key="CalcitaGridSelectionBorderColor">#B4086F9E</Color>
+			<Color x:Key="CalcitaGridSelectionFillColor">#1E086F9E</Color>
+
+			<Color x:Key="CalcitaGridColHeaderColor">#FFF2F2FC</Color>
+			<Color x:Key="CalcitaGridColHeaderHoverColor">#FFEADF79</Color>
+			<Color x:Key="CalcitaGridColHeaderSelectedColor">#FFEADF79</Color>
+			<Color x:Key="CalcitaGridColHeaderFullSelectedColor">#FFFAF7E1</Color>
+			<Color x:Key="CalcitaGridColHeaderInvalidColor">#FFE8E8E8</Color>
+			<Color x:Key="CalcitaGridColHeaderTextColor">#FF00008B</Color>
+			<Color x:Key="CalcitaGridColSplitterColor">#FFB0C4DE</Color>
+
+			<Color x:Key="CalcitaGridRowHeaderColor">#FFF0F8FF</Color>
+			<Color x:Key="CalcitaGridRowHeaderHoverColor">#FFB0C4DE</Color>
+			<Color x:Key="CalcitaGridRowHeaderSelectedColor">#FFEEE8AA</Color>
+			<Color x:Key="CalcitaGridRowHeaderFullSelectedColor">#FFFFFACD</Color>
+			<Color x:Key="CalcitaGridRowHeaderInvalidColor">#FFE8E8E8</Color>
+			<Color x:Key="CalcitaGridRowHeaderTextColor">#FF00008B</Color>
+			<Color x:Key="CalcitaGridRowSplitterColor">#FFB0C4DE</Color>
+
+			<Color x:Key="CalcitaGridLeadHeaderColor">#FFE6E6FA</Color>
+			<Color x:Key="CalcitaGridLeadHeaderSelectedColor">#FFE6E6FA</Color>
+			<Color x:Key="CalcitaGridLeadHeaderIndicatorColor">#FFDCDCDC</Color>
+
+			<Color x:Key="CalcitaCtrlOutlinePanelBorderColor">#FFC0C0C0</Color>
+			<Color x:Key="CalcitaCtrlOutlinePanelBackgroundColor">#FFF0F0F0</Color>
+			<Color x:Key="CalcitaCtrlOutlineButtonBorderColor">#FF000000</Color>
+			<Color x:Key="CalcitaCtrlOutlineButtonTextColor">#FF000000</Color>
+
+			<SolidColorBrush x:Key="CalcitaGridBackgroundBrush" Color="{StaticResource CalcitaGridBackgroundColor}" />
+			<SolidColorBrush x:Key="CalcitaGridTextBrush" Color="{StaticResource CalcitaGridTextColor}" />
+			<SolidColorBrush x:Key="CalcitaGridLineBrush" Color="{StaticResource CalcitaGridLineColor}" />
+			<SolidColorBrush x:Key="CalcitaGridSelectionBorderBrush" Color="{StaticResource CalcitaGridSelectionBorderColor}" />
+			<SolidColorBrush x:Key="CalcitaGridSelectionFillBrush" Color="{StaticResource CalcitaGridSelectionFillColor}" />
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFF2F2FC" Offset="0" />
+				<GradientStop Color="#FFD8D8EC" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFEADF79" Offset="0" />
+				<GradientStop Color="#FFC8B852" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFEADF79" Offset="0" />
+				<GradientStop Color="#FFC8B852" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderFullSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFFAF7E1" Offset="0" />
+				<GradientStop Color="#FFE4DEB8" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderInvalidBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFE8E8E8" Offset="0" />
+				<GradientStop Color="#FFDCDCDC" Offset="1" />
+			</LinearGradientBrush>
+			<SolidColorBrush x:Key="CalcitaGridColHeaderTextBrush" Color="{StaticResource CalcitaGridColHeaderTextColor}" />
+			<SolidColorBrush x:Key="CalcitaGridColSplitterBrush" Color="{StaticResource CalcitaGridColSplitterColor}" />
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFF0F8FF" Offset="0" />
+				<GradientStop Color="#FFD0E0F0" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFB0C4DE" Offset="0" />
+				<GradientStop Color="#FF8FA6C2" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFEEE8AA" Offset="0" />
+				<GradientStop Color="#FFD8C88A" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderFullSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFFFFACD" Offset="0" />
+				<GradientStop Color="#FFE8E0A8" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderInvalidBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFE8E8E8" Offset="0" />
+				<GradientStop Color="#FFDCDCDC" Offset="1" />
+			</LinearGradientBrush>
+			<SolidColorBrush x:Key="CalcitaGridRowHeaderTextBrush" Color="{StaticResource CalcitaGridRowHeaderTextColor}" />
+			<SolidColorBrush x:Key="CalcitaGridRowSplitterBrush" Color="{StaticResource CalcitaGridRowSplitterColor}" />
+			<LinearGradientBrush x:Key="CalcitaGridLeadHeaderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFE6E6FA" Offset="0" />
+				<GradientStop Color="#FFC8C8DE" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridLeadHeaderSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFE6E6FA" Offset="0" />
+				<GradientStop Color="#FFC8C8DE" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridLeadHeaderIndicatorBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FFDCDCDC" Offset="0" />
+				<GradientStop Color="#FFC4C4C4" Offset="1" />
+			</LinearGradientBrush>
+			<SolidColorBrush x:Key="CalcitaCtrlOutlinePanelBorderBrush" Color="{StaticResource CalcitaCtrlOutlinePanelBorderColor}" />
+			<SolidColorBrush x:Key="CalcitaCtrlOutlinePanelBackgroundBrush" Color="{StaticResource CalcitaCtrlOutlinePanelBackgroundColor}" />
+			<SolidColorBrush x:Key="CalcitaCtrlOutlineButtonBorderBrush" Color="{StaticResource CalcitaCtrlOutlineButtonBorderColor}" />
+			<SolidColorBrush x:Key="CalcitaCtrlOutlineButtonTextBrush" Color="{StaticResource CalcitaCtrlOutlineButtonTextColor}" />
+
 		</ResourceDictionary>
 		<ResourceDictionary x:Key="Dark">
 			<Color x:Key="CalcitaBackgroundColor">#FF282828</Color>
@@ -74,6 +171,103 @@
 			<SolidColorBrush x:Key="CalcitaHighlightBrush2" Color="{StaticResource CalcitaHighlightColor2}" />
 			
 			<SolidColorBrush x:Key="CalcitaTabSelectedBackgroundBrush" Color="{StaticResource CalcitaBackgroundColor}" />
+
+			<Color x:Key="CalcitaGridBackgroundColor">#FF282828</Color>
+			<Color x:Key="CalcitaGridTextColor">#FFDEDEDE</Color>
+			<Color x:Key="CalcitaGridLineColor">#FF4A4A4A</Color>
+			<Color x:Key="CalcitaGridSelectionBorderColor">#B4119EDA</Color>
+			<Color x:Key="CalcitaGridSelectionFillColor">#35119EDA</Color>
+
+			<Color x:Key="CalcitaGridColHeaderColor">#FF3B3B3B</Color>
+			<Color x:Key="CalcitaGridColHeaderHoverColor">#FF4A4A5A</Color>
+			<Color x:Key="CalcitaGridColHeaderSelectedColor">#FF6E6E5A</Color>
+			<Color x:Key="CalcitaGridColHeaderFullSelectedColor">#FF636363</Color>
+			<Color x:Key="CalcitaGridColHeaderInvalidColor">#FF5A403C</Color>
+			<Color x:Key="CalcitaGridColHeaderTextColor">#FFDADADA</Color>
+			<Color x:Key="CalcitaGridColSplitterColor">#FF6E6E6E</Color>
+
+			<Color x:Key="CalcitaGridRowHeaderColor">#FF3B3B3B</Color>
+			<Color x:Key="CalcitaGridRowHeaderHoverColor">#FF4A4A5A</Color>
+			<Color x:Key="CalcitaGridRowHeaderSelectedColor">#FF6E6E5A</Color>
+			<Color x:Key="CalcitaGridRowHeaderFullSelectedColor">#FF636363</Color>
+			<Color x:Key="CalcitaGridRowHeaderInvalidColor">#FF5A403C</Color>
+			<Color x:Key="CalcitaGridRowHeaderTextColor">#FFDADADA</Color>
+			<Color x:Key="CalcitaGridRowSplitterColor">#FF6E6E6E</Color>
+
+			<Color x:Key="CalcitaGridLeadHeaderColor">#FF414141</Color>
+			<Color x:Key="CalcitaGridLeadHeaderSelectedColor">#FF5A5A5A</Color>
+			<Color x:Key="CalcitaGridLeadHeaderIndicatorColor">#FF6E6E6E</Color>
+
+			<Color x:Key="CalcitaCtrlOutlinePanelBorderColor">#FF8A8A8A</Color>
+			<Color x:Key="CalcitaCtrlOutlinePanelBackgroundColor">#FF282828</Color>
+			<Color x:Key="CalcitaCtrlOutlineButtonBorderColor">#FF6E6E6E</Color>
+			<Color x:Key="CalcitaCtrlOutlineButtonTextColor">#FFDEDEDE</Color>
+
+			<SolidColorBrush x:Key="CalcitaGridBackgroundBrush" Color="{StaticResource CalcitaGridBackgroundColor}" />
+			<SolidColorBrush x:Key="CalcitaGridTextBrush" Color="{StaticResource CalcitaGridTextColor}" />
+			<SolidColorBrush x:Key="CalcitaGridLineBrush" Color="{StaticResource CalcitaGridLineColor}" />
+			<SolidColorBrush x:Key="CalcitaGridSelectionBorderBrush" Color="{StaticResource CalcitaGridSelectionBorderColor}" />
+			<SolidColorBrush x:Key="CalcitaGridSelectionFillBrush" Color="{StaticResource CalcitaGridSelectionFillColor}" />
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF4B4B4B" Offset="0" />
+				<GradientStop Color="#FF3B3B3B" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF4A4A5A" Offset="0" />
+				<GradientStop Color="#FF3A3A4A" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF7C7C6C" Offset="0" />
+				<GradientStop Color="#FF6E6E5A" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderFullSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF717171" Offset="0" />
+				<GradientStop Color="#FF636363" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridColHeaderInvalidBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF6A5E5A" Offset="0" />
+				<GradientStop Color="#FF5A403C" Offset="1" />
+			</LinearGradientBrush>
+			<SolidColorBrush x:Key="CalcitaGridColHeaderTextBrush" Color="{StaticResource CalcitaGridColHeaderTextColor}" />
+			<SolidColorBrush x:Key="CalcitaGridColSplitterBrush" Color="{StaticResource CalcitaGridColSplitterColor}" />
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF4B4B4B" Offset="0" />
+				<GradientStop Color="#FF3B3B3B" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF4A4A5A" Offset="0" />
+				<GradientStop Color="#FF3A3A4A" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF6E6E5A" Offset="0" />
+				<GradientStop Color="#FF5E5E4A" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderFullSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF717171" Offset="0" />
+				<GradientStop Color="#FF636363" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridRowHeaderInvalidBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF6A5E5A" Offset="0" />
+				<GradientStop Color="#FF5A403C" Offset="1" />
+			</LinearGradientBrush>
+			<SolidColorBrush x:Key="CalcitaGridRowHeaderTextBrush" Color="{StaticResource CalcitaGridRowHeaderTextColor}" />
+			<SolidColorBrush x:Key="CalcitaGridRowSplitterBrush" Color="{StaticResource CalcitaGridRowSplitterColor}" />
+			<LinearGradientBrush x:Key="CalcitaGridLeadHeaderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF4F4F4F" Offset="0" />
+				<GradientStop Color="#FF414141" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridLeadHeaderSelectedBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF686868" Offset="0" />
+				<GradientStop Color="#FF5A5A5A" Offset="1" />
+			</LinearGradientBrush>
+			<LinearGradientBrush x:Key="CalcitaGridLeadHeaderIndicatorBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+				<GradientStop Color="#FF7C7C7C" Offset="0" />
+				<GradientStop Color="#FF6E6E6E" Offset="1" />
+			</LinearGradientBrush>
+			<SolidColorBrush x:Key="CalcitaCtrlOutlinePanelBorderBrush" Color="{StaticResource CalcitaCtrlOutlinePanelBorderColor}" />
+			<SolidColorBrush x:Key="CalcitaCtrlOutlinePanelBackgroundBrush" Color="{StaticResource CalcitaCtrlOutlinePanelBackgroundColor}" />
+			<SolidColorBrush x:Key="CalcitaCtrlOutlineButtonBorderBrush" Color="{StaticResource CalcitaCtrlOutlineButtonBorderColor}" />
+			<SolidColorBrush x:Key="CalcitaCtrlOutlineButtonTextBrush" Color="{StaticResource CalcitaCtrlOutlineButtonTextColor}" />
 		</ResourceDictionary>
 	</ResourceDictionary.ThemeDictionaries>
 	<FontFamily x:Key="ContentControlThemeFontFamily">fonts:Inter#Inter, $Default</FontFamily>

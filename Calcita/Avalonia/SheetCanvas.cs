@@ -480,15 +480,7 @@ namespace Calcita.Controls
                 && sheet.controlAdapter != null)
             {
 
-                SolidColorBrush bgBrush;
-                if (this.Owner.ControlStyle.TryGetColor(ControlAppearanceColors.GridBackground, out SolidColor bgColor))
-                {
-                    bgBrush = new SolidColorBrush(bgColor);
-                }
-                else
-                {
-                    bgBrush = new SolidColorBrush(Colors.White);
-                }
+                var bgBrush = this.Owner.ControlStyle.GetBrush(ControlAppearanceColors.GridBackground);
 
                 dc.DrawRectangle(bgBrush, null, new Rect(0, 0, this.Bounds.Size.Width, this.Bounds.Size.Height));
 
@@ -516,7 +508,7 @@ namespace Calcita.Controls
 
         IRenderer ICompViewAdapter.Renderer => renderer;
 
-        ControlAppearanceStyle ICompViewAdapter.ControlStyle => throw new System.NotImplementedException();
+        ControlAppearanceStyle ICompViewAdapter.ControlStyle => this.Owner?.ControlStyle ?? ControlAppearanceStyle.CreateDefaultControlStyle();
 
         double ICompViewAdapter.BaseScale => this.BaseScale;
 

@@ -3,6 +3,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
+using Calcita.CellTypes;
 using Calcita.Controls;
 using Calcita.Demo.ViewModel;
 
@@ -138,6 +140,18 @@ namespace Calcita.Demo
         private void View_PageBreaks_Click(object sender, RoutedEventArgs e)
         {
             grid.CurrentWorksheet?.SetSettings(WorksheetSettings.View_ShowPageBreaks, (sender as MenuItem)?.IsChecked == true);
+        }
+
+        private void View_Theme_Click(object sender, RoutedEventArgs e)
+        {
+            if (App.Current == null || sender is not MenuItem menu) return;
+
+            App.Current.RequestedThemeVariant = menu.Tag switch
+            {
+                "Dark" => ThemeVariant.Dark,
+                "Default" => ThemeVariant.Default,
+                _ => ThemeVariant.Light,
+            };
         }
         #endregion // Menu - View
 

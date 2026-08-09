@@ -600,7 +600,7 @@ namespace Calcita.Views
             int endRow = visibleRegion.endRow + (dc.FullCellClip ? 0 : 1);
             int endCol = visibleRegion.endCol + (dc.FullCellClip ? 0 : 1);
 
-            render.BeginDrawLine(1, sheet.controlAdapter.ControlStyle.Colors[ControlAppearanceColors.GridLine]);
+            render.BeginDrawLine(sheet.controlAdapter.ControlStyle.GetPen(ControlAppearanceColors.GridLine));
 
             #region Horizontal line
             // horizontal line
@@ -814,32 +814,10 @@ namespace Calcita.Views
             {
                 #region Plain Text
 
-                #region Determine text color
-                SolidColor textColor;
-
-                if (!cell.RenderColor.IsTransparent)
-                {
-                    // render color, used to render negative number, specified by data formatter
-                    textColor = cell.RenderColor;
-                }
-                else if (cell.InnerStyle.HasStyle(PlainStyleFlag.TextColor))
-                {
-                    // cell text color, specified by SetRangeStyle
-                    textColor = cell.InnerStyle.TextColor;
-                }
-                // default cell text color
-                else if (!sheet.controlAdapter.ControlStyle.TryGetColor(ControlAppearanceColors.GridText, out textColor))
-                {
-                    // default built-in text
-                    textColor = SolidColor.Black;
-                }
-
                 if (cell.FontDirty)
                 {
                     sheet.UpdateCellFont(cell);
                 }
-
-                #endregion // Determine text color
 
                 #region Determine clip region
 
@@ -900,7 +878,7 @@ namespace Calcita.Views
 
                 #endregion // Determine clip region
 
-                dc.Renderer.DrawCellText(cell, textColor, dc.DrawMode, this.scaleFactor);
+                dc.Renderer.DrawCellText(cell, dc.DrawMode, this.scaleFactor);
 
                 #region clip region
                 if (needWidthClip)
@@ -980,20 +958,20 @@ namespace Calcita.Views
 
                 if (scaledSelectionRect.Width > 0 || scaledSelectionRect.Height > 0)
                 {
-                    SolidColor selectionFillColor = controlStyle.Colors[ControlAppearanceColors.SelectionFill];
+                    var selectionFillBrush = controlStyle.GetBrush(ControlAppearanceColors.SelectionFill);
 
                     if (sheet.SelectionStyle == WorksheetSelectionStyle.Default)
                     {
                         var range = this.sheet.GetRangeIfMergedCell(this.sheet.focusPos);
                         var scaledFocusPosRect = GetScaledAndClippedRangeRect(this, range.StartPos, range.EndPos, 0);
 
-                        SolidColor selectionBorderColor = controlStyle.Colors[ControlAppearanceColors.SelectionBorder];
+                        var selectionBorderPen = controlStyle.GetPen(ControlAppearanceColors.SelectionBorder);
 
-                        g.FillRectangle(scaledSelectionRect, selectionFillColor);
+                        g.FillRectangle(scaledSelectionRect, selectionFillBrush);
 
-                        if (selectionBorderColor.A > 0)
+                        if (selectionBorderPen != null)
                         {
-                            g.DrawRectangle(scaledSelectionRect, selectionBorderColor, selectionBorderWidth, LineStyles.Solid);
+                            g.DrawRectangle(selectionBorderPen, scaledSelectionRect);
                         }
                     }
                     else if (this.sheet.SelectionStyle == WorksheetSelectionStyle.FocusRect)
@@ -1003,13 +981,11 @@ namespace Calcita.Views
 
                     if (sheet.HasSettings(WorksheetSettings.Edit_DragSelectionToFillSerial))
                     {
-                        var sheetBackColor = controlStyle.Colors[ControlAppearanceColors.GridBackground];
-
                         var thumbRect = new Rectangle(scaledSelectionRect.Right - selectionBorderWidth,
                             scaledSelectionRect.Bottom - selectionBorderWidth,
                             selectionBorderWidth + 2, selectionBorderWidth + 2);
 
-                        g.DrawRectangle(thumbRect, sheetBackColor);
+                        g.DrawRectangle(controlStyle.GetPen(ControlAppearanceColors.GridBackground), thumbRect);
                     }
                 }
             }

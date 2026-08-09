@@ -1,4 +1,4 @@
-﻿/*****************************************************
+/*****************************************************
  * 
  * ReoGrid - .NET Spreadsheet Control
  * 
@@ -32,21 +32,24 @@ namespace Calcita.Graphics
         void DrawLine(Point startPoint, Point endPoint, SolidColor color);
         void DrawLine(Point startPoint, Point endPoint, SolidColor color, RGFloat width, LineStyles style);
         //void DrawLine(SolidColor color, Point startPoint, Point endPoint, RGFloat width, LineStyles style, LineCapStyles startCap, LineCapStyles endCap);
-        void DrawLine(RGPen p, RGFloat x1, RGFloat y1, RGFloat x2, RGFloat y2);
-        void DrawLine(RGPen p, Point startPoint, Point endPoint);
+        void DrawLine(IRGPen p, RGFloat x1, RGFloat y1, RGFloat x2, RGFloat y2);
+        void DrawLine(IRGPen p, Point startPoint, Point endPoint);
         void DrawLines(Point[] points, int start, int length, SolidColor color, RGFloat width, LineStyles style);
 
         void DrawRectangle(Rectangle rect, SolidColor color);
+        void DrawRectangle(Rectangle rect, IRGPen pen);
         void DrawRectangle(Rectangle rect, SolidColor color, RGFloat width, LineStyles lineStyle);
         void DrawRectangle(RGFloat x, RGFloat y, RGFloat width, RGFloat height, SolidColor color);
-        void DrawRectangle(RGPen p, Rectangle rect);
-        void DrawRectangle(RGPen p, RGFloat x, RGFloat y, RGFloat width, RGFloat height);
+        void DrawRectangle(IRGPen p, Rectangle rect);
+        void DrawRectangle(IRGPen p, RGFloat x, RGFloat y, RGFloat width, RGFloat height);
 
         void FillRectangle(HatchStyles style, SolidColor hatchColor, SolidColor bgColor, Rectangle rect);
         void FillRectangle(HatchStyles style, SolidColor hatchColor, SolidColor bgColor, RGFloat x, RGFloat y, RGFloat width, RGFloat height);
         void FillRectangle(Rectangle rect, IColor color);
         void FillRectangle(RGFloat x, RGFloat y, RGFloat width, RGFloat height, IColor color);
         void FillRectangle(RGBrush b, RGFloat x, RGFloat y, RGFloat width, RGFloat height);
+        void FillRectangle(Rectangle rect, IRGBrush brush);
+        void FillRectangle(RGFloat x, RGFloat y, RGFloat width, RGFloat height, IRGBrush brush);
         void FillRectangleLinear(SolidColor startColor, SolidColor endColor, RGFloat angle, Rectangle rect);
 
         void DrawAndFillRectangle(Rectangle rect, SolidColor lineColor, IColor fillColor);

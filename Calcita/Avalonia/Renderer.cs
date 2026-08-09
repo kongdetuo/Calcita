@@ -1,4 +1,4 @@
-﻿/*****************************************************
+/*****************************************************
  *
  * Calcita - Cross-platform spreadsheet and UI toolkit (based on ReoGrid)
  *
@@ -38,6 +38,7 @@ using Avalonia.Media.Immutable;
 using System.Net;
 using Calcita.AvaloniaPlatform;
 
+
 namespace Calcita.Rendering
 {
     #region Graphics
@@ -60,12 +61,12 @@ namespace Calcita.Rendering
         public PlatformGraphics PlatformGraphics { get { return g; } set { this.g = value; } }
 
         #region Line
-        public void DrawLine(Pen p, double x1, double y1, double x2, double y2)
+        public void DrawLine(IRGPen p, double x1, double y1, double x2, double y2)
         {
             DrawLine(p, new Point(x1, y1), new Point(x2, y2));
         }
 
-        public void DrawLine(Pen p, Point startPoint, Point endPoint)
+        public void DrawLine(IRGPen p, Point startPoint, Point endPoint)
         {
 #if !GRID_GUIDELINE
             double halfPenWidth = p.Thickness / 2;
@@ -162,12 +163,12 @@ namespace Calcita.Rendering
         #endregion // Line
 
         #region Rectangle
-        public void DrawRectangle(Pen p, Rectangle rect)
+        public void DrawRectangle(IRGPen p, Rectangle rect)
         {
             g.DrawRectangle(null, p, rect);
         }
 
-        public void DrawRectangle(Pen p, double x, double y, double w, double h)
+        public void DrawRectangle(IRGPen p, double x, double y, double w, double h)
         {
             g.DrawRectangle(null, p, new Rect(x, y, w, h));
         }
@@ -176,6 +177,11 @@ namespace Calcita.Rendering
         {
             var p = this.resourceManager.GetPen(color);
             if (p != null) this.g.DrawRectangle(null, p, (Rect)rect);
+        }
+
+        public void DrawRectangle(Rectangle rect, IRGPen pen)
+        {
+            if (pen != null) this.g.DrawRectangle(null, pen, (Rect)rect);
         }
 
         public void DrawRectangle(double x, double y, double width, double height, SolidColor color)
@@ -238,6 +244,16 @@ namespace Calcita.Rendering
         public void FillRectangle(RGBrush b, double x, double y, double width, double height)
         {
             this.g.DrawRectangle(b, null, new Rect(x, y, width, height));
+        }
+
+        public void FillRectangle(double x, double y, double width, double height, IRGBrush brush)
+        {
+            if (brush != null) this.g.DrawRectangle(brush, null, new Rect(x, y, width, height));
+        }
+
+        public void FillRectangle(Rectangle rect, IRGBrush brush)
+        {
+            if (brush != null) this.g.DrawRectangle(brush, null, rect);
         }
 
         public void FillRectangleLinear(SolidColor color1, SolidColor color2, double angle, Rectangle rect)
@@ -615,7 +631,7 @@ namespace Calcita.Rendering
             }
         }
 
-        public void DrawCellText(Cell cell, SolidColor textColor, DrawMode drawMode, double scale)
+        public void DrawCellText(Cell cell, DrawMode drawMode, double scale)
         {
             var sheet = cell.Worksheet;
 
@@ -644,28 +660,25 @@ namespace Calcita.Rendering
             }
         }
 
-        private static Color DecideTextColor(Cell cell)
+        private static IRGBrush DecideTextBrush(Cell cell)
         {
             var sheet = cell.Worksheet;
             var controlStyle = sheet.controlAdapter.ControlStyle;
-            SolidColor textColor;
 
             if (!cell.RenderColor.IsTransparent)
             {
-                textColor = cell.RenderColor;
+                return new SolidColorBrush((Avalonia.Media.Color)cell.RenderColor);
             }
             else if (cell.InnerStyle.HasStyle(PlainStyleFlag.TextColor))
             {
                 // cell text color, specified by SetRangeStyle
-                textColor = cell.InnerStyle.TextColor;
+                return new SolidColorBrush((Avalonia.Media.Color)cell.InnerStyle.TextColor);
             }
-            else if (!controlStyle.TryGetColor(ControlAppearanceColors.GridText, out textColor))
+            else
             {
                 // default cell text color
-                textColor = SolidColor.Black;
+                return controlStyle.GetBrush(ControlAppearanceColors.GridText);
             }
-
-            return textColor;
         }
 
         public void UpdateCellRenderFont(Cell cell, Core.UpdateFontReason reason)
@@ -678,13 +691,13 @@ namespace Calcita.Rendering
 
             if (cell.formattedText == null || cell.formattedText.ToString() != cell.InnerDisplay)
             {
-                SolidColor textColor = DecideTextColor(cell);
+                IRGBrush brush = DecideTextBrush(cell);
 
                 cell.formattedText = new Avalonia.Media.FormattedText(cell.InnerDisplay,
                     System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                     Typeface.Default, // base.resourceManager.GetTypeface(cell.InnerStyle.FontName),
                     fontSize,
-                    base.resourceManager.GetBrush(textColor));
+                    brush);
             }
             else if (reason == Core.UpdateFontReason.FontChanged || reason == Core.UpdateFontReason.ScaleChanged)
             {
@@ -693,8 +706,8 @@ namespace Calcita.Rendering
             }
             else if (reason == Core.UpdateFontReason.TextColorChanged)
             {
-                SolidColor textColor = DecideTextColor(cell);
-                cell.formattedText.SetForegroundBrush(resourceManager.GetBrush(textColor));
+                IRGBrush brush = DecideTextBrush(cell);
+                cell.formattedText.SetForegroundBrush(brush);
             }
 
             var ft = cell.formattedText;
@@ -836,11 +849,11 @@ namespace Calcita.Rendering
             }
         }
 
-        private Pen cachePen = null;
+        private IRGPen cachePen = null;
 
-        public void BeginDrawLine(double width, SolidColor color)
+        public void BeginDrawLine(IRGPen pen)
         {
-            cachePen = new Pen(new SolidColorBrush(color), width);
+            cachePen = pen;
         }
 
         public void DrawLine(double x1, double y1, double x2, double y2)
@@ -852,7 +865,7 @@ namespace Calcita.Rendering
         {
         }
 
-        public void DrawLeadHeadArrow(Rectangle bounds, SolidColor startColor, SolidColor endColor)
+        public void DrawLeadHeadArrow(Rectangle bounds, IRGBrush brush)
         {
         }
 
@@ -880,7 +893,7 @@ namespace Calcita.Rendering
             this.headerTextScale = 9d * scale;
         }
 
-        public void DrawHeaderText(string text, RGBrush brush, Rectangle rect)
+        public void DrawHeaderText(string text, IRGBrush brush, Rectangle rect)
         {
             var ft = new Avalonia.Media.FormattedText(text,
                 System.Globalization.CultureInfo.CurrentCulture, FlowDirection.LeftToRight,

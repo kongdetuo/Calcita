@@ -47,13 +47,13 @@ namespace Calcita.Rendering
 
         void EndCappedLine();
 
-        void BeginDrawLine(RGFloat width, SolidColor color);
+        void BeginDrawLine(IRGPen pen);
 
         void DrawLine(RGFloat x1, RGFloat y1, RGFloat x2, RGFloat y2);
 
         void EndDrawLine();
 
-        void DrawCellText(Cell cell, SolidColor textColor, DrawMode drawMode, RGFloat scale);
+        void DrawCellText(Cell cell, DrawMode drawMode, RGFloat scale);
 
         void UpdateCellRenderFont(Cell cell, Core.UpdateFontReason reason);
 
@@ -61,9 +61,9 @@ namespace Calcita.Rendering
 
         void BeginDrawHeaderText(RGFloat scale);
 
-        void DrawHeaderText(string text, RGBrush brush, Rectangle rect);
+        void DrawHeaderText(string text, IRGBrush brush, Rectangle rect);
 
-        void DrawLeadHeadArrow(Graphics.Rectangle bounds, SolidColor startColor, SolidColor endColor);
+        void DrawLeadHeadArrow(Graphics.Rectangle bounds, IRGBrush brush);
 
         RGPen GetPen(SolidColor color);
 

@@ -780,7 +780,7 @@ namespace Calcita.Controls
         /// Control Style Settings
         /// </summary>
         [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public ControlAppearanceStyle ControlStyle
+        internal ControlAppearanceStyle ControlStyle
         {
             get { return this.controlStyle; }
             set
@@ -792,22 +792,34 @@ namespace Calcita.Controls
 
                 if (this.controlStyle != value)
                 {
-                    if (this.controlStyle != null) this.controlStyle?.CurrentControl = null;
                     this.controlStyle = value;
                 }
                 //workbook.SetControlStyle(value);
 
                 this.SheetCanvas?.renderer.ControlStyle = value;
 
-                this.ApplyControlStyle();
+                this.ApplyControlStyle(true);
             }
         }
 
-        internal void ApplyControlStyle()
+        internal void ApplyControlStyle(bool force = false)
         {
-            this.controlStyle?.CurrentControl = this;
+            bool changed = force;
 
-            this.adapter?.Invalidate();
+            if (this.controlStyle != null)
+            {
+#if AVALONIA
+                this.SheetCanvas?.renderer.ControlStyle = this.controlStyle;
+
+                this.controlStyle.RefreshFromHost(this);
+                changed = true;
+#endif
+            }
+
+            if (changed)
+            {
+                this.adapter?.Invalidate();
+            }
         }
 
         //private AppearanceStyle appearanceStyle = new AppearanceStyle(this);

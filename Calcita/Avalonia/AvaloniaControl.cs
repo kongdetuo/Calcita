@@ -74,6 +74,9 @@ namespace Calcita.Controls
         {
             this.Focusable = true;
 
+            this.ResourcesChanged += (s, e) => this.ApplyControlStyle();
+            this.ActualThemeVariantChanged += (s, e) => this.ApplyControlStyle();
+
             this.BeginInit();
 
             //this.horScrollbar.Scroll += (s, e) =>
@@ -202,6 +205,8 @@ namespace Calcita.Controls
 
             this.CurrentWorksheet?.ControlAdapter = this.adapter;
             this.adapter.Invalidate();
+
+            this.ApplyControlStyle();
 
             static IDisposable? bind<T>(Control? control, AvaloniaProperty<T> property, Func<IObservable<T>> observableFactory)
             {
@@ -707,21 +712,21 @@ namespace Calcita.Controls
 
                 var sheet = this.canvas.CurrentWorksheet;
 
-                Color textColor;
+                IRGBrush textBrush;
 
                 if (!cell.RenderColor.IsTransparent)
                 {
-                    textColor = cell.RenderColor;
+                    textBrush = new SolidColorBrush(cell.RenderColor);
                 }
                 else if (cell.InnerStyle.HasStyle(PlainStyleFlag.TextColor))
                 {
                     // cell text color, specified by SetRangeStyle
-                    textColor = cell.InnerStyle.TextColor;
+                    textBrush = new SolidColorBrush(cell.InnerStyle.TextColor);
                 }
                 else
                 {
                     // default cell text color
-                    textColor = this.canvas.controlStyle[ControlAppearanceColors.GridText];
+                    textBrush = this.canvas.controlStyle.GetBrush(ControlAppearanceColors.GridText);
                 }
 
                 Canvas.SetLeft(this.editTextbox, bounds.X);
@@ -735,9 +740,10 @@ namespace Calcita.Controls
                 this.editTextbox.FontFamily = new FontFamily(cell.InnerStyle.FontName);
                 this.editTextbox.FontSize = cell.InnerStyle.FontSize * sheet.ScaleFactor * 96f / 72f;
                 this.editTextbox.FontStyle = PlatformUtility.ToAvaloniaFontStyle(cell.InnerStyle.fontStyles);
-                this.editTextbox.Foreground = this.Renderer.GetBrush(textColor);
-                this.editTextbox.Background = this.Renderer.GetBrush(cell.InnerStyle.HasStyle(PlainStyleFlag.BackColor)
-                    ? cell.InnerStyle.BackColor : this.canvas.controlStyle[ControlAppearanceColors.GridBackground]);
+                this.editTextbox.Foreground = textBrush;
+                this.editTextbox.Background = cell.InnerStyle.HasStyle(PlainStyleFlag.BackColor)
+                    ? new SolidColorBrush(cell.InnerStyle.BackColor)
+                    : this.canvas.controlStyle.GetBrush(ControlAppearanceColors.GridBackground);
                 this.editTextbox.SelectionStart = this.editTextbox.Text.Length;
                 this.editTextbox.TextWrap = cell.InnerStyle.TextWrapMode != TextWrapMode.NoWrap;
                 this.editTextbox.TextWrapping = (cell.InnerStyle.TextWrapMode == TextWrapMode.NoWrap)

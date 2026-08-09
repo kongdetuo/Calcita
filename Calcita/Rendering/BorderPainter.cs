@@ -51,7 +51,7 @@ namespace Calcita.Rendering
         {
 
             RGPen p;
-            static RGPen CreatePen(Avalonia.Media.IBrush color, double thickness, RGDashStyle dashStyle)
+            static RGPen CreatePen(IRGBrush color, double thickness, RGDashStyle dashStyle)
             {
                 return new RGPen(color, 1)
                 {

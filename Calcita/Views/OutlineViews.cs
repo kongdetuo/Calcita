@@ -1,4 +1,4 @@
-﻿/*****************************************************
+/*****************************************************
  * 
  * ReoGrid - .NET Spreadsheet Control
  * 
@@ -42,10 +42,9 @@ namespace Calcita.Views
 
             var controlStyle = dc.Renderer.ControlStyle;
 
-            var linePen = dc.Renderer.GetPen(
-                controlStyle[ControlAppearanceColors.OutlinePanelBorder]);
+            var linePen = controlStyle.GetPen(ControlAppearanceColors.OutlinePanelBorder);
 
-            dc.Graphics.FillRectangle(bounds, controlStyle[ControlAppearanceColors.OutlinePanelBackground]);
+            dc.Graphics.FillRectangle(bounds, controlStyle.GetBrush(ControlAppearanceColors.OutlinePanelBackground));
 
             // right
             dc.Graphics.DrawLine(linePen, bounds.Right, bounds.Y, bounds.Right, bounds.Bottom);
@@ -76,10 +75,10 @@ namespace Calcita.Views
 
             g.BeginDrawHeaderText(1f);
 
-            var borderPen = dc.Renderer.GetPen(controlStyle[ControlAppearanceColors.OutlinePanelBorder]);
-            var textBrush = dc.Renderer.GetBrush(controlStyle[ControlAppearanceColors.OutlineButtonText]);
+            var borderPen = controlStyle.GetPen(ControlAppearanceColors.OutlinePanelBorder);
+            var textBrush = controlStyle.GetBrush(ControlAppearanceColors.OutlineButtonText);
 
-            dc.Graphics.FillRectangle(bounds, controlStyle[ControlAppearanceColors.OutlinePanelBackground]);
+            dc.Graphics.FillRectangle(bounds, controlStyle.GetBrush(ControlAppearanceColors.OutlinePanelBackground));
 
             if (outlines != null)
             {
@@ -336,12 +335,12 @@ namespace Calcita.Views
             var controlStyle = dc.Renderer.ControlStyle;
 
             g.FillRectangle(bounds.X, bounds.Y, bounds.Width, bounds.Height + 1,
-                controlStyle[ControlAppearanceColors.OutlinePanelBackground]);
+                controlStyle.GetBrush(ControlAppearanceColors.OutlinePanelBackground));
 
             base.Draw(dc);
 
-            g.DrawLine(bounds.Right, bounds.Top, bounds.Right, bounds.Bottom,
-                controlStyle[ControlAppearanceColors.OutlinePanelBorder]);
+            g.DrawLine(controlStyle.GetPen(ControlAppearanceColors.OutlinePanelBorder),
+                bounds.Right, bounds.Top, bounds.Right, bounds.Bottom);
         }
 
         public override void DrawView(CellDrawingContext dc)
@@ -356,7 +355,10 @@ namespace Calcita.Views
 
             if (outlines != null)
             {
-                var p = dc.Renderer.GetPen(controlStyle[ControlAppearanceColors.OutlineButtonBorder]);
+                var p = this.scaleFactor > 0.5f
+                    ? controlStyle.GetPen(ControlAppearanceColors.OutlineButtonBorder, 2f)
+                    : controlStyle.GetPen(ControlAppearanceColors.OutlineButtonBorder);
+                var framePen = controlStyle.GetPen(ControlAppearanceColors.OutlineButtonBorder);
 
                 RGFloat scale = Math.Min(this.scaleFactor, 1f);
                 RGFloat halfButtonSize = Worksheet.OutlineButtonSize / 2f * scale;
@@ -374,11 +376,6 @@ namespace Calcita.Views
                             var endRow = sheet.rows[outline.End];
 
                             if (!endRow.IsVisible) continue;
-
-                            if (this.scaleFactor > 0.5f)
-                            {
-                                p.Thickness = 2;
-                            }
 
                             Rectangle bbRect = outline.ToggleButtonBounds;
                             RGFloat crossX = bbRect.X + bbRect.Width / 2;
@@ -402,8 +399,7 @@ namespace Calcita.Views
                             g.DrawLine(p, bbRect.Left + 3, crossY, bbRect.Right - 2, crossY);
 
                             // frame
-                            p.Thickness = 1;
-                            g.DrawRectangle(p, bbRect.X, bbRect.Y, bbRect.Width, bbRect.Height);
+                            g.DrawRectangle(framePen, bbRect.X, bbRect.Y, bbRect.Width, bbRect.Height);
                         }
                     }
 
@@ -476,12 +472,12 @@ namespace Calcita.Views
             var controlStyle = dc.Renderer.ControlStyle;
 
             g.FillRectangle(bounds.X, bounds.Y, bounds.Width + 1, bounds.Height,
-                controlStyle[ControlAppearanceColors.OutlinePanelBackground]);
+                controlStyle.GetBrush(ControlAppearanceColors.OutlinePanelBackground));
 
             base.Draw(dc);
 
-            g.DrawLine(bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom,
-                controlStyle[ControlAppearanceColors.OutlinePanelBorder]);
+            g.DrawLine(controlStyle.GetPen(ControlAppearanceColors.OutlinePanelBorder),
+                bounds.Left, bounds.Bottom, bounds.Right, bounds.Bottom);
         }
 
         public override void DrawView(CellDrawingContext dc)
@@ -496,7 +492,10 @@ namespace Calcita.Views
 
             if (outlines != null)
             {
-                var p = dc.Renderer.GetPen(controlStyle[ControlAppearanceColors.OutlineButtonBorder]);
+                var p = this.scaleFactor > 0.5f
+                    ? controlStyle.GetPen(ControlAppearanceColors.OutlineButtonBorder, 2f)
+                    : controlStyle.GetPen(ControlAppearanceColors.OutlineButtonBorder);
+                var framePen = controlStyle.GetPen(ControlAppearanceColors.OutlineButtonBorder);
 
                 RGFloat scale = Math.Min(this.scaleFactor, 1f);
                 RGFloat halfButtonSize = Worksheet.OutlineButtonSize / 2f * scale;
@@ -509,16 +508,11 @@ namespace Calcita.Views
                     {
                         line = outlines[idx];
 
-                        foreach (var outline in line)
+foreach (var outline in line)
                         {
                             var endCol = sheet.cols[outline.End];
 
                             if (!endCol.IsVisible) continue;
-
-                            if (this.scaleFactor > 0.5f)
-                            {
-                                p.Thickness = 2;
-                            }
 
                             Rectangle bbRect = outline.ToggleButtonBounds;
 
@@ -542,8 +536,9 @@ namespace Calcita.Views
 
                             // |
                             g.DrawLine(p, bbRect.Left + 3, crossY, bbRect.Right - 2, crossY);
-                            p.Thickness = 1;
-                            g.DrawRectangle(p, bbRect.X, bbRect.Y, bbRect.Width, bbRect.Height);
+
+                            // frame
+                            g.DrawRectangle(framePen, bbRect.X, bbRect.Y, bbRect.Width, bbRect.Height);
                         }
                     }
 

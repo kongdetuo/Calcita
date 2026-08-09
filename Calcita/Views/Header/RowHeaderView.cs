@@ -52,8 +52,8 @@ namespace Calcita.Views
 
 			g.BeginDrawHeaderText(this.scaleFactor);
 
-			var splitterLinePen = dc.Renderer.GetPen(controlStyle.Colors[ControlAppearanceColors.RowHeadSplitter]);
-			var defaultTextBrush = dc.Renderer.GetBrush(controlStyle.Colors[ControlAppearanceColors.RowHeadText]);
+			var splitterLinePen = controlStyle.GetPen(ControlAppearanceColors.RowHeadSplitter);
+			var defaultTextBrush = controlStyle.GetBrush(ControlAppearanceColors.RowHeadText);
 
 			bool isFullRowSelected = sheet.SelectionRange.Cols == sheet.ColumnCount;
 
@@ -74,7 +74,7 @@ namespace Calcita.Views
 
 					if (rect.Height > 0)
 					{
-						g.FillRectangle(rect, controlStyle.GetRowHeadEndColor(false, isSelected, isSelected && isFullRowSelected, false));
+						g.FillRectangle(rect, controlStyle.GetRowHeadBrush(false, isSelected, isSelected && isFullRowSelected, false));
 						g.DrawLine(splitterLinePen, new Point(0, y), new Point(bounds.Width, y));
 
 						var headerText = row.Text != null ? row.Text : (row.Row + 1).ToString();
@@ -112,7 +112,7 @@ namespace Calcita.Views
 			// right line
 			if (!sheet.HasSettings(WorksheetSettings.View_ShowGridLine))
 			{
-				dc.Graphics.DrawLine(dc.Renderer.GetPen(controlStyle.Colors[ControlAppearanceColors.RowHeadSplitter]),
+				dc.Graphics.DrawLine(controlStyle.GetPen(ControlAppearanceColors.RowHeadSplitter),
 					bounds.Right, bounds.Y, bounds.Right,
 					Math.Min((sheet.rows[sheet.rows.Count - 1].Bottom - ScrollViewTop) * this.scaleFactor + bounds.Top, bounds.Bottom));
 			}

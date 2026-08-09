@@ -117,11 +117,8 @@ namespace Calcita.Views
 
 						scaledSelectionMovingRect.Offset(-1, -1);
 
-						SolidColor selectionBorderColor = controlStyle.Colors[ControlAppearanceColors.SelectionBorder];
-
 						dc.Graphics.DrawRectangle(scaledSelectionMovingRect,
-							ColorUtility.FromAlphaColor(255, selectionBorderColor),
-							controlStyle.SelectionBorderWidth, LineStyles.Solid);
+							controlStyle.GetPen(ControlAppearanceColors.SelectionBorder, controlStyle.SelectionBorderWidth));
 					}
 					#endregion // Selection Moving
 					break;

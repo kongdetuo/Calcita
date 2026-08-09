@@ -38,15 +38,13 @@ namespace Calcita.Views
 			var g = dc.Graphics;
 			var controlStyle = dc.Renderer.ControlStyle;
 
-			g.FillRectangle(bounds, controlStyle.Colors[ControlAppearanceColors.LeadHeadNormal]);
+			g.FillRectangle(bounds, controlStyle.GetBrush(ControlAppearanceColors.LeadHeadNormal));
 
-			var startColor = sheet.isLeadHeadSelected ?
-					controlStyle.Colors[ControlAppearanceColors.LeadHeadIndicatorStart]
-					: controlStyle.Colors[ControlAppearanceColors.LeadHeadSelected];
+			var indicatorBrush = sheet.isLeadHeadSelected ?
+					controlStyle.GetBrush(ControlAppearanceColors.LeadHeadIndicator)
+					: controlStyle.GetBrush(ControlAppearanceColors.LeadHeadSelected);
 
-			var endColor = controlStyle.Colors[ControlAppearanceColors.LeadHeadIndicatorEnd];
-
-			dc.Renderer.DrawLeadHeadArrow(bounds, startColor, endColor);
+			dc.Renderer.DrawLeadHeadArrow(bounds, indicatorBrush);
 		}
 		#endregion // Draw
 

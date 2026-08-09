@@ -50,8 +50,8 @@ namespace Calcita.Views
 
             r.BeginDrawHeaderText(this.scaleFactor);
 
-            var splitterLinePen = r.GetPen(controlStyle.Colors[ControlAppearanceColors.RowHeadSplitter]);
-            var headerTextBrush = r.GetBrush(controlStyle.Colors[ControlAppearanceColors.ColHeadText]);
+            var splitterLinePen = controlStyle.GetPen(ControlAppearanceColors.RowHeadSplitter);
+            var headerTextBrush = controlStyle.GetBrush(ControlAppearanceColors.ColHeadText);
 
             bool isFullColSelected = sheet.SelectionRange.Rows == sheet.RowCount;
 
@@ -74,11 +74,9 @@ namespace Calcita.Views
 
 #if WINFORM || WPF || AVALONIA
 
-                    SolidColor startColor = controlStyle.GetColHeadStartColor(false, isSelected, isSelected && isFullColSelected, false);
-                    SolidColor endColor = controlStyle.GetColHeadEndColor(false, isSelected, isSelected && isFullColSelected, false);
-                    g.FillRectangleLinear(startColor, endColor, 90f, rect);
+                    g.FillRectangle(rect, controlStyle.GetColHeadBrush(false, isSelected, isSelected && isFullColSelected, false));
 #elif ANDROID
-					g.FillRectangle(rect, controlStyle.GetRowHeadEndColor(false, isSelected, isSelected && isFullColSelected, false));
+					g.FillRectangle(rect, controlStyle.GetRowHeadBrush(false, isSelected, isSelected && isFullColSelected, false));
 #endif // ANDROID
 
                     g.DrawLine(splitterLinePen, x, 0, x, bounds.Height);
@@ -113,7 +111,7 @@ namespace Calcita.Views
             //	g.DrawLine(ViewLeft, bounds.Bottom,
             //		Math.Min((sheet.cols[sheet.cols.Count - 1].Right - ViewLeft) * this.scaleFactor + bounds.Left, bounds.Width),
             //		//ViewLeft+ bounds.Width,
-            //		bounds.Bottom, controlStyle.Colors[ControlAppearanceColors.ColHeadSplitter]);
+            //		bounds.Bottom);
             //}
         }
 

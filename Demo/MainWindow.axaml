@@ -42,6 +42,25 @@
                 <MenuItem x:Name="viewPageBreaksVisible"  Header="Print Page Breaks"
                           ToggleType="CheckBox"
                           Click="View_PageBreaks_Click"/>
+                <Separator />
+                <MenuItem Header="_Theme">
+                    <MenuItem x:Name="themeLight" Header="Light"
+                              ToggleType="Radio"
+                              GroupName="CalcitaTheme"
+                              Tag="Light"
+                              IsChecked="True"
+                              Click="View_Theme_Click"/>
+                    <MenuItem Header="Dark"
+                              ToggleType="Radio"
+                              GroupName="CalcitaTheme"
+                              Tag="Dark"
+                              Click="View_Theme_Click"/>
+                    <MenuItem Header="System (Default)"
+                              ToggleType="Radio"
+                              GroupName="CalcitaTheme"
+                              Tag="Default"
+                              Click="View_Theme_Click"/>
+                </MenuItem>
                 </MenuItem>
             <MenuItem Header="_Sheet">
                 <MenuItem x:Name="freezeToCell" Header="Freeze To Cell" Click="freezeToCell_Click"/>

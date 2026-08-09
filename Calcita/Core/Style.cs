@@ -2536,26 +2536,6 @@ namespace Calcita
 			{
 				CheckReferenceValidity();
 
-				//SolidColor textColor;
-
-				//if (!this.Cell.RenderColor.IsTransparent)
-				//{
-				//	// render color, used to render negative number, specified by data formatter
-				//	textColor = this.Cell.RenderColor;
-				//}
-				//else if (this.Cell.InnerStyle.HasStyle(PlainStyleFlag.TextColor))
-				//{
-				//	// cell text color, specified by SetRangeStyle
-				//	textColor = this.Cell.InnerStyle.TextColor;
-				//}
-				//// default cell text color
-				//else if (!this.Cell.Worksheet.controlAdapter.ControlStyle.TryGetColor(
-				//	ControlAppearanceColors.GridText, out textColor))
-				//{
-				//	// default built-in text
-				//	textColor = SolidColor.Black;
-				//}
-
 				return this.Cell.InnerStyle.TextColor;
 			}
 			set
