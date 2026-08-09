@@ -89,9 +89,6 @@ namespace Calcita.Controls
             //    verScrollBar_Sroll(s, e);
             //};
 
-            //this.sheetTab.NewSheetClick += SheetTab_NewSheetClick;
-            //this.sheetTab.TabMoved += SheetTab_TabMoved;
-
             this.InitControl();
 
 
@@ -139,8 +136,6 @@ namespace Calcita.Controls
 
             this.horScrollbar?.Scroll -= horScrollBar_Scroll;
             this.verScrollbar?.Scroll -= verScrollBar_Sroll;
-            this.sheetTab?.NewSheetClick -= this.SheetTab_NewSheetClick;
-            this.sheetTab?.TabMoved -= this.SheetTab_TabMoved;
 
             this.SheetCanvas = e.NameScope.Find<SheetCanvas>("PART_SheetCanvas");
             this.horScrollbar = e.NameScope.Find<ScrollBar>("PART_HorizontalScrollBar");
@@ -174,13 +169,6 @@ namespace Calcita.Controls
 
             this.horScrollbar?.Scroll += horScrollBar_Scroll;
             this.verScrollbar?.Scroll += verScrollBar_Sroll;
-            this.sheetTab?.NewSheetClick += this.SheetTab_NewSheetClick;
-            this.sheetTab?.TabMoved += this.SheetTab_TabMoved;
-
-            sheetTab?.SelectedIndexChanged += (s, e) =>
-            {
-                this.SelectedIndex = (s as SheetTabControl)!.SelectedIndex;
-            };
 
             Disposables = [
                 SheetCanvas?.Bind(SheetCanvas.WorksheetProperty, this[!CurrentWorksheetProperty]),
@@ -211,27 +199,6 @@ namespace Calcita.Controls
             static IDisposable? bind<T>(Control? control, AvaloniaProperty<T> property, Func<IObservable<T>> observableFactory)
             {
                 return control?.Bind(property, observableFactory(), Avalonia.Data.BindingPriority.Template);
-            }
-        }
-
-        private void SheetTab_TabMoved(object? sender, SheetTabMovedEventArgs e)
-        {
-            var workbook = this.Workbook;
-
-            if (workbook != null)
-            {
-                workbook.MoveWorksheet(e.Index, e.TargetIndex);
-            }
-        }
-
-        private void SheetTab_NewSheetClick(object? sender, EventArgs e)
-        {
-            var workbook = this.Workbook;
-
-            if (workbook != null)
-            {
-                var sheet = workbook.CreateWorksheet();
-                workbook.AddWorksheet(sheet);
             }
         }
 
