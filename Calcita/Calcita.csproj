@@ -28,9 +28,9 @@
 		<Authors>Calcita Contributors</Authors>
 		<Company>Calcita</Company>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/Calcita/Calcita</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/kongdetuo/Calcita</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/Calcita/Calcita</RepositoryUrl>
+		<RepositoryUrl>https://github.com/kongdetuo/Calcita</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<VersionPrefix>0.1.0</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
