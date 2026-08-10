@@ -32,7 +32,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/kongdetuo/Calcita</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<VersionPrefix>0.1.0</VersionPrefix>
+		<VersionPrefix>0.1.1</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<PackageId>Calcita.Avalonia</PackageId>
 		<Description>Calcita — a modernized fork of ReoGrid. Powerful and lightweight .NET spreadsheet component compatible with Excel formats. This package contains the Avalonia UI build of Calcita.</Description>
