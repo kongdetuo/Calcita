@@ -176,6 +176,7 @@ namespace Calcita.Controls
                 bind(verScrollbar, ScrollBar.ViewportSizeProperty, () => this.GetObservable(LargeChangeProperty, p => p.Height)),
 
                 bind(sheetTab, SheetTabControl.IsVisibleProperty, () => this.GetObservable(SheetTabVisibleProperty)),
+                bind(sheetTab, SheetTabControl.NewButtonVisibleProperty, () => this.GetObservable(SheetTabNewButtonVisibleProperty)),
                 //bind(sheetTab, SheetTabControl.SelectedIndexProperty, ()=> this.GetObservable(SelectedIndexProperty)),
             ];
 
