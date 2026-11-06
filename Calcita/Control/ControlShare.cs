@@ -857,12 +857,18 @@ namespace Calcita.Controls
         }
 
         /// <summary>
+        /// SheetTabNewButtonVisible StyledProperty definition
+        /// </summary>
+        public static readonly StyledProperty<bool> SheetTabNewButtonVisibleProperty =
+            AvaloniaProperty.Register<CalcitaControl, bool>(nameof(SheetTabNewButtonVisible), true);
+
+        /// <summary>
         /// Determines that whether or not to display the new button on sheet tab control.
         /// </summary>
         public bool SheetTabNewButtonVisible
         {
-            get { return this.sheetTab?.NewButtonVisible == true; }
-            set { this.sheetTab?.NewButtonVisible = value; }
+            get => this.GetValue(SheetTabNewButtonVisibleProperty);
+            set => SetValue(SheetTabNewButtonVisibleProperty, value);
         }
         #endregion // SheetTabControl
 
