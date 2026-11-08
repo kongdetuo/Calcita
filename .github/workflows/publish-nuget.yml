@@ -21,7 +21,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Pack
-        run: dotnet pack Calcita/Calcita.csproj --configuration AvaloniaRelease --output ./artifacts -p:Version="${GITHUB_REF_NAME#v}"
+        run: dotnet pack Calcita/Calcita.csproj -p:GeneratePackageOnBuild=false --configuration AvaloniaRelease --output ./artifacts -p:Version="${GITHUB_REF_NAME#v}"
 
       - name: Authenticate with NuGet.org
         id: nuget-login
